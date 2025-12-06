@@ -61,6 +61,19 @@
     "file": "dicom-scp/pipelines/dicom-scp.toml",
     "type": "pipeline"
   },
+  "cstore-filesystem": {
+    "name": "DICOM C-STORE to Filesystem",
+    "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOM Service",
+      "Filesystem Service"
+    ],
+    "file": "cstore-filesystem/pipelines/main.toml",
+    "type": "pipeline"
+  },
   "dicomweb": {
     "name": "DICOMweb to DICOM",
     "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
