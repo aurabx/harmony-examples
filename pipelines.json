@@ -10,7 +10,7 @@
     "file": "basic-echo/pipelines/basic-echo.toml",
     "type": "pipeline"
   },
-  "http-backend": {
+  "http-http": {
     "name": "HTTP to HTTP",
     "description": "Basic HTTP endpoint with HTTP backend for API proxy",
     "categories": [
@@ -19,7 +19,7 @@
     "prerequisites": [
       "HTTP Service"
     ],
-    "file": "http-backend/pipelines/http-backend.toml",
+    "file": "http-http/pipelines/http-http.toml",
     "type": "pipeline"
   },
   "fhir": {
