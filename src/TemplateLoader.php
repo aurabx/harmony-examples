@@ -2,30 +2,31 @@
 
 namespace Runbeam\HarmonyExamples;
 
+use JsonException;
 use RuntimeException;
 
 class TemplateLoader
 {
     /**
-     * Load src/pipelines.json.
+     * Load pipelines.json from project root.
      *
      * @return array
-     * @throws \JsonException
+     * @throws RuntimeException|JsonException
      */
     public function loadPipelines(): array
     {
-        return $this->loadJson(__DIR__ . '/pipelines.json');
+        return $this->loadJson(__DIR__ . '/../pipelines.json');
     }
 
     /**
-     * Load src/transforms.json.
+     * Load transforms.json from project root.
      *
      * @return array
-     * @throws \JsonException
+     * @throws RuntimeException|JsonException
      */
     public function loadTransforms(): array
     {
-        return $this->loadJson(__DIR__ . '/transforms.json');
+        return $this->loadJson(__DIR__ . '/../transforms.json');
     }
 
     /**
@@ -33,7 +34,7 @@ class TemplateLoader
      *
      * @param  string  $path  Path to JSON file
      * @return array
-     * @throws RuntimeException|\JsonException If file is missing, unreadable, or invalid JSON
+     * @throws RuntimeException|JsonException If file is missing, unreadable, or invalid JSON
      */
     private function loadJson(string $path): array
     {
@@ -46,11 +47,13 @@ class TemplateLoader
             throw new RuntimeException("Failed to read file: {$path}");
         }
 
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
             throw new RuntimeException(
-                "Failed to decode JSON in {$path}: " . json_last_error_msg()
+                "Failed to decode JSON in {$path}: " . $e->getMessage(),
+                0,
+                $e
             );
         }
 

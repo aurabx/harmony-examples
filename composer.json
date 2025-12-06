@@ -11,5 +11,21 @@
   ],
   "require": {
     "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Runbeam\\HarmonyExamples\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Runbeam\\HarmonyExamples\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }
