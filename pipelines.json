@@ -62,6 +62,17 @@
     "file": "dicom-scp/pipelines/dicom-scp.toml",
     "type": "pipeline"
   },
+  "http-content-type": {
+    "name": "HTTP Multi-Content-Type Support",
+    "description": "Parse and process multiple content types",
+    "categories": [
+      "example",
+      "http"
+    ],
+    "prerequisites": [],
+    "file": "content-types/pipelines/multi-content.toml",
+    "type": "pipeline"
+  },
   "http-http": {
     "name": "HTTP to HTTP",
     "description": "Basic HTTP API proxy",
