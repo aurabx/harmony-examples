@@ -1,0 +1,23 @@
+{
+  "patient-to-fhir": {
+    "name": "Patient to FHIR",
+    "description": "Transform patient data to FHIR Patient resource format using JOLT",
+    "categories": [
+      "FHIR"
+    ],
+    "prerequisites": [],
+    "file": "patient-to-fhir/patient_to_fhir.json",
+    "type": "transform"
+  },
+  "fhir-to-dicom-params": {
+    "name": "FHIR to DICOM Parameters",
+    "description": "Transform FHIR ImagingStudy to DICOM query parameters for C-FIND operations",
+    "categories": [
+      "FHIR",
+      "DICOM"
+    ],
+    "prerequisites": [],
+    "file": "fhir-to-dicom-params/fhir_to_dicom_params.json",
+    "type": "transform"
+  }
+}

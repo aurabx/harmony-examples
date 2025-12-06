@@ -1,0 +1,44 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "customerId": "customer.id",
+      "customerName": "customer.name",
+      "orderDetails": {
+        "orderId": "order.id",
+        "orderDate": "order.date",
+        "items": {
+          "*": {
+            "productId": "order.items[&1].product_id",
+            "productName": "order.items[&1].product_name",
+            "quantity": "order.items[&1].quantity",
+            "price": "order.items[&1].price"
+          }
+        },
+        "totalAmount": "order.total_amount"
+      },
+      "shippingAddress": {
+        "street": "shipping.street",
+        "city": "shipping.city",
+        "state": "shipping.state",
+        "zipCode": "shipping.zip_code",
+        "country": "shipping.country"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "customer": {
+        "type": "customer"
+      },
+      "order": {
+        "status": "pending",
+        "currency": "USD"
+      },
+      "shipping": {
+        "method": "standard"
+      }
+    }
+  }
+]

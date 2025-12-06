@@ -1,0 +1,85 @@
+# ------------------------
+# SOAP to JSON Pipeline
+# Demonstrates automatic SOAP/XML to JSON conversion with Bearer token authentication and data transformation
+#-------------------------
+[pipelines.soap_to_json_proxy]
+description = "Receives SOAP/XML requests, automatically converts to JSON (via Content-Type detection), applies Bearer token authentication, transforms data structure with JOLT, and forwards to HTTP backend"
+networks = ["http_net"]
+endpoints = ["soap_endpoint"]
+middleware = [
+    "jwt_auth",
+    "jolt_transform",
+]
+backends = ["http_backend"]
+
+# ------------------------
+# Services
+#-------------------------
+[services.http]
+module = ""
+
+# ------------------------
+# Middleware Types
+#-------------------------
+[middleware_types.jwt_auth]
+module = ""
+
+[middleware_types.transform]
+module = ""
+
+# ------------------------
+# Middleware
+#-------------------------
+[middleware.jwt_auth]
+type = "jwt_auth"
+# RS256 (recommended for production)
+public_key_path = "./tmp/jwt_public.pem"
+issuer = "https://auth.example.com/"
+audience = "soap-api"
+leeway_secs = 60
+
+# Enhanced JWT Validation (Optional)
+# Trusted issuers - array of allowed JWT issuers
+# trusted_issuers = ["https://auth.example.com/", "https://auth2.example.com/"]
+
+# JWKS URI for fetching public keys
+# jwks_uri = "https://auth.example.com/.well-known/jwks.json"
+
+# Allowed signing algorithms
+# algorithms = ["RS256", "ES256"]
+
+# Required claims that must be present in JWT
+# required_claims = ["sub", "email", "scope"]
+
+# Clock skew tolerance (0-300 seconds)
+# leeway_seconds = 60
+
+# Validate JWT expiration (default: true)
+# validate_expiry = true
+
+# For development/testing with HS256, uncomment:
+# use_hs256 = true
+# hs256_secret = "your-secret-key-here"
+
+[middleware.jolt_transform]
+type = "transform"
+[middleware.jolt_transform.options]
+spec_path = "soap-to-json-transform.json"
+apply = "left"
+fail_on_error = true
+
+# ------------------------
+# Endpoints
+#-------------------------
+[endpoints.soap_endpoint]
+service = "http"
+[endpoints.soap_endpoint.options]
+path_prefix = "/soap"
+
+# ------------------------
+# Backends - External HTTP service
+#-------------------------
+[backends.http_backend]
+service = "http"
+[backends.http_backend.options]
+base_url = "http://127.0.0.1:9000"

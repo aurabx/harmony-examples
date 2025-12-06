@@ -1,0 +1,15 @@
+{
+  "name": "aurabx/harmony-examples",
+  "description": "Example templates for Harmony/Runbeam",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Aurabox",
+      "email": "hello@aurabox.cloud"
+    }
+  ],
+  "require": {
+    "ext-json": "*"
+  }
+}

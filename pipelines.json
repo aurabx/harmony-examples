@@ -1,0 +1,135 @@
+{
+  "basic-echo": {
+    "name": "Basic Echo",
+    "description": "Simple echo service for testing request/response flow",
+    "categories": [
+      "example",
+      "http"
+    ],
+    "prerequisites": [],
+    "file": "basic-echo/pipelines/basic-echo.toml",
+    "type": "pipeline"
+  },
+  "http-backend": {
+    "name": "HTTP to HTTP",
+    "description": "Basic HTTP endpoint with HTTP backend for API proxy",
+    "categories": [
+      "http"
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
+    "file": "http-backend/pipelines/http-backend.toml",
+    "type": "pipeline"
+  },
+  "fhir": {
+    "name": "FHIR to FHIR",
+    "description": "FHIR endpoint with basic authentication and JSON extraction middleware",
+    "categories": [
+      "fhir"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Echo Backend"
+    ],
+    "file": "fhir/pipelines/fhir.toml",
+    "type": "pipeline"
+  },
+  "fhir-dicom": {
+    "name": "FHIR to DICOM",
+    "description": "FHIR ImagingStudy resource integration with DICOM backend",
+    "categories": [
+      "fhir",
+      "dicom"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM Backend"
+    ],
+    "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
+    "type": "pipeline"
+  },
+  "dicom-scp": {
+    "name": "DICOM SCP example",
+    "description": "DICOM endpoint (SCP) that accepts DIMSE connections for query and retrieve operations",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOM Service"
+    ],
+    "file": "dicom-scp/pipelines/dicom-scp.toml",
+    "type": "pipeline"
+  },
+  "dicomweb": {
+    "name": "DICOMweb to DICOM",
+    "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
+    "categories": [
+      "dicomweb",
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOMweb Service",
+      "DICOM SCU Backend"
+    ],
+    "file": "dicomweb/pipelines/dicomweb.toml",
+    "type": "pipeline"
+  },
+  "dicom-backend": {
+    "name": "HTTP to DICOM",
+    "description": "HTTP endpoint with DICOM backend for remote PACS integration",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM SCU Backend"
+    ],
+    "file": "dicom-backend/pipelines/dicom-backend.toml",
+    "type": "pipeline"
+  },
+  "transform": {
+    "name": "JOLT Transform example",
+    "description": "Demonstrates JOLT transform middleware for data transformation",
+    "categories": [
+      "http",
+      "example"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "file": "transform/pipelines/transform-example.toml",
+    "type": "pipeline"
+  },
+  "soap-to-json": {
+    "name": "SOAP to JSON",
+    "description": "Converts SOAP/XML to JSON with JWT authentication and JOLT transformation",
+    "categories": [
+      "http",
+      "example"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "JWT Auth Middleware",
+      "Transform Middleware"
+    ],
+    "file": "soap-to-json/pipelines/soap-to-json.toml",
+    "type": "pipeline"
+  },
+  "jmix": {
+    "name": "JMIX to DICOM",
+    "description": "High-performance JMIX API with default skip flags for large datasets",
+    "categories": [
+      "dicom",
+      "jmix"
+    ],
+    "prerequisites": [
+      "JMIX Service",
+      "DICOM Backend"
+    ],
+    "file": "jmix/pipelines/jmix-performance.toml",
+    "type": "pipeline"
+  },
+
+}
