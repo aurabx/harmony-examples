@@ -22,3 +22,7 @@ target
 
 # PHP
 vendor
+tmp
+*.log
+**/tmp/**
+**/data/**
