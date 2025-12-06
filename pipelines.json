@@ -10,6 +10,58 @@
     "file": "basic-echo/pipelines/basic-echo.toml",
     "type": "pipeline"
   },
+  "cstore-filesystem": {
+    "name": "DICOM C-STORE to Filesystem",
+    "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOM Service",
+      "Filesystem Service"
+    ],
+    "file": "cstore-filesystem/pipelines/main.toml",
+    "type": "pipeline"
+  },
+  "dicomweb": {
+    "name": "DICOMweb to DICOM",
+    "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
+    "categories": [
+      "dicomweb",
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOMweb Service",
+      "DICOM SCU Backend"
+    ],
+    "file": "dicomweb/pipelines/dicomweb.toml",
+    "type": "pipeline"
+  },
+  "dicom-backend": {
+    "name": "HTTP to DICOM",
+    "description": "HTTP endpoint with DICOM backend for remote PACS integration",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM SCU Backend"
+    ],
+    "file": "dicom-backend/pipelines/dicom-backend.toml",
+    "type": "pipeline"
+  },
+  "dicom-scp": {
+    "name": "DICOM SCP example",
+    "description": "DICOM endpoint (SCP) that accepts DIMSE connections for query and retrieve operations",
+    "categories": [
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOM Service"
+    ],
+    "file": "dicom-scp/pipelines/dicom-scp.toml",
+    "type": "pipeline"
+  },
   "http-http": {
     "name": "HTTP to HTTP",
     "description": "Basic HTTP API proxy",
@@ -61,70 +113,18 @@
     "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
     "type": "pipeline"
   },
-  "dicom-scp": {
-    "name": "DICOM SCP example",
-    "description": "DICOM endpoint (SCP) that accepts DIMSE connections for query and retrieve operations",
+  "jmix": {
+    "name": "JMIX to DICOM",
+    "description": "High-performance JMIX API with default skip flags for large datasets",
     "categories": [
-      "dicom"
+      "dicom",
+      "jmix"
     ],
     "prerequisites": [
-      "DICOM Service"
+      "JMIX Service",
+      "DICOM Backend"
     ],
-    "file": "dicom-scp/pipelines/dicom-scp.toml",
-    "type": "pipeline"
-  },
-  "cstore-filesystem": {
-    "name": "DICOM C-STORE to Filesystem",
-    "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend",
-    "categories": [
-      "dicom"
-    ],
-    "prerequisites": [
-      "DICOM Service",
-      "Filesystem Service"
-    ],
-    "file": "cstore-filesystem/pipelines/main.toml",
-    "type": "pipeline"
-  },
-  "dicomweb": {
-    "name": "DICOMweb to DICOM",
-    "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
-    "categories": [
-      "dicomweb",
-      "dicom"
-    ],
-    "prerequisites": [
-      "DICOMweb Service",
-      "DICOM SCU Backend"
-    ],
-    "file": "dicomweb/pipelines/dicomweb.toml",
-    "type": "pipeline"
-  },
-  "dicom-backend": {
-    "name": "HTTP to DICOM",
-    "description": "HTTP endpoint with DICOM backend for remote PACS integration",
-    "categories": [
-      "dicom"
-    ],
-    "prerequisites": [
-      "HTTP Service",
-      "DICOM SCU Backend"
-    ],
-    "file": "dicom-backend/pipelines/dicom-backend.toml",
-    "type": "pipeline"
-  },
-  "transform": {
-    "name": "JOLT Transform example",
-    "description": "Demonstrates JOLT transform middleware for data transformation",
-    "categories": [
-      "http",
-      "example"
-    ],
-    "prerequisites": [
-      "HTTP Service",
-      "Transform Middleware"
-    ],
-    "file": "transform/pipelines/transform-example.toml",
+    "file": "jmix/pipelines/jmix-performance.toml",
     "type": "pipeline"
   },
   "soap-to-json": {
@@ -142,18 +142,18 @@
     "file": "soap-to-json/pipelines/soap-to-json.toml",
     "type": "pipeline"
   },
-  "jmix": {
-    "name": "JMIX to DICOM",
-    "description": "High-performance JMIX API with default skip flags for large datasets",
+  "transform": {
+    "name": "JOLT Transform example",
+    "description": "Demonstrates JOLT transform middleware for data transformation",
     "categories": [
-      "dicom",
-      "jmix"
+      "http",
+      "example"
     ],
     "prerequisites": [
-      "JMIX Service",
-      "DICOM Backend"
+      "HTTP Service",
+      "Transform Middleware"
     ],
-    "file": "jmix/pipelines/jmix-performance.toml",
+    "file": "transform/pipelines/transform-example.toml",
     "type": "pipeline"
   }
 }
