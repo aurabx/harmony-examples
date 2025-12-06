@@ -12,7 +12,7 @@
   },
   "http-http": {
     "name": "HTTP to HTTP",
-    "description": "Basic HTTP endpoint with HTTP backend for API proxy",
+    "description": "Basic HTTP API proxy",
     "categories": [
       "http"
     ],
@@ -20,6 +20,18 @@
       "HTTP Service"
     ],
     "file": "http-http/pipelines/http-http.toml",
+    "type": "pipeline"
+  },
+  "http-internal": {
+    "name": "HTTP to HTTP (for internal services)",
+    "description": "Basic HTTP internal API proxy",
+    "categories": [
+      "http"
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
+    "file": "http-internal/pipelines/http-internal.toml",
     "type": "pipeline"
   },
   "fhir": {
