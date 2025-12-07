@@ -10,23 +10,33 @@ class TemplateLoader
     /**
      * Load pipelines.json from project root.
      *
+     * @param  string|null  $pipelines_root
+     * @param  string|null  $pipelines_file
      * @return array
-     * @throws RuntimeException|JsonException
+     * @throws JsonException
      */
-    public function loadPipelines(): array
+    public function loadPipelines(string $pipelines_root = null, string $pipelines_file = null): array
     {
-        return $this->loadJson(__DIR__ . '/../pipelines.json');
+        $pipelines_root = $pipelines_root ?: __DIR__ . '/../';
+        $pipelines_file = $pipelines_file ?: 'pipelines.json';
+
+        return $this->loadJson($pipelines_root . $pipelines_file);
     }
 
     /**
      * Load transforms.json from project root.
      *
+     * @param  string|null  $transforms_root
+     * @param  string|null  $transforms_file
      * @return array
-     * @throws RuntimeException|JsonException
+     * @throws JsonException
      */
-    public function loadTransforms(): array
+    public function loadTransforms(string $transforms_root = null, string $transforms_file = null): array
     {
-        return $this->loadJson(__DIR__ . '/../transforms.json');
+        $transforms_root = $transforms_root ?: __DIR__ . '/../';
+        $transforms_file = $transforms_file ?: 'transforms.json';
+
+        return $this->loadJson($transforms_root . $transforms_file);
     }
 
     /**
