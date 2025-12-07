@@ -6,6 +6,7 @@ description = "FHIR API with healthcare-grade security policies (HIPAA-aligned)"
 networks = ["http_net"]
 endpoints = ["fhir_test"]
 middleware = [
+    "basic_auth",
     "healthcare_policies",
 ]
 backends = ["fhir_backend"]
@@ -14,10 +15,19 @@ backends = ["fhir_backend"]
 # Middleware
 #-------------------------
 
+[middleware.basic_auth]
+type = "basic_auth"
+
+[middleware.basic_auth.options]
+username = "test_user"
+password = "test_password"
+token_path = "./tmp/fhir_token"
+
 # Healthcare Security Policies (References policies by ID)
 # Production-grade access control aligned with HIPAA and healthcare compliance requirements
 # Note: Bearer token authentication is configured at the target level (see config.toml)
 [middleware.healthcare_policies]
+type = "policies"
 
 [middleware.healthcare_policies.options]
 policies = ["fhir_security"]

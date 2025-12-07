@@ -1,16 +1,18 @@
 {
   "basic-echo": {
-    "name": "Basic Echo",
+    "name": "Basic Echo Foo",
     "description": "Simple echo service for testing request/response flow",
     "categories": [
       "example",
       "http"
     ],
-    "prerequisites": [],
+    "prerequisites": [
+      "HTTP service"
+    ],
     "file": "basic-echo/pipelines/basic-echo.toml",
     "type": "pipeline"
   },
-  "cstore-filesystem": {
+  "dicom-cstore-to-filesystem": {
     "name": "DICOM C-STORE to Filesystem",
     "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend",
     "categories": [
@@ -23,24 +25,11 @@
     "file": "cstore-filesystem/pipelines/main.toml",
     "type": "pipeline"
   },
-  "dicomweb": {
-    "name": "DICOMweb to DICOM",
-    "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
-    "categories": [
-      "dicomweb",
-      "dicom"
-    ],
-    "prerequisites": [
-      "DICOMweb Service",
-      "DICOM SCU Backend"
-    ],
-    "file": "dicomweb/pipelines/dicomweb.toml",
-    "type": "pipeline"
-  },
-  "dicom-backend": {
+  "http-to-dicom": {
     "name": "HTTP to DICOM",
     "description": "HTTP endpoint with DICOM backend for remote PACS integration",
     "categories": [
+      "http",
       "dicom"
     ],
     "prerequisites": [
@@ -60,6 +49,47 @@
       "DICOM Service"
     ],
     "file": "dicom-scp/pipelines/dicom-scp.toml",
+    "type": "pipeline"
+  },
+  "dicomweb-dicom": {
+    "name": "DICOMweb to DICOM",
+    "description": "DICOMweb QIDO-RS and WADO-RS endpoint bridging to DIMSE",
+    "categories": [
+      "dicomweb",
+      "dicom"
+    ],
+    "prerequisites": [
+      "DICOMweb Service",
+      "DICOM SCU Backend"
+    ],
+    "file": "dicomweb/pipelines/dicomweb.toml",
+    "type": "pipeline"
+  },
+  "fhir": {
+    "name": "FHIR to FHIR",
+    "description": "FHIR endpoint with basic authentication and JSON extraction middleware",
+    "categories": [
+      "fhir"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Echo Backend"
+    ],
+    "file": "fhir/pipelines/fhir.toml",
+    "type": "pipeline"
+  },
+  "fhir-dicom": {
+    "name": "FHIR to DICOM",
+    "description": "FHIR ImagingStudy resource integration with DICOM backend",
+    "categories": [
+      "fhir",
+      "dicom"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM Backend"
+    ],
+    "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
     "type": "pipeline"
   },
   "http-content-type": {
@@ -97,33 +127,7 @@
     "file": "http-internal/pipelines/http-internal.toml",
     "type": "pipeline"
   },
-  "fhir": {
-    "name": "FHIR to FHIR",
-    "description": "FHIR endpoint with basic authentication and JSON extraction middleware",
-    "categories": [
-      "fhir"
-    ],
-    "prerequisites": [
-      "HTTP Service",
-      "Echo Backend"
-    ],
-    "file": "fhir/pipelines/fhir.toml",
-    "type": "pipeline"
-  },
-  "fhir-dicom": {
-    "name": "FHIR to DICOM",
-    "description": "FHIR ImagingStudy resource integration with DICOM backend",
-    "categories": [
-      "fhir",
-      "dicom"
-    ],
-    "prerequisites": [
-      "HTTP Service",
-      "DICOM Backend"
-    ],
-    "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
-    "type": "pipeline"
-  },
+
   "jmix": {
     "name": "JMIX to DICOM",
     "description": "High-performance JMIX API with default skip flags for large datasets",

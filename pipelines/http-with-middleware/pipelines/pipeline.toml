@@ -34,8 +34,8 @@
 #     -d "plain text"
 # ==============================================================================
 
-[pipelines.smoketest]
-description = "Comprehensive smoketest with all middleware types"
+[pipelines.example]
+description = "Comprehensive example with middleware"
 networks = ["default"]
 endpoints = ["http_api"]
 middleware = [
@@ -59,7 +59,7 @@ type = "basic_auth"
 [middleware.basic_auth.options]
 username = "testuser"
 password = "testpass"
-token_path = "./tmp/smoketest_token"
+token_path = "./tmp/example_token"
 
 # ==============================================================================
 # MIDDLEWARE - ACCESS CONTROL POLICIES
