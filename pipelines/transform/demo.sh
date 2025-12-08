@@ -29,8 +29,8 @@ if ! command -v curl &> /dev/null; then
     exit 1
 fi
 
-if ! command -v cargo &> /dev/null; then
-    echo -e "${RED}Error: cargo not found. Please install Rust.${NC}"
+if ! command -v harmony &> /dev/null; then
+    echo -e "${RED}Error: harmony not found. Please install Harmony.${NC}"
     exit 1
 fi
 
@@ -77,7 +77,7 @@ echo ""
 # Start Harmony in background
 echo -e "${YELLOW}Starting Harmony transform service on port $HARMONY_PORT...${NC}"
 cd "$SCRIPT_DIR"
-"$PROJECT_ROOT/target/release/harmony" --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
+harmony --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
 HARMONY_PID=$!
 echo -e "${GREEN}✓ Harmony started (PID: $HARMONY_PID)${NC}"
 

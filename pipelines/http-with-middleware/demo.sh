@@ -34,12 +34,17 @@ echo ""
 
 # Check for required tools
 echo -e "${YELLOW}Checking prerequisites...${NC}"
-for cmd in curl python3 cargo jq; do
+for cmd in curl python3 jq; do
     if ! command -v $cmd &> /dev/null; then
         echo -e "${RED}Error: $cmd not found. Please install $cmd.${NC}"
         exit 1
     fi
 done
+
+if ! command -v harmony &> /dev/null; then
+    echo -e "${RED}Error: harmony not found. Please install Harmony.${NC}"
+    exit 1
+fi
 echo -e "${GREEN}✓ All prerequisites found${NC}"
 echo ""
 
@@ -101,17 +106,14 @@ fi
 echo -e "${GREEN}✓ Backend is ready${NC}"
 echo ""
 
-# Build Harmony
-echo -e "${YELLOW}Building Harmony...${NC}"
-cd "$PROJECT_ROOT"
-cargo build --release --quiet
-echo -e "${GREEN}✓ Build complete${NC}"
+# Build Harmony (already installed)
+echo -e "${YELLOW}Harmony already available${NC}"
 echo ""
 
 # Start Harmony
 echo -e "${YELLOW}Starting Harmony on port $HARMONY_PORT...${NC}"
 cd "$SCRIPT_DIR"
-"$PROJECT_ROOT/target/release/harmony" --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
+harmony --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
 HARMONY_PID=$!
 echo -e "${GREEN}✓ Harmony started (PID: $HARMONY_PID)${NC}"
 

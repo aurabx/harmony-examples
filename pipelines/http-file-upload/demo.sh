@@ -14,7 +14,7 @@ mkdir -p examples/http-file-upload/tmp/uploads
 
 # Start Harmony in background
 echo "Starting Harmony Proxy..."
-cargo run -- --config examples/http-file-upload/config.toml > examples/http-file-upload/server.log 2>&1 &
+harmony --config examples/http-file-upload/config.toml > examples/http-file-upload/server.log 2>&1 &
 SERVER_PID=$!
 
 # Wait for server to start (loop up to 60s)
