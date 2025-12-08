@@ -1,0 +1,46 @@
+[
+  {
+    "comment": "Extract key resources from the FHIR Bundle for easier access",
+    "operation": "shift",
+    "spec": {
+      "entry": {
+        "*": {
+          "resource": {
+            "resourceType": {
+              "ServiceRequest": "serviceRequest",
+              "Patient": "patient",
+              "Practitioner": "practitioner",
+              "Organization": "organization",
+              "Task": "task"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "comment": "Build simplified HTTP API request from FHIR bundle",
+    "operation": "modify-default-beta",
+    "spec": {
+      "apiRequest": {
+        "=": {
+          "patientId": "@(patient.identifier[0].value)",
+          "patientName": "@(patient.name[0].family) @(patient.name[0].given[0])",
+          "serviceCode": "@(serviceRequest.code.coding[0].code)",
+          "serviceDisplay": "@(serviceRequest.code.coding[0].display)",
+          "priority": "@(serviceRequest.priority)",
+          "requesterName": "@(practitioner.name[0].family), @(practitioner.name[0].given[0])",
+          "organizationName": "@(organization.name)",
+          "notes": "Service request converted from AU eRequesting FHIR bundle"
+        }
+      }
+    }
+  },
+  {
+    "comment": "Extract just the apiRequest object for posting to backend",
+    "operation": "shift",
+    "spec": {
+      "apiRequest": "."
+    }
+  }
+]

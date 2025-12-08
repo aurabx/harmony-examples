@@ -170,5 +170,41 @@
     ],
     "file": "transform/pipelines/transform-example.toml",
     "type": "pipeline"
+  },
+
+  "au-erequesting-http-to-fhir": {
+    "name": "AU eRequesting: HTTP to FHIR",
+    "description": "Convert HTTP service requests to AU eRequesting FHIR bundles and back to HTTP responses",
+    "categories": [
+      "fhir",
+      "healthcare",
+      "australia",
+      "example"
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "FHIR Service",
+      "Transform Middleware"
+    ],
+    "file": "au-erequesting/pipelines/au-erequesting.toml",
+    "type": "pipeline"
+  },
+
+  "au-erequesting-fhir-to-api": {
+    "name": "AU eRequesting: FHIR to HTTP API",
+    "description": "Accept AU eRequesting FHIR bundles and convert to simplified HTTP API calls for backend services",
+    "categories": [
+      "fhir",
+      "healthcare",
+      "australia",
+      "example"
+    ],
+    "prerequisites": [
+      "FHIR Service",
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "file": "au-erequesting/pipelines/fhir-to-api.toml",
+    "type": "pipeline"
   }
 }

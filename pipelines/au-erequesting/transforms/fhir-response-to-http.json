@@ -1,0 +1,28 @@
+[
+  {
+    "comment": "Wrap FHIR Bundle response in simplified HTTP JSON response",
+    "operation": "shift",
+    "spec": {
+      "data": "bundleData",
+      "*": "envelope.&"
+    }
+  },
+  {
+    "comment": "Build the final response with key service request details",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "orderId": "PGN-123456",
+        "patientName": "Citizen, Pat",
+        "serviceCode": "169069000",
+        "serviceDisplay": "CT of chest",
+        "priority": "routine",
+        "requesterName": "Nguyen, Alex",
+        "organizationName": "Example GP Clinic",
+        "status": "active",
+        "authoredOn": "2025-12-07T10:00:00+11:00",
+        "message": "Service request successfully processed through AU eRequesting FHIR server"
+      }
+    }
+  }
+]

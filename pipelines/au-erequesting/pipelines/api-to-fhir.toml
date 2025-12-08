@@ -1,0 +1,80 @@
+# AU eRequesting HTTP-to-FHIR-to-HTTP Pipeline
+# 
+# This pipeline demonstrates converting HTTP service requests to FHIR bundles,
+# posting them to a FHIR server, and converting the response back to HTTP.
+#
+# Request flow:
+#   GET /service-requests?providerId=8003621566684455
+#   ↓ (transform via http-request-to-fhir.json)
+#   POST FHIR Bundle to backend
+#   ↓ (backend returns FHIR Bundle)
+#   ↓ (transform via fhir-response-to-http.json)
+#   JSON HTTP response
+#
+
+[pipelines.service_requests_to_fhir]
+description = "GET /service-requests converts to FHIR and back"
+networks = ["http_net"]
+endpoints = ["service_requests_endpoint"]
+middleware.left = [
+    "http_to_fhir_transform",
+    "dump_fhir_request",
+]
+middleware.right = [
+    "fhir_to_http_transform",
+    "dump_final_response",
+]
+backends = ["fhir_backend"]
+
+# ========================
+# Endpoints
+# ========================
+
+[endpoints.service_requests_endpoint]
+service = "http"
+[endpoints.service_requests_endpoint.options]
+path_prefix = "/"
+
+# ========================
+# Backends
+# ========================
+
+[backends.fhir_backend]
+service = "http"
+target_ref = "fhir_server"
+
+# ========================
+# Middleware - Left Side (Request Processing)
+# ========================
+
+# Transform HTTP request to FHIR Bundle
+[middleware.http_to_fhir_transform]
+type = "transform"
+[middleware.http_to_fhir_transform.options]
+spec_path = "http-request-to-fhir.json"
+fail_on_error = false
+
+# Debug: log the FHIR request before sending to backend
+[middleware.dump_fhir_request]
+type = "log_dump"
+[middleware.dump_fhir_request.options]
+label = "fhir_request_to_backend"
+pretty = true
+
+# ========================
+# Middleware - Right Side (Response Processing)
+# ========================
+
+# Transform FHIR Bundle response back to simplified HTTP response
+[middleware.fhir_to_http_transform]
+type = "transform"
+[middleware.fhir_to_http_transform.options]
+spec_path = "fhir-response-to-http.json"
+fail_on_error = false
+
+# Debug: log the final HTTP response
+[middleware.dump_final_response]
+type = "log_dump"
+[middleware.dump_final_response.options]
+label = "final_http_response"
+pretty = true

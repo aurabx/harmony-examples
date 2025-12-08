@@ -1,0 +1,57 @@
+# AU eRequesting HTTP-to-FHIR Integration Example
+# Demonstrates converting HTTP API requests to FHIR bundles and back
+
+[proxy]
+id = "harmony-au-erequesting"
+log_level = "debug"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+
+# Network configuration
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8080
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_au_erequesting.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.fhir]
+module = ""
+
+# Middleware types
+[middleware_types.transform]
+module = ""
+
+[middleware_types.log_dump]
+module = ""
+
+# Target definition - FHIR server backend
+[targets.fhir_server]
+connection.host = "127.0.0.1"
+connection.port = 8888
+connection.protocol = "http"
+timeout_secs = 60
+
+# Target definition - Simple API backend
+[targets.api_server]
+connection.host = "127.0.0.1"
+connection.port = 8889
+connection.protocol = "http"
+timeout_secs = 60

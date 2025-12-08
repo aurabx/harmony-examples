@@ -1,0 +1,66 @@
+# FHIR to FHIR Pipeline (Pass-through)
+#
+# This pipeline demonstrates accepting FHIR bundles from clients,
+# sending them to the FHIR server, and returning the FHIR response.
+#
+# Request flow:
+#   POST /fhir-bundle (FHIR Bundle)
+#   ↓ (pass through to FHIR server)
+#   POST http://127.0.0.1:8888/ (FHIR server)
+#   ↓ (FHIR server processes and returns response)
+#   FHIR response back to client
+#
+
+[pipelines.fhir_to_fhir]
+description = "POST FHIR Bundle → FHIR Server → FHIR Response"
+networks = ["http_net"]
+endpoints = ["fhir_bundle_endpoint"]
+middleware.left = [
+    "dump_incoming_fhir",
+]
+middleware.right = [
+    "dump_outgoing_fhir",
+]
+backends = ["fhir_backend"]
+
+# ========================
+# Endpoints
+# ========================
+
+[endpoints.fhir_bundle_endpoint]
+service = "fhir"
+[endpoints.fhir_bundle_endpoint.options]
+# Accept FHIR bundle POST requests
+path_prefix = "/fhir-bundle"
+
+# ========================
+# Backends
+# ========================
+
+[backends.fhir_backend]
+service = "fhir"
+target_ref = "fhir_server"
+[backends.fhir_backend.options]
+# Will POST the FHIR bundle to http://127.0.0.1:8888/
+
+# ========================
+# Middleware - Left Side (Request Processing)
+# ========================
+
+# Debug: log the incoming FHIR bundle
+[middleware.dump_incoming_fhir]
+type = "log_dump"
+[middleware.dump_incoming_fhir.options]
+label = "incoming_fhir_bundle"
+pretty = true
+
+# ========================
+# Middleware - Right Side (Response Processing)
+# ========================
+
+# Debug: log the outgoing FHIR response
+[middleware.dump_outgoing_fhir]
+type = "log_dump"
+[middleware.dump_outgoing_fhir.options]
+label = "fhir_response_from_server"
+pretty = true
