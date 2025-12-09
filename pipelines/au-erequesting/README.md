@@ -1,57 +1,66 @@
-# AU eRequesting FHIR HTTP Integration Example
+# AU eRequesting FHIR Integration Example
 
-This example demonstrates how to use Harmony to convert HTTP API requests into FHIR bundles compliant with the AU eRequesting Implementation Guide, send them to a FHIR server, and convert the responses back to simplified HTTP JSON responses.
+This example demonstrates bidirectional integration between HTTP APIs and FHIR using Harmony proxies with the SMILE FHIR server backend. It includes two main data flow patterns:
 
 ## Overview
 
-The example illustrates a complete HTTP-to-FHIR-to-HTTP workflow:
-
+### Forward Flow: HTTP → FHIR → HTTP
+Convert HTTP API requests to FHIR queries and back:
 ```
-HTTP Request
+GET /service-requests?type=Task&owner=kioma-pathology
    ↓ (HTTP→FHIR transform)
-FHIR Bundle (AU eRequesting)
-   ↓ (POST to backend)
-FHIR Server
-   ↓ (receive FHIR response)
-FHIR Bundle
+GET /Task?owner=kioma-pathology (FHIR query)
+   ↓ (Query FHIR Server)
+FHIR Bundle Response
    ↓ (FHIR→HTTP transform)
-HTTP JSON Response
+HTTP JSON Response with tasks array
+```
+
+### Reverse Flow: FHIR → FHIR
+Process FHIR bundles directly:
+```
+POST /fhir-bundle (FHIR Bundle)
+   ↓ (pass-through to FHIR Server)
+FHIR Response Bundle
 ```
 
 ## Architecture
 
 ### Components
 
-1. **FHIR Server** (`server.py`)
-   - Simple Python HTTP server listening on port 8888
-   - Accepts POST requests with FHIR bundles
-   - Returns the pre-configured AU eRequesting response
+1. **SMILE FHIR Server** (https://smile.sparked-fhir.com)
+   - Remote FHIR backend service
+   - Accepts GET (query) and POST (transaction) requests with FHIR bundles
+   - Endpoint: `https://smile.sparked-fhir.com/ereq/fhir/DEFAULT`
 
-2. **Harmony Proxy** (Rust application)
-   - Listens on port 8080
-   - Transforms HTTP requests to FHIR bundles
-   - Forwards bundles to the FHIR server
-   - Transforms responses back to HTTP JSON
+2. **http-server.py** (Port 8889)
+   - HTTP API backend service
+   - Manages orders from HTTP requests
+   - Used in bidirectional integration test
 
-3. **HTTP API**
-   - `GET /service-requests?providerId={id}`
-   - Query parameters: `providerId`, `patientId`, `serviceCode`
-   - Returns simplified JSON with key service request details
+3. **Harmony Proxy** (Port 8080)
+   - Runs two transformation pipelines
+   - Pipeline 1: HTTP → FHIR → HTTP (forward flow)
+   - Pipeline 2: FHIR → FHIR (reverse flow)
 
-### Files
+### File Structure
 
 ```
 au-erequesting/
-├── config.toml                 # Harmony proxy configuration
+├── README.md                       # This file
+├── config.toml                     # Harmony proxy configuration
+├── fhir-server.py                  # FHIR backend service
+├── http-server.py                  # HTTP API backend service
+├── request.json                    # AU eRequesting FHIR bundle (test data)
+├── demo-forward.sh                 # Forward flow demo script
+├── demo-bidirectional.sh           # Bidirectional demo script
 ├── pipelines/
-│   └── au-erequesting.toml    # Pipeline definition
-├── transforms/
-│   ├── http-request-to-fhir.json      # Request transformation
-│   └── fhir-response-to-http.json     # Response transformation
-├── server.py                   # FHIR server implementation
-├── request.json               # AU eRequesting FHIR bundle template
-├── demo.sh                    # Orchestration script
-└── README.md                  # This file
+│   ├── http-to-fhir.toml          # Forward flow pipeline (HTTP→FHIR→HTTP)
+│   └── fhir-to-fhir.toml          # Reverse flow pipeline (FHIR→FHIR)
+└── transforms/
+    ├── http-request-to-fhir.json   # HTTP → FHIR transformation
+    ├── fhir-response-to-http.json  # FHIR → HTTP transformation
+    └── fhir-to-api-request.json    # (deprecated, not used)
 ```
 
 ## Getting Started
@@ -63,46 +72,54 @@ au-erequesting/
 - curl
 - zsh or bash shell
 
-### Running the Demo
+### Running the Demos
 
+**Forward Flow Only** (HTTP → FHIR → HTTP):
 ```bash
-cd /Users/xtfer/working/runbeam/runbeam-workspace/projects/harmony-examples/pipelines/au-erequesting
-./demo.sh
+./demo-forward.sh
 ```
 
-The demo script will:
+**Bidirectional Integration** (both forward and reverse flows):
+```bash
+./demo-bidirectional.sh
+```
 
+Both scripts will:
 1. Check for required tools
-2. Start the FHIR server on port 8888
-3. Build Harmony
-4. Start the Harmony proxy on port 8080
-5. Run test requests
-6. Display results
-7. Clean up on exit
+2. Start all necessary services
+3. Run test requests
+4. Display results
+5. Clean up on exit
 
 ### Manual Execution
 
-#### 1. Start FHIR Server
+#### 1. No FHIR Server Setup Required
+The example uses the remote SMILE FHIR server (https://smile.sparked-fhir.com/ereq/fhir/DEFAULT).
 
+#### 2. Start HTTP Server (optional, only needed for bidirectional)
 ```bash
-python3 server.py 8888
+python3 http-server.py 8889
 ```
 
-#### 2. Start Harmony Proxy
-
+#### 3. Start Harmony Proxy
 ```bash
-cd /path/to/au-erequesting
 harmony --config ./config.toml
 ```
 
-#### 3. Make HTTP Requests
-
+#### 4. Test Forward Flow
 ```bash
-# Simple GET request for service requests
-curl 'http://127.0.0.1:8080/service-requests?providerId=8003621566684455'
+# HTTP → FHIR → HTTP
+# Query Tasks owned by a specific organization
+curl -s 'http://127.0.0.1:8080/service-requests?type=Task&owner=kioma-pathology' | jq
+```
 
-# Pretty-print the response
-curl -s 'http://127.0.0.1:8080/service-requests?providerId=8003621566684455' | jq
+#### 5. Test Reverse Flow
+```bash
+# FHIR → FHIR
+curl -s -X POST \
+  -H "Content-Type: application/fhir+json" \
+  -d @request.json \
+  'http://127.0.0.1:8080/fhir-bundle' | jq
 ```
 
 ## Configuration Details
@@ -114,64 +131,73 @@ curl -s 'http://127.0.0.1:8080/service-requests?providerId=8003621566684455' | j
 - **Log Level**: debug
 - **Transforms Path**: `./transforms`
 - **Pipelines Path**: `./pipelines`
-- **FHIR Backend**: localhost:8888
+- **FHIR Backend**: https://smile.sparked-fhir.com/ereq/fhir/DEFAULT
 
-### Pipeline Configuration (`au-erequesting.toml`)
+### Pipelines
 
-The pipeline defines a single flow:
+#### Forward Flow (`http-to-fhir.toml`)
+1. **Endpoint**: `GET /service-requests`
+2. **Request Processing**:
+   - `http_to_fhir_transform`: Converts HTTP query params (`type`, `owner`) to FHIR query path
+3. **Backend**: GET query to FHIR server (e.g., `/Task?owner=kioma-pathology`)
+4. **Response Processing**:
+   - `fhir_to_http_transform`: Extracts task entries from FHIR Bundle into JSON array
 
-1. **HTTP Request Endpoint**: `/` (all paths)
-2. **Request Middleware**:
-   - `http_to_fhir_transform`: Converts HTTP request to FHIR bundle
-   - `dump_fhir_request`: Logs the FHIR request for debugging
-3. **Backend**: HTTP POST to FHIR server
-4. **Response Middleware**:
-   - `fhir_to_http_transform`: Extracts key fields from FHIR response
-   - `dump_final_response`: Logs the final HTTP response
+#### Reverse Flow (`fhir-to-fhir.toml`)
+1. **Endpoint**: `POST /fhir-bundle`
+2. **Request Processing**:
+   - `dump_incoming_fhir`: Logs incoming FHIR bundle
+3. **Backend**: POST to FHIR server
+4. **Response Processing**:
+   - `dump_outgoing_fhir`: Logs FHIR response
 
 ## Transform Specifications
 
 ### HTTP to FHIR Transform (`http-request-to-fhir.json`)
 
-Converts HTTP request into a AU eRequesting FHIR bundle containing:
+Converts HTTP query parameters into a FHIR query path:
 
-- **Task (Group)**: Top-level task for coordinating the request
-- **Task (Diagnostic Request)**: Task focused on the diagnostic request
-- **ServiceRequest**: The actual service being requested (CT imaging)
-- **Patient**: The patient receiving the service
-- **Practitioner**: The requesting clinician
-- **PractitionerRole**: Role of the practitioner
-- **Organization**: The organization initiating the request
-- **Encounter**: The clinical encounter context
+- Extracts `type` and `owner` from query params
+- Builds target URI: `/{type}?owner={owner}`
+- Example: `?type=Task&owner=kioma-pathology` → `/Task?owner=kioma-pathology`
 
-**Notes**:
-- Uses fixed UUIDs for relationships
-- Creates conformant AU eRequesting bundle with proper profiles
-- Status set to "requested" and intent to "order"
+**Query Parameters**:
+- `type`: FHIR resource type to query (e.g., `Task`, `ServiceRequest`)
+- `owner`: Organization identifier to filter by
 
 ### FHIR to HTTP Transform (`fhir-response-to-http.json`)
 
-Extracts key information from the FHIR bundle response:
+Extracts task entries from a FHIR Bundle into a simplified JSON structure:
 
 ```json
 {
-  "data": {
-    "orderId": "PGN-123456",
-    "patientName": "Citizen Pat",
-    "serviceCode": "169069000",
-    "serviceDisplay": "CT of chest",
-    "priority": "routine",
-    "requesterName": "Nguyen, Alex",
-    "organizationName": "Example GP Clinic",
-    "status": "active",
-    "authoredOn": "2025-12-07T10:00:00+11:00",
-    "bundleType": "Bundle",
-    "message": "Service request successfully processed through AU eRequesting FHIR server"
-  }
+  "totalTasks": 5,
+  "tasks": [
+    {
+      "taskId": "task-123",
+      "status": "requested",
+      "priority": "routine",
+      "authoredOn": "2025-12-07T10:00:00+11:00",
+      "orderId": "PGN-123456",
+      "patientRef": "Patient/pat-001",
+      "requesterRef": "PractitionerRole/pr-001",
+      "organizationRef": "Organization/org-001"
+    },
+    ...
+  ]
 }
 ```
 
-## FHIR Server (`server.py`)
+**Output Fields**:
+- `totalTasks`: Total count from Bundle
+- `tasks[]`: Array of extracted task information
+  - `taskId`, `status`, `priority`, `authoredOn`
+  - `orderId` (from groupIdentifier)
+  - `patientRef`, `requesterRef`, `organizationRef` (FHIR references)
+
+## Services
+
+### FHIR Server (`fhir-server.py`)
 
 ### Endpoints
 
@@ -189,9 +215,28 @@ Extracts key information from the FHIR bundle response:
 - Uses Python's built-in `http.server` for simplicity
 - No external dependencies required
 - Reads response from `request.json` in the same directory
+- Handles both GET (query) and POST (transaction) requests
 - Logs all requests to stdout
 - Returns 404 for unrecognized paths
 - Returns 400 for invalid JSON
+
+### HTTP Server (`http-server.py`)
+
+Simple HTTP API backend for managing orders.
+
+#### Endpoints
+
+- **GET `/health`**: Health check
+- **GET `/orders`**: List all orders
+- **GET `/orders/{id}`**: Get specific order
+- **POST `/orders`**: Create new order
+
+#### Implementation Details
+
+- Stores orders in-memory
+- Validates required fields: patientId, patientName, serviceCode, serviceDisplay
+- Returns 201 Created for successful POST requests
+- Used in bidirectional demo for full integration testing
 
 ## Demonstrating Conformance
 
@@ -228,21 +273,24 @@ To extend this example:
 
 ## Logs
 
-The demo script generates two log files in the `tmp/` directory:
+The demo script generates log files in the `tmp/` directory:
 
 - **harmony.log**: Harmony proxy debug output and middleware logs
-- **fhir_server.log**: FHIR server request/response logs
 
 ## Troubleshooting
 
-### FHIR Server won't start
-- Check that port 8888 is available: `lsof -i :8888`
-- Verify `request.json` exists in the same directory as `server.py`
-- Check Python version: `python3 --version`
+### FHIR Server connectivity
+- Verify you can reach the SMILE FHIR server: `curl https://smile.sparked-fhir.com/ereq/fhir/DEFAULT`
+- Check network connectivity and firewall rules
+- Ensure HTTPS/port 443 is accessible
+
+### HTTP Server won't start
+- Check that port 8889 is available: `lsof -i :8889`
+- Verify http-server.py is executable: `chmod +x http-server.py`
 
 ### Harmony won't start
 - Check that port 8080 is available: `lsof -i :8080`
-- Verify Harmony built successfully: Check `harmony.log`
+- Verify Harmony is installed: `which harmony`
 - Ensure config.toml paths are correct
 
 ### Transform errors
@@ -250,7 +298,7 @@ The demo script generates two log files in the `tmp/` directory:
 - Verify transform JSON syntax: `python3 -m json.tool transforms/http-request-to-fhir.json`
 
 ### Request returns empty or incorrect response
-- Verify FHIR server is running: `curl http://127.0.0.1:8888/health`
+- Verify FHIR server is reachable: `curl https://smile.sparked-fhir.com/ereq/fhir/DEFAULT`
 - Check that the bundle was sent to the backend: Look in `harmony.log` for "fhir_request_to_backend"
 - Verify response transformation: Look for "final_http_response" in logs
 

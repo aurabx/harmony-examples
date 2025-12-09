@@ -42,11 +42,12 @@ module = ""
 [middleware_types.log_dump]
 module = ""
 
-# Target definition - FHIR server backend
+# Target definition - FHIR server backend (SMILE FHIR Server)
 [targets.fhir_server]
-connection.host = "127.0.0.1"
-connection.port = 8888
-connection.protocol = "http"
+connection.host = "smile.sparked-fhir.com"
+connection.port = 443
+connection.protocol = "https"
+connection.base_path = "/ereq/fhir/DEFAULT"
 timeout_secs = 60
 
 # Target definition - Simple API backend

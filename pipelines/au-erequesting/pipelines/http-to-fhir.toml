@@ -18,11 +18,9 @@ networks = ["http_net"]
 endpoints = ["service_requests_endpoint"]
 middleware.left = [
     "http_to_fhir_transform",
-    "dump_fhir_request",
 ]
 middleware.right = [
     "fhir_to_http_transform",
-    "dump_final_response",
 ]
 backends = ["fhir_backend"]
 
@@ -33,7 +31,7 @@ backends = ["fhir_backend"]
 [endpoints.service_requests_endpoint]
 service = "http"
 [endpoints.service_requests_endpoint.options]
-path_prefix = "/"
+path_prefix = "/service-requests"
 
 # ========================
 # Backends
@@ -48,18 +46,13 @@ target_ref = "fhir_server"
 # ========================
 
 # Transform HTTP request to FHIR Bundle
+
 [middleware.http_to_fhir_transform]
 type = "transform"
 [middleware.http_to_fhir_transform.options]
 spec_path = "http-request-to-fhir.json"
 fail_on_error = false
-
-# Debug: log the FHIR request before sending to backend
-[middleware.dump_fhir_request]
-type = "log_dump"
-[middleware.dump_fhir_request.options]
-label = "fhir_request_to_backend"
-pretty = true
+debug = true
 
 # ========================
 # Middleware - Right Side (Response Processing)
@@ -71,10 +64,4 @@ type = "transform"
 [middleware.fhir_to_http_transform.options]
 spec_path = "fhir-response-to-http.json"
 fail_on_error = false
-
-# Debug: log the final HTTP response
-[middleware.dump_final_response]
-type = "log_dump"
-[middleware.dump_final_response.options]
-label = "final_http_response"
-pretty = true
+debug = true

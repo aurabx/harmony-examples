@@ -186,13 +186,13 @@
       "FHIR Service",
       "Transform Middleware"
     ],
-    "file": "au-erequesting/pipelines/au-erequesting.toml",
+    "file": "au-erequesting/pipelines/http-to-fhir.toml",
     "type": "pipeline"
   },
 
-  "au-erequesting-fhir-to-api": {
-    "name": "AU eRequesting: FHIR to HTTP API",
-    "description": "Accept AU eRequesting FHIR bundles and convert to simplified HTTP API calls for backend services",
+  "au-erequesting-fhir-to-http": {
+    "name": "AU eRequesting: FHIR to HTTP",
+    "description": "Accept AU eRequesting FHIR bundles and convert to HTTP API calls for backend services",
     "categories": [
       "fhir",
       "healthcare",
@@ -204,7 +204,7 @@
       "HTTP Service",
       "Transform Middleware"
     ],
-    "file": "au-erequesting/pipelines/fhir-to-api.toml",
+    "file": "au-erequesting/pipelines/fhir-to-fhir.toml",
     "type": "pipeline"
   }
 }

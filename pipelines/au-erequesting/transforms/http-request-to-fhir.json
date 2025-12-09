@@ -1,324 +1,34 @@
 [
   {
-    "comment": "Initialize the root FHIR Bundle structure with transaction type",
-    "operation": "default",
-    "spec": {
-      "resourceType": "Bundle",
-      "type": "transaction",
-      "entry": []
-    }
-  },
-  {
-    "comment": "Pass through the bundle structure",
+    "comment": "Extract owner and type from query params",
     "operation": "shift",
     "spec": {
-      "resourceType": "resourceType",
-      "type": "type",
-      "entry": "entry"
+      "context": {
+        "request_details": {
+          "query_params": {
+            "owner": {
+              "0": "owner"
+            },
+            "type": {
+              "0": "type"
+            }
+          }
+        }
+      }
     }
   },
   {
-    "comment": "Build the complete AU eRequesting bundle with all required resources",
-    "operation": "modify-default-beta",
+    "comment": "Build target_details.uri for FHIR backend with query params embedded in URI",
+    "operation": "modify-overwrite-beta",
     "spec": {
-      "entry": {
-        "=": [
-          {
-            "fullUrl": "urn:uuid:18b57f7b-9cee-4d6c-92d3-32e11f44a2c1",
-            "request": {
-              "method": "POST",
-              "url": "Task"
-            },
-            "resource": {
-              "resourceType": "Task",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-task-group"
-                ],
-                "tag": [
-                  {
-                    "system": "http://terminology.hl7.org.au/CodeSystem/resource-tag",
-                    "code": "fulfilment-task-group"
-                  }
-                ]
-              },
-              "status": "requested",
-              "intent": "order",
-              "groupIdentifier": {
-                "type": {
-                  "coding": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                      "code": "PGN"
-                    }
-                  ]
-                },
-                "system": "http://ns.electronichealth.net.au/id/hpio-scoped/order/1.0/8003621566684455",
-                "value": "PGN-123456"
-              },
-              "requester": {
-                "reference": "urn:uuid:68aa1d0c-e021-6c1f-d7c8-87e66f88a7b6"
-              },
-              "code": {
-                "coding": [
-                  {
-                    "system": "http://hl7.org/fhir/CodeSystem/task-code",
-                    "code": "fulfill"
-                  }
-                ]
-              },
-              "for": {
-                "reference": "urn:uuid:58f9c0bf-df10-5b0e-c6b7-76d55e77f6a5"
-              },
-              "authoredOn": "2025-12-07T10:00:00+11:00"
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:28c68e8c-adef-4e7b-93e4-43f22b55b3d2",
-            "request": {
-              "method": "POST",
-              "url": "Task"
-            },
-            "resource": {
-              "resourceType": "Task",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-task-diagnosticrequest"
-                ],
-                "tag": [
-                  {
-                    "system": "http://terminology.hl7.org.au/CodeSystem/resource-tag",
-                    "code": "fulfilment-task"
-                  }
-                ]
-              },
-              "status": "requested",
-              "intent": "order",
-              "priority": "routine",
-              "groupIdentifier": {
-                "type": {
-                  "coding": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                      "code": "PGN"
-                    }
-                  ]
-                },
-                "system": "http://ns.electronichealth.net.au/id/hpio-scoped/order/1.0/8003621566684455",
-                "value": "PGN-123456"
-              },
-              "partOf": [
-                {
-                  "reference": "urn:uuid:18b57f7b-9cee-4d6c-92d3-32e11f44a2c1"
-                }
-              ],
-              "focus": {
-                "reference": "urn:uuid:38d79f9d-bfef-4f8c-a4f5-54a33b55c4e3"
-              },
-              "requester": {
-                "reference": "urn:uuid:68aa1d0c-e021-6c1f-d7c8-87e66f88a7b6"
-              },
-              "code": {
-                "coding": [
-                  {
-                    "system": "http://hl7.org/fhir/CodeSystem/task-code",
-                    "code": "fulfill"
-                  }
-                ]
-              },
-              "for": {
-                "reference": "urn:uuid:58f9c0bf-df10-5b0e-c6b7-76d55e77f6a5"
-              },
-              "authoredOn": "2025-12-07T10:00:00+11:00"
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:38d79f9d-bfef-4f8c-a4f5-54a33b55c4e3",
-            "request": {
-              "method": "POST",
-              "url": "ServiceRequest"
-            },
-            "resource": {
-              "resourceType": "ServiceRequest",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-servicerequest-imag"
-                ]
-              },
-              "extension": [
-                {
-                  "url": "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-displaysequence",
-                  "valueInteger": 1
-                }
-              ],
-              "status": "active",
-              "intent": "order",
-              "category": [
-                {
-                  "coding": [
-                    {
-                      "system": "http://snomed.info/sct",
-                      "code": "363679005",
-                      "display": "Imaging"
-                    }
-                  ],
-                  "text": "Imaging"
-                }
-              ],
-              "code": {
-                "coding": [
-                  {
-                    "system": "http://snomed.info/sct",
-                    "code": "169069000",
-                    "display": "CT of chest"
-                  }
-                ],
-                "text": "CT chest"
-              },
-              "subject": {
-                "reference": "urn:uuid:58f9c0bf-df10-5b0e-c6b7-76d55e77f6a5"
-              },
-              "encounter": {
-                "reference": "urn:uuid:48e8aabe-ceff-5a9d-b5a6-65c44d66e5f4"
-              },
-              "authoredOn": "2025-12-07T10:00:00+11:00",
-              "requester": {
-                "reference": "urn:uuid:68aa1d0c-e021-6c1f-d7c8-87e66f88a7b6"
-              },
-              "requisition": {
-                "type": {
-                  "coding": [
-                    {
-                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                      "code": "PGN"
-                    }
-                  ]
-                },
-                "system": "http://ns.electronichealth.net.au/id/hpio-scoped/order/1.0/8003621566684455",
-                "value": "PGN-123456"
-              }
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:48e8aabe-ceff-5a9d-b5a6-65c44d66e5f4",
-            "request": {
-              "method": "POST",
-              "url": "Encounter"
-            },
-            "resource": {
-              "resourceType": "Encounter",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-encounter"
-                ]
-              },
-              "status": "in-progress",
-              "class": {
-                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                "code": "AMB"
-              },
-              "subject": {
-                "reference": "urn:uuid:58f9c0bf-df10-5b0e-c6b7-76d55e77f6a5"
-              }
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:58f9c0bf-df10-5b0e-c6b7-76d55e77f6a5",
-            "request": {
-              "method": "POST",
-              "url": "Patient"
-            },
-            "resource": {
-              "resourceType": "Patient",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-patient"
-                ]
-              },
-              "identifier": [
-                {
-                  "type": {
-                    "coding": [
-                      {
-                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                        "code": "MR",
-                        "display": "Medical record number"
-                      }
-                    ],
-                    "text": "Medical Record Number"
-                  },
-                  "system": "http://ns.electronichealth.net.au/id/hpio-scoped/medicalrecord/1.0/8003621566684455",
-                  "value": "00001234",
-                  "assigner": {
-                    "reference": "urn:uuid:88cc3f2e-a243-8e3b-f9e0-a9a88b00c9d8"
-                  }
-                }
-              ],
-              "birthDate": "1960-01-15",
-              "name": [
-                {
-                  "use": "official",
-                  "family": "Citizen",
-                  "given": [
-                    "Pat"
-                  ]
-                }
-              ],
-              "gender": "unknown"
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:68aa1d0c-e021-6c1f-d7c8-87e66f88a7b6",
-            "request": {
-              "method": "POST",
-              "url": "PractitionerRole"
-            },
-            "resource": {
-              "resourceType": "PractitionerRole",
-              "meta": {
-                "profile": [
-                  "http://hl7.org.au/fhir/ereq/StructureDefinition/au-erequesting-practitionerrole"
-                ]
-              },
-              "practitioner": {
-                "reference": "urn:uuid:78bb2e1d-f132-7d2a-e8d9-98f77a99b8c7"
-              },
-              "organization": {
-                "reference": "urn:uuid:88cc3f2e-a243-8e3b-f9e0-a9a88b00c9d8"
-              }
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:78bb2e1d-f132-7d2a-e8d9-98f77a99b8c7",
-            "request": {
-              "method": "POST",
-              "url": "Practitioner"
-            },
-            "resource": {
-              "resourceType": "Practitioner",
-              "name": [
-                {
-                  "family": "Nguyen",
-                  "given": [
-                    "Alex"
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            "fullUrl": "urn:uuid:88cc3f2e-a243-8e3b-f9e0-a9a88b00c9d8",
-            "request": {
-              "method": "POST",
-              "url": "Organization"
-            },
-            "resource": {
-              "resourceType": "Organization",
-              "name": "Example GP Clinic"
-            }
-          }
-        ]
-      }
+      "uri": "=concat('/', @(1,type), '?owner=', @(1,owner))"
+    }
+  },
+  {
+    "comment": "Output uri to target_details - query_params cleared automatically when uri contains ?",
+    "operation": "shift",
+    "spec": {
+      "uri": "context.target_details.uri"
     }
   }
 ]

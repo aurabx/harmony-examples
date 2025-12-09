@@ -1,6 +1,6 @@
 #!/bin/bash
-# AU eRequesting FHIR Integration - Bidirectional Demo
-# Demonstrates both HTTP→FHIR and FHIR→HTTP API flows
+# AU eRequesting Bidirectional Integration Demo
+# Demonstrates both HTTP→FHIR→HTTP and FHIR→FHIR flows
 
 set -e
 
@@ -20,8 +20,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 TMP_DIR="$SCRIPT_DIR/tmp"
 export TMP_DIR
 
-echo -e "${BLUE}=== AU eRequesting Bidirectional FHIR Integration Demo ===${NC}"
-echo "This script demonstrates both HTTP→FHIR and FHIR→API flows"
+echo -e "${BLUE}=== AU eRequesting Bidirectional Integration Demo ===${NC}"
+echo "This script demonstrates both forward (HTTP→FHIR→HTTP) and reverse (FHIR→FHIR) flows"
 echo ""
 
 # Check for required tools
@@ -85,13 +85,13 @@ trap cleanup EXIT INT TERM
 # Start FHIR Server
 echo -e "${YELLOW}Starting FHIR Server on port $FHIR_SERVER_PORT...${NC}"
 cd "$SCRIPT_DIR"
-python3 server.py $FHIR_SERVER_PORT > "$TMP_DIR/fhir_server.log" 2>&1 &
+python3 fhir-server.py $FHIR_SERVER_PORT > "$TMP_DIR/fhir_server.log" 2>&1 &
 FHIR_SERVER_PID=$!
 echo -e "${GREEN}✓ FHIR Server started (PID: $FHIR_SERVER_PID)${NC}"
 
 # Start API Backend
 echo -e "${YELLOW}Starting API Backend on port $API_BACKEND_PORT...${NC}"
-python3 api_backend.py $API_BACKEND_PORT > "$TMP_DIR/api_backend.log" 2>&1 &
+python3 http-server.py $API_BACKEND_PORT > "$TMP_DIR/api_backend.log" 2>&1 &
 API_BACKEND_PID=$!
 echo -e "${GREEN}✓ API Backend started (PID: $API_BACKEND_PID)${NC}"
 

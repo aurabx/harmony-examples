@@ -1,0 +1,82 @@
+# FHIR to HTTP Pipeline
+#
+# This pipeline demonstrates accepting FHIR bundles from FHIR clients,
+# converting them to HTTP API calls for the backend service,
+# and converting the HTTP response back to FHIR.
+#
+# Request flow:
+#   POST /fhir-bundle (FHIR Bundle)
+#   ↓ (transform via fhir-to-http.json)
+#   POST http://127.0.0.1:8889/ (HTTP API backend)
+#   ↓ (backend returns HTTP response)
+#   ↓ (transform via http-response-to-fhir.json)
+#   FHIR Bundle response back to client
+#
+
+[pipelines.fhir_to_http]
+description = "POST FHIR Bundle → HTTP Backend → FHIR Response"
+networks = ["http_net"]
+endpoints = ["fhir_bundle_endpoint"]
+middleware.left = [
+    "dump_incoming_fhir",
+    "fhir_to_http_transform",
+]
+middleware.right = [
+    "http_to_fhir_transform",
+    "dump_outgoing_fhir",
+]
+backends = ["http_backend"]
+
+# ========================
+# Endpoints
+# ========================
+
+[endpoints.fhir_bundle_endpoint]
+service = "http"
+[endpoints.fhir_bundle_endpoint.options]
+# Accept FHIR bundle POST requests
+path_prefix = "/fhir-bundle"
+
+# ========================
+# Backends
+# ========================
+
+[backends.http_backend]
+service = "http"
+target_ref = "api_server"
+
+# ========================
+# Middleware - Left Side (Request Processing)
+# ========================
+
+# Debug: log the incoming FHIR bundle
+[middleware.dump_incoming_fhir]
+type = "log_dump"
+[middleware.dump_incoming_fhir.options]
+label = "incoming_fhir_bundle"
+pretty = true
+
+# Transform FHIR Bundle to HTTP request
+[middleware.fhir_to_http_transform]
+type = "transform"
+[middleware.fhir_to_http_transform.options]
+spec_path = "fhir-to-http.json"
+fail_on_error = false
+
+# ========================
+# Middleware - Right Side (Response Processing)
+# ========================
+
+# Transform HTTP response back to FHIR Bundle
+[middleware.http_to_fhir_transform]
+type = "transform"
+[middleware.http_to_fhir_transform.options]
+spec_path = "http-response-to-fhir.json"
+fail_on_error = false
+
+# Debug: log the outgoing FHIR response
+[middleware.dump_outgoing_fhir]
+type = "log_dump"
+[middleware.dump_outgoing_fhir.options]
+label = "fhir_response_to_client"
+pretty = true
