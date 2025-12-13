@@ -5,8 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0]
+## [0.4.0]
+### Added
+- AU eRequesting example pipelines (FHIR-to-HTTP and HTTP-to-FHIR)
+- npm package distribution with TypeScript definitions
+- CommonJS module entry point (`index.cjs`)
 
+### Changed
+- Examples now call `harmony` directly instead of via `cargo`
+- Updated pipeline configurations
+
+## [0.3.0]
+### Changed
+- Updated example pipeline configurations
+
+### Fixed
+- PHPUnit cache configuration
+
+## [0.2.0]
+### Added
+- C-STORE filesystem example from Harmony
+- Demo scripts for basic echo and DICOM backend
+- Content-types example to JSON catalog
+
+### Changed
+- `TemplateLoader` now supports different loading locations
+- Reorganised `pipelines.json` structure
+- Updated HTTP-HTTP example
+
+### Fixed
+- HTTP internal example configuration
+
+## [0.1.0]
 Initial port from the Runbeam projet
 
 ### Added

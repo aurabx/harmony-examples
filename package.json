@@ -1,6 +1,6 @@
 {
   "name": "@aurabx/harmony-examples",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Example pipeline configurations and templates for Harmony/Runbeam",
   "license": "MIT",
   "main": "./index.cjs",
