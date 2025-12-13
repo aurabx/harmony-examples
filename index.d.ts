@@ -13,6 +13,7 @@ export interface PipelineCatalogEntry {
   prerequisites: string[];
   file: string;
   type: 'pipeline';
+  hidden?: boolean;
 }
 
 export interface TransformCatalogEntry {

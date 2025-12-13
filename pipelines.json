@@ -4,7 +4,7 @@
     "shortDescription": "Simple echo service for testing",
     "description": "A basic HTTP proxy that demonstrates simple request/response handling. Perfect for understanding the fundamentals of proxy configuration and routing.",
     "categories": ["example", "http"],
-    "tags": ["HTTP", "proxy", "testing", "basic"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "Learning & Testing", "description": "Understand proxy basics with a simple echo endpoint" },
       { "title": "Development", "description": "Quick prototyping and validation of HTTP flows" },
@@ -12,14 +12,15 @@
     ],
     "prerequisites": ["HTTP service"],
     "file": "basic-echo/pipelines/basic-echo.toml",
-    "type": "pipeline"
+    "type": "pipeline",
+    "hidden": true
   },
   "http-external": {
     "name": "External API Gateway",
     "shortDescription": "HTTP gateway for an API service",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
     "categories": ["http"],
-    "tags": ["API", "REST", "gateway", "HTTP", "routing"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "API Gateway", "description": "Central proxy for backend service routing" },
       { "title": "Path-Based Routing", "description": "Route requests by URL path to different backends" },
@@ -34,7 +35,7 @@
     "shortDescription": "HTTP backend to prevent external access to admin paths",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
     "categories": ["http"],
-    "tags": ["API", "REST", "gateway", "HTTP", "routing"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "Access control", "description": "Restrict access for admin services" },
       { "title": "VPN routing", "description": "Route internal, VPN requests to different services" },
@@ -49,7 +50,7 @@
     "shortDescription": "Basic HTTP API proxy",
     "description": "Basic HTTP API proxy demonstrating simple passthrough routing.",
     "categories": ["http"],
-    "tags": ["HTTP", "proxy", "routing"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "Simple Proxy", "description": "Proxy HTTP requests to a backend service" }
     ],
@@ -62,7 +63,7 @@
     "shortDescription": "Store DICOM images to local filesystem",
     "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend.",
     "categories": ["dicom"],
-    "tags": ["healthcare", "DICOM", "storage", "filesystem"],
+    "tags": ["Healthcare", "DICOM", "filesystem"],
     "useCases": [
       { "title": "Image Archival", "description": "Store incoming DICOM images to disk" },
       { "title": "Local PACS", "description": "Simple file-based image storage" }
@@ -76,7 +77,7 @@
     "shortDescription": "HTTP to DICOM medical imaging proxy",
     "description": "Convert HTTP requests to DICOM operations (C-FIND, C-MOVE, C-STORE) targeting PACS systems. Enable REST access to DICOM infrastructure.",
     "categories": ["http", "dicom"],
-    "tags": ["healthcare", "DICOM", "imaging", "PACS", "medical"],
+    "tags": ["Healthcare", "DICOM", "REST"],
     "useCases": [
       { "title": "REST to DICOM", "description": "Access DICOM PACS systems via HTTP/REST API" },
       { "title": "Medical Imaging Integration", "description": "Query and retrieve DICOM studies from PACS" },
@@ -91,7 +92,7 @@
     "shortDescription": "DICOM Service Class Provider endpoint",
     "description": "Receive DICOM images from medical modalities (CT, MRI, Ultrasound). Support C-ECHO, C-FIND, C-GET, and C-MOVE operations for PACS integration.",
     "categories": ["dicom"],
-    "tags": ["healthcare", "DICOM", "imaging", "modality", "receiver"],
+    "tags": ["Healthcare", "DICOM"],
     "useCases": [
       { "title": "Image Reception", "description": "Receive DICOM C-STORE from medical devices" },
       { "title": "Study Routing", "description": "Route received studies to archive or processing" },
@@ -106,7 +107,7 @@
     "shortDescription": "Web-based DICOM services",
     "description": "DICOM Service Class Provider supporting web protocols. Enables browser-based access to medical imaging with C-ECHO, C-FIND, C-GET, C-MOVE operations.",
     "categories": ["dicomweb", "dicom"],
-    "tags": ["healthcare", "DICOM", "web", "imaging"],
+    "tags": ["Healthcare", "DICOM", "DICOMweb"],
     "useCases": [
       { "title": "Web Imaging Access", "description": "Access DICOM images through web protocols" },
       { "title": "Cloud Integration", "description": "Enable cloud-based DICOM workflows" },
@@ -121,7 +122,7 @@
     "shortDescription": "Connect to FHIR-compliant health systems",
     "description": "Proxy for FHIR resources with authentication and validation. Routes healthcare data to FHIR servers with security headers and JSON extraction.",
     "categories": ["fhir"],
-    "tags": ["healthcare", "FHIR", "compliance"],
+    "tags": ["Healthcare", "FHIR"],
     "useCases": [
       { "title": "FHIR Server Integration", "description": "Connect to Firely or other FHIR servers with authentication" },
       { "title": "Healthcare Interoperability", "description": "Secure FHIR resource exchange between health systems" },
@@ -136,7 +137,7 @@
     "shortDescription": "Unified clinical and imaging data pipeline",
     "description": "Full bidirectional pipeline converting between FHIR and DICOM formats. Links clinical orders with imaging studies and produces FHIR ImagingStudy bundles.",
     "categories": ["fhir", "dicom"],
-    "tags": ["healthcare", "FHIR", "DICOM", "radiology", "integration"],
+    "tags": ["Healthcare", "FHIR", "DICOM"],
     "useCases": [
       { "title": "Radiology Workflow", "description": "Link FHIR radiology orders with DICOM imaging studies" },
       { "title": "Comprehensive Records", "description": "Create FHIR ImagingStudy bundles with clinical context" },
@@ -151,7 +152,7 @@
     "shortDescription": "Multi-format data negotiation",
     "description": "Handle multiple content types (JSON, FHIR JSON, DICOM JSON) automatically. Parse and route requests based on MIME type detection.",
     "categories": ["example", "http"],
-    "tags": ["transformation", "content-types", "formats", "negotiation"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "Format Negotiation", "description": "Automatically detect and handle multiple content types" },
       { "title": "Multi-Format Support", "description": "Accept JSON, FHIR+JSON, DICOM+JSON in same endpoint" },
@@ -166,7 +167,7 @@
     "shortDescription": "Share JMIX packages from DICOM services",
     "description": "Integrate JMIX applications with DICOM infrastructure. Secure proxy with performance optimization and schema validation.",
     "categories": ["dicom", "jmix"],
-    "tags": ["enterprise", "JMIX", "SaaS", "integration"],
+    "tags": ["DICOM", "JMIX"],
     "useCases": [
       { "title": "JMIX to External Systems", "description": "Connect JMIX apps to third-party APIs and services" },
       { "title": "DICOM Integration", "description": "Link JMIX applications with medical imaging systems" },
@@ -181,7 +182,7 @@
     "shortDescription": "Convert SOAP to modern JSON APIs",
     "description": "Transform legacy SOAP messages to JSON format via JOLT. Enables modern client access to SOAP-based backend systems with JWT authentication.",
     "categories": ["http", "example"],
-    "tags": ["transformation", "API", "SOAP", "JSON", "modernization"],
+    "tags": ["SOAP", "REST"],
     "useCases": [
       { "title": "Legacy System Modernization", "description": "Expose SOAP services as JSON APIs" },
       { "title": "Client Migration", "description": "Support both SOAP and JSON clients during transition" },
@@ -196,7 +197,7 @@
     "shortDescription": "JSON data reshaping with JOLT",
     "description": "Transform and reshape JSON data using JOLT mappings. Convert between data formats, normalize schemas, and enrich data in flight.",
     "categories": ["http", "example"],
-    "tags": ["transformation", "data", "JOLT", "ETL"],
+    "tags": ["REST"],
     "useCases": [
       { "title": "Schema Conversion", "description": "Transform patient records to FHIR format" },
       { "title": "Data Normalization", "description": "Reshape and standardize JSON data" },
@@ -211,7 +212,7 @@
     "shortDescription": "Convert HTTP service requests to AU eRequesting FHIR bundles",
     "description": "Convert HTTP service requests to AU eRequesting FHIR bundles and back to HTTP responses.",
     "categories": ["fhir", "healthcare", "australia", "example"],
-    "tags": ["healthcare", "FHIR", "Australia", "eRequesting"],
+    "tags": ["Healthcare", "FHIR", "REST"],
     "useCases": [
       { "title": "eRequesting Integration", "description": "Integrate with the Australian eRequesting specification" },
       { "title": "FHIR Bundle Generation", "description": "Generate compliant FHIR bundles from HTTP requests" }
@@ -225,7 +226,7 @@
     "shortDescription": "Accept AU eRequesting FHIR bundles and convert to HTTP API calls",
     "description": "Accept AU eRequesting FHIR bundles and convert to HTTP API calls for backend services.",
     "categories": ["fhir", "healthcare", "australia", "example"],
-    "tags": ["healthcare", "FHIR", "Australia", "eRequesting"],
+    "tags": ["Healthcare", "FHIR", "REST"],
     "useCases": [
       { "title": "FHIR to REST", "description": "Convert FHIR bundles to backend REST calls" },
       { "title": "eRequesting Backend", "description": "Accept eRequesting messages for processing" }
