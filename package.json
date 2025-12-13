@@ -1,0 +1,62 @@
+{
+  "name": "@aurabx/harmony-examples",
+  "version": "0.1.0",
+  "description": "Example pipeline configurations and templates for Harmony/Runbeam",
+  "license": "MIT",
+  "main": "./index.cjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.cjs"
+    },
+    "./pipelines.json": "./pipelines.json",
+    "./transforms.json": "./transforms.json",
+    "./pipelines/*": "./pipelines/*",
+    "./transforms/*": "./transforms/*"
+  },
+  "files": [
+    "pipelines.json",
+    "transforms.json",
+
+    "pipelines/**/README.md",
+    "pipelines/**/config.toml",
+    "pipelines/**/pipelines/**/*.toml",
+    "pipelines/**/transforms/**/*.json",
+    "pipelines/**/*.sh",
+    "pipelines/**/*.py",
+    "pipelines/**/*.dcm",
+
+    "transforms/**/*.json",
+
+    "index.cjs",
+    "index.d.ts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/aurabx/harmony-examples.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aurabx/harmony-examples/issues"
+  },
+  "homepage": "https://github.com/aurabx/harmony-examples#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "harmony",
+    "runbeam",
+    "pipelines",
+    "examples",
+    "fhir",
+    "dicom",
+    "dicomweb",
+    "jolt"
+  ]
+}

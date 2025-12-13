@@ -1,0 +1,22 @@
+.DS_Store
+.idea/
+
+# Composer / PHP dev
+vendor/
+tests/
+phpunit.xml
+composer.json
+composer.lock
+
+# VCS
+.git/
+
+# Example runtime artifacts
+pipelines/**/tmp/
+pipelines/**/tmp/**
+pipelines/**/logs/
+pipelines/**/logs/**
+
+**/*.log
+**/*.zip
+**/*.redb

@@ -58,8 +58,11 @@ This repository contains example pipelines that showcase Harmony's capabilities 
 - **Harmony Proxy** (Rust-based runtime)
 - **PHP 8.3+** (for template utilities)
 - **Composer** (for PHP dependencies)
+- **Node.js 18+** (if consuming as an npm package)
 
 ### Installation
+
+#### PHP (Composer)
 
 ```bash
 # Install PHP dependencies
@@ -67,6 +70,12 @@ composer install
 
 # Run tests
 composer test
+```
+
+#### Node.js (npm)
+
+```bash
+npm install @aurabx/harmony-examples
 ```
 
 ### Running an Example
@@ -85,6 +94,20 @@ curl http://127.0.0.1:8080/echo
 Refer to individual `README.md` files in each pipeline directory for specific instructions.
 
 ## Template Loading
+
+### Node.js
+
+```js
+const examples = require('@aurabx/harmony-examples');
+
+// Catalog objects
+console.log(Object.keys(examples.pipelines));
+
+// Resolve a file path inside the installed package
+console.log(examples.resolvePipelinePath('basic-echo'));
+```
+
+### PHP
 
 The `TemplateLoader` class provides utilities for loading pipeline and transform metadata:
 
