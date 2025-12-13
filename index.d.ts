@@ -14,6 +14,7 @@ export interface PipelineCatalogEntry {
   file: string;
   type: 'pipeline';
   hidden?: boolean;
+  featured?: boolean;
 }
 
 export interface TransformCatalogEntry {
