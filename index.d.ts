@@ -1,7 +1,15 @@
+export interface UseCase {
+  title: string;
+  description: string;
+}
+
 export interface PipelineCatalogEntry {
   name: string;
+  shortDescription: string;
   description: string;
   categories: string[];
+  tags: string[];
+  useCases: UseCase[];
   prerequisites: string[];
   file: string;
   type: 'pipeline';
