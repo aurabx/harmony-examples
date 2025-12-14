@@ -38,26 +38,20 @@ class TemplateLoaderTest extends TestCase
 
         foreach ($pipelines as $key => $pipeline) {
             $this->assertArrayHasKey('name', $pipeline, "Pipeline '{$key}' missing 'name'");
+            $this->assertArrayHasKey('shortDescription', $pipeline, "Pipeline '{$key}' missing 'shortDescription'");
             $this->assertArrayHasKey('description', $pipeline, "Pipeline '{$key}' missing 'description'");
-            $this->assertArrayHasKey('categories', $pipeline, "Pipeline '{$key}' missing 'categories'");
+            $this->assertArrayHasKey('tags', $pipeline, "Pipeline '{$key}' missing 'tags'");
             $this->assertArrayHasKey('file', $pipeline, "Pipeline '{$key}' missing 'file'");
             $this->assertArrayHasKey('type', $pipeline, "Pipeline '{$key}' missing 'type'");
 
-            $this->assertIsArray($pipeline['categories'], "Pipeline '{$key}' categories should be array");
-        }
-    }
+            $this->assertIsArray($pipeline['tags'], "Pipeline '{$key}' tags should be array");
 
-    public function testLoadPipelineCategoriesAreLowercase(): void
-    {
-        $pipelines = $this->loader->loadPipelines();
+            if (array_key_exists('categories', $pipeline)) {
+                $this->assertIsArray($pipeline['categories'], "Pipeline '{$key}' categories should be array");
+            }
 
-        foreach ($pipelines as $key => $pipeline) {
-            foreach ($pipeline['categories'] as $category) {
-                $this->assertEquals(
-                    strtolower($category),
-                    $category,
-                    "Pipeline '{$key}' has non-lowercase category: '{$category}'"
-                );
+            if (array_key_exists('directory', $pipeline)) {
+                $this->assertIsString($pipeline['directory'], "Pipeline '{$key}' directory should be string");
             }
         }
     }

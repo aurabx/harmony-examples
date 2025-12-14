@@ -7,7 +7,7 @@ export interface PipelineCatalogEntry {
   name: string;
   shortDescription: string;
   description: string;
-  categories: string[];
+  categories?: string[];
   tags: string[];
   useCases: UseCase[];
   prerequisites: string[];
