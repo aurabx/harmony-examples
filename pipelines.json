@@ -10,6 +10,7 @@
       { "title": "Health Checks", "description": "Simple endpoint for monitoring and diagnostics" }
     ],
     "prerequisites": ["HTTP service"],
+    "directory": "basic-echo",
     "file": "basic-echo/pipelines/basic-echo.toml",
     "type": "pipeline",
     "hidden": true
@@ -25,6 +26,7 @@
       { "title": "Request Filtering", "description": "Filter and transform requests before forwarding" }
     ],
     "prerequisites": ["HTTP Service"],
+    "directory": "http-external",
     "file": "http-external/pipelines/http-external.toml",
     "type": "pipeline",
     "featured": true
@@ -40,6 +42,7 @@
       { "title": "Request Filtering", "description": "Filter and transform requests before forwarding" }
     ],
     "prerequisites": ["HTTP Service"],
+    "directory": "http-internal",
     "file": "http-internal/pipelines/http-internal.toml",
     "type": "pipeline",
     "featured": true
@@ -53,6 +56,7 @@
       { "title": "Simple Proxy", "description": "Proxy HTTP requests to a backend service" }
     ],
     "prerequisites": ["HTTP Service"],
+    "directory": "http-http",
     "file": "http-http/pipelines/http-http.toml",
     "type": "pipeline"
   },
@@ -66,6 +70,7 @@
       { "title": "Local PACS", "description": "Simple file-based image storage" }
     ],
     "prerequisites": ["DICOM Service", "Filesystem Service"],
+    "directory": "cstore-filesystem",
     "file": "cstore-filesystem/pipelines/main.toml",
     "type": "pipeline"
   },
@@ -80,6 +85,7 @@
       { "title": "System Interoperability", "description": "Bridge modern APIs with legacy DICOM infrastructure" }
     ],
     "prerequisites": ["HTTP Service", "DICOM SCU Backend"],
+    "directory": "dicom-backend",
     "file": "dicom-backend/pipelines/dicom-backend.toml",
     "type": "pipeline"
   },
@@ -94,6 +100,7 @@
       { "title": "Modality Gateway", "description": "Central point for medical device connectivity" }
     ],
     "prerequisites": ["DICOM Service"],
+    "directory": "dicom-scp",
     "file": "dicom-scp/pipelines/dicom-scp.toml",
     "type": "pipeline"
   },
@@ -108,6 +115,7 @@
       { "title": "Modern Viewer Support", "description": "Support web-based DICOM viewers and applications" }
     ],
     "prerequisites": ["DICOMweb Service", "DICOM SCU Backend"],
+    "directory": "dicomweb",
     "file": "dicomweb/pipelines/dicomweb.toml",
     "type": "pipeline"
   },
@@ -122,6 +130,7 @@
       { "title": "Data Extraction", "description": "Extract and route specific FHIR resources" }
     ],
     "prerequisites": ["HTTP Service", "Echo Backend"],
+    "directory": "fhir",
     "file": "fhir/pipelines/fhir.toml",
     "type": "pipeline"
   },
@@ -136,6 +145,7 @@
       { "title": "Data Normalization", "description": "Convert between FHIR and DICOM formats seamlessly" }
     ],
     "prerequisites": ["HTTP Service", "DICOM Backend"],
+    "directory": "fhir_dicom",
     "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
     "type": "pipeline"
   },
@@ -150,6 +160,7 @@
       { "title": "Flexible Integration", "description": "Connect diverse systems with format adaptation" }
     ],
     "prerequisites": [],
+    "directory": "content-types",
     "file": "content-types/pipelines/multi-content.toml",
     "type": "pipeline"
   },
@@ -164,6 +175,7 @@
       { "title": "Enterprise Integration", "description": "Enterprise-grade application connectivity" }
     ],
     "prerequisites": ["JMIX Service", "DICOM Backend"],
+    "directory": "jmix",
     "file": "jmix/pipelines/jmix-performance.toml",
     "type": "pipeline"
   },
@@ -178,6 +190,7 @@
       { "title": "Format Translation", "description": "Automatic XML to JSON conversion with JOLT" }
     ],
     "prerequisites": ["HTTP Service", "JWT Auth Middleware", "Transform Middleware"],
+    "directory": "soap-to-json",
     "file": "soap-to-json/pipelines/soap-to-json.toml",
     "type": "pipeline"
   },
@@ -192,6 +205,7 @@
       { "title": "Format Translation", "description": "Convert between different data schemas" }
     ],
     "prerequisites": ["HTTP Service", "Transform Middleware"],
+    "directory": "transform",
     "file": "transform/pipelines/transform-example.toml",
     "type": "pipeline"
   },
@@ -205,6 +219,7 @@
       { "title": "FHIR Bundle Generation", "description": "Generate compliant FHIR bundles from HTTP requests" }
     ],
     "prerequisites": ["HTTP Service", "FHIR Service", "Transform Middleware"],
+    "directory": "au-erequesting",
     "file": "au-erequesting/pipelines/http-to-fhir.toml",
     "type": "pipeline"
   },
@@ -218,7 +233,8 @@
       { "title": "eRequesting Backend", "description": "Accept eRequesting messages for processing" }
     ],
     "prerequisites": ["FHIR Service", "HTTP Service", "Transform Middleware"],
-    "file": "au-erequesting/pipelines/fhir-to-fhir.toml",
+    "directory": "au-erequesting",
+    "file": "au-erequesting/pipelines/fhir-to-http.toml",
     "type": "pipeline"
   }
 }

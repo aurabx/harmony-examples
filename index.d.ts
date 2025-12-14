@@ -12,6 +12,7 @@ export interface PipelineCatalogEntry {
   useCases: UseCase[];
   prerequisites: string[];
   file: string;
+  directory?: string;
   type: 'pipeline';
   hidden?: boolean;
   featured?: boolean;
