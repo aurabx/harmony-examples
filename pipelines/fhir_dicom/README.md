@@ -1,6 +1,34 @@
 # FHIR-DICOM Integration Example
 
-This example demonstrates a complete FHIR-to-DICOM-to-FHIR pipeline using Harmony as a bridge between FHIR clients and DICOM PACS systems.
+## What is this pipeline?
+
+This example demonstrates a complete FHIR-to-DICOM-to-FHIR pipeline using Harmony as a bridge between FHIR clients and DICOM PACS systems. This example is ideal for:
+
+- Converting FHIR queries to DICOM operations
+- Bridging FHIR and DICOM systems
+- Querying DICOM PACS via FHIR APIs
+- Building healthcare data integration workflows
+
+## How to add this pipeline to your Harmony instance
+
+To use this pipeline in your Harmony deployment, follow the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines):
+
+1. Create a new TOML file in your `pipelines/` directory
+2. Copy the pipeline configuration from this example
+3. Configure DICOM backend and FHIR response settings
+4. Harmony automatically discovers and loads the pipeline
+
+## About Harmony and Runbeam
+
+**Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
+
+**Runbeam** provides the cloud platform and ecosystem for deploying and managing Harmony instances.
+
+- [Harmony Documentation](https://docs.runbeam.io/harmony)
+- [Runbeam Cloud](https://runbeam.io)
+- [GitHub Repository](https://github.com/runbeam/harmony)
+
+---
 
 ## Overview
 

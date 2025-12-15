@@ -1,6 +1,34 @@
 # Harmony Comprehensive Smoketest
 
-This example provides a comprehensive integration test of all major Harmony features in a single pipeline.
+## What is this pipeline?
+
+This example provides a comprehensive integration test of all major Harmony features in a single pipeline. This example is ideal for:
+
+- Learning all Harmony capabilities in one place
+- Testing complete middleware chains
+- Demonstrating full feature integration
+- Using as a template for production pipelines
+
+## How to add this pipeline to your Harmony instance
+
+To use this pipeline in your Harmony deployment, follow the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines):
+
+1. Create a new TOML file in your `pipelines/` directory
+2. Copy the pipeline configuration from this example
+3. Configure authentication, transforms, and backend settings
+4. Harmony automatically discovers and loads the pipeline
+
+## About Harmony and Runbeam
+
+**Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
+
+**Runbeam** provides the cloud platform and ecosystem for deploying and managing Harmony instances.
+
+- [Harmony Documentation](https://docs.runbeam.io/harmony)
+- [Runbeam Cloud](https://runbeam.io)
+- [GitHub Repository](https://github.com/runbeam/harmony)
+
+---
 
 ## Features Tested
 

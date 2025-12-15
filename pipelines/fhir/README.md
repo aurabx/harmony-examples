@@ -1,6 +1,34 @@
 # FHIR Passthrough Example
 
-This example demonstrates a FHIR endpoint that proxies to a real FHIR server with basic authentication and JSON extraction middleware. It shows how to secure endpoints and proxy FHIR resources through Harmony.
+## What is this pipeline?
+
+This example demonstrates a FHIR endpoint that proxies to a real FHIR server with basic authentication and JSON extraction middleware. It shows how to secure endpoints and proxy FHIR resources through Harmony. This example is ideal for:
+
+- Proxying FHIR servers with authentication
+- Adding security layers to FHIR endpoints
+- Normalizing FHIR responses
+- Building FHIR API gateways
+
+## How to add this pipeline to your Harmony instance
+
+To use this pipeline in your Harmony deployment, follow the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines):
+
+1. Create a new TOML file in your `pipelines/` directory
+2. Copy the pipeline configuration from this example
+3. Configure authentication and FHIR backend target
+4. Harmony automatically discovers and loads the pipeline
+
+## About Harmony and Runbeam
+
+**Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
+
+**Runbeam** provides the cloud platform and ecosystem for deploying and managing Harmony instances.
+
+- [Harmony Documentation](https://docs.runbeam.io/harmony)
+- [Runbeam Cloud](https://runbeam.io)
+- [GitHub Repository](https://github.com/runbeam/harmony)
+
+---
 
 ## What This Example Demonstrates
 

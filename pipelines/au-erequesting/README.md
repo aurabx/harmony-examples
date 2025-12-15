@@ -1,5 +1,35 @@
 # AU eRequesting FHIR Integration Example
 
+## What is this pipeline?
+
+This example demonstrates bidirectional integration between HTTP APIs and FHIR using Harmony proxies with the SMILE FHIR server backend. It includes two main data flow patterns for converting between HTTP APIs and FHIR resources. This example is ideal for:
+
+- Integrating legacy HTTP APIs with FHIR systems
+- Transforming HTTP requests to FHIR queries and back
+- Building bidirectional FHIR bridges
+- Healthcare data interoperability
+
+## How to add this pipeline to your Harmony instance
+
+To use this pipeline in your Harmony deployment, follow the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines):
+
+1. Create a new TOML file in your `pipelines/` directory
+2. Copy the pipeline configuration from this example
+3. Update the FHIR backend target and HTTP server addresses
+4. Harmony automatically discovers and loads the pipeline
+
+## About Harmony and Runbeam
+
+**Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
+
+**Runbeam** provides the cloud platform and ecosystem for deploying and managing Harmony instances.
+
+- [Harmony Documentation](https://docs.runbeam.io/harmony)
+- [Runbeam Cloud](https://runbeam.io)
+- [GitHub Repository](https://github.com/runbeam/harmony)
+
+---
+
 This example demonstrates bidirectional integration between HTTP APIs and FHIR using Harmony proxies with the SMILE FHIR server backend. It includes two main data flow patterns:
 
 ## Overview

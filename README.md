@@ -2,6 +2,38 @@
 
 Example pipeline configurations and templates for [Harmony/Runbeam](https://runbeam.cloud), demonstrating healthcare data integration patterns including FHIR, DICOM, DICOMweb, and JMIX.
 
+## What are these pipelines?
+
+Harmony Examples contains 17 ready-to-use pipeline configurations that demonstrate Harmony's core capabilities. Each example includes a complete pipeline definition with middleware configuration, backend setup, and comprehensive documentation. Examples are organized by use case:
+
+- **Basic Patterns**: HTTP proxying, echo endpoints, content-type handling
+- **Healthcare Integration**: FHIR, DICOM, DICOMweb, JMIX
+- **Data Transformation**: JOLT-based transformations, format conversion
+- **Security**: Authentication, authorization, rate limiting, access control
+
+## How to add these pipelines to your Harmony instance
+
+Each pipeline example can be used as a starting point for your own deployments. To use any example:
+
+1. Copy the pipeline directory to your Harmony configuration directory
+2. Review the example's README.md for specific setup instructions
+3. Customize configuration files for your environment
+4. Deploy using your preferred method
+
+For detailed instructions on adding and managing pipelines, see the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines).
+
+## About Harmony and Runbeam
+
+**Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
+
+**Runbeam** provides the cloud platform and ecosystem for deploying and managing Harmony instances.
+
+- [Harmony Documentation](https://docs.runbeam.io/harmony)
+- [Runbeam Cloud](https://runbeam.io)
+- [GitHub Repository](https://github.com/runbeam/harmony)
+
+---
+
 ## Overview
 
 This repository contains example pipelines that showcase Harmony's capabilities for:
@@ -14,27 +46,35 @@ This repository contains example pipelines that showcase Harmony's capabilities 
 
 ## Pipeline Examples
 
-### Basic Examples
+### HTTP API Gateway Patterns
 
 - **basic-echo** - Simple echo service for testing request/response flow
 - **http-external** - HTTP proxy with external backend and access control
 - **http-internal** - HTTP proxy restricted to internal networks
+- **http-http** - Comprehensive HTTP proxy with combined security policies
+- **http-file-upload** - HTTP file upload handling with storage backend
+- **http-with-middleware** - Complete middleware chain demonstration
+
+### Data Transformation
+
 - **transform** - JOLT transform middleware demonstrations
 - **soap-to-json** - SOAP/XML to JSON conversion with JWT authentication
+- **content-types** - Multi-content-type parsing (JSON, XML, CSV, multipart, binary)
+- **webhook** - Webhook middleware for audit trails and event integration
 
 ### Healthcare Integration
 
 - **fhir** - FHIR endpoint with authentication and JSON extraction
-- **fhir-dicom** - FHIR ImagingStudy integration with DICOM backend
+- **fhir_dicom** - FHIR ImagingStudy integration with DICOM backend
 - **dicom-scp** - DICOM SCP endpoint (C-ECHO, C-FIND, C-GET, C-MOVE)
-- **dicom-backend** - HTTP to DICOM protocol translation
+- **dicom-backend** - HTTP to DICOM protocol translation (SCU)
 - **dicomweb** - DICOMweb QIDO-RS and WADO-RS to DIMSE bridge
 - **jmix** - High-performance JMIX packaging and delivery
 
-### Advanced
+### Specialized Healthcare Systems
 
-- **content-types** - Multi-content-type parsing (JSON, XML, CSV, multipart, binary)
-- **smoketest** - Comprehensive integration test of all middleware types
+- **au-erequesting** - Australian eRequesting FHIR integration
+- **cstore-filesystem** - DICOM C-STORE to filesystem storage
 
 ## Project Structure
 
