@@ -1,0 +1,123 @@
+# Santa's Workshop Gift Logistics System Configuration
+# Powers the North Pole's mission-critical gift distribution network
+
+[proxy]
+id = "harmony-north-pole"
+pipelines_path = "pipelines"
+
+# Runbeam Cloud Integration
+# Note: North Pole operates on internal cloud infrastructure
+[runbeam]
+enabled = false
+# cloud_api_base_url = "https://api.northpole.christmas"
+# poll_interval_secs = 30
+
+# Network configuration
+# Port 2512 = December 25, 12:00 🎄
+[network.gift_net]
+enable_wireguard = false
+interface = "sleigh0"
+
+[network.gift_net.http]
+bind_address = "127.0.0.1"
+bind_port = 2512
+
+# Logging
+# All logs reviewed by Head Elf (Compliance Division)
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "./tmp/harmony_workshop.log"
+
+# Storage
+# Cleared annually on December 26th per North Pole Data Retention Policy
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+[services.gift]
+module = ""
+
+# Middleware types
+[middleware_types.json_extractor]
+module = ""
+
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.policies]
+module = ""
+
+[middleware_types.cookie_auth]
+module = ""
+
+[middleware_types.naughty_nice]
+module = ""
+
+[middleware_types.transform]
+module = ""
+
+# ------------------------
+# Authentication Definitions
+#-------------------------
+
+# Cookie-based authentication (milk & cookies required)
+[authentications.elf_cookie_auth]
+id = "elf_cookie_auth"
+method = "bearer"
+
+[authentications.elf_cookie_auth.options]
+token = "jinglebells123"  # Replace with actual Elf API token
+
+# Reindeer Fleet API authentication
+[authentications.reindeer_auth]
+id = "reindeer_auth"
+method = "bearer"
+
+[authentications.reindeer_auth.options]
+token = "dasher-dancer-prancer-vixen"  # Replace with Fleet credentials
+
+# ------------------------
+# Target Definitions
+#-------------------------
+
+# Naughty/Nice Registry
+[targets.naughty_nice_registry]
+connection.host = "registry.northpole.internal"
+connection.protocol = "https"
+connection.base_path = "/api/v2024"
+authentication = "authentications.elf_cookie_auth"
+timeout_secs = 30
+
+# Elf Production Management System
+[targets.elf_production]
+connection.host = "epms.workshop.northpole.internal"
+connection.protocol = "https"
+connection.base_path = "/production"
+authentication = "authentications.elf_cookie_auth"
+timeout_secs = 60
+
+# Reindeer Fleet Logistics
+[targets.reindeer_fleet]
+connection.host = "fleet.sleigh.northpole.internal"
+connection.protocol = "https"
+connection.base_path = "/logistics"
+authentication = "authentications.reindeer_auth"
+timeout_secs = 45
+
+# Gift Delivery Confirmation Service
+[targets.delivery_confirmation]
+connection.host = "delivery.christmas.northpole.internal"
+connection.protocol = "https"
+connection.base_path = "/confirm"
+authentication = "authentications.elf_cookie_auth"
+timeout_secs = 120  # Extended for chimney-to-chimney operations

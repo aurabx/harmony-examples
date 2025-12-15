@@ -251,5 +251,23 @@
     "file": "webhook/pipelines/webhook.toml",
     "type": "pipeline",
     "since": "0.11"
+  },
+  "santas-workshop": {
+    "name": "Santa's Workshop",
+    "shortDescription": "North Pole Gift Distribution Network",
+    "description": "Mission-critical pipeline powering Santa's Gift Distribution Network. Integrates the Naughty/Nice Registry, Elf Production Management System (EPMS), and Reindeer Fleet Logistics API for seamless Christmas Eve operations.",
+    "tags": ["REST", "Christmas"],
+    "useCases": [
+      { "title": "Gift Routing", "description": "High-throughput gift routing with sub-millisecond latency to chimneys worldwide" },
+      { "title": "Naughty/Nice Classification", "description": "Real-time eligibility verification against the authoritative Nice List" },
+      { "title": "Reindeer Fleet Management", "description": "Load-balanced sleigh assignments with Rudolph failover support" }
+    ],
+    "prerequisites": ["North Pole VPN", "Elf API Token", "Reindeer Fleet Credentials"],
+    "directory": "santas-workshop",
+    "file": "santas-workshop/pipelines/santas-workshop.toml",
+    "type": "pipeline",
+    "featured": true,
+    "runbeam": false,
+    "deployVideo": "https://youtu.be/E8gmARGvPlI?si=VqC0jnuCLnPmm6dj"
   }
 }

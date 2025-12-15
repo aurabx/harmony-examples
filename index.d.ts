@@ -16,6 +16,9 @@ export interface PipelineCatalogEntry {
   type: 'pipeline';
   hidden?: boolean;
   featured?: boolean;
+  since?: string;
+  runbeam?: boolean;
+  deployVideo?: string;
 }
 
 export interface TransformCatalogEntry {

@@ -1,0 +1,181 @@
+# Santa's Workshop Gift Logistics Pipeline
+# Mission-critical gift distribution for Christmas Eve operations
+
+# ------------------------
+# Endpoint groups
+#-------------------------
+
+[pipelines.gift_logistics]
+description = "North Pole Gift Distribution Network with Naughty/Nice verification"
+networks = ["gift_net"]
+endpoints = ["gift_api", "fleet_api", "coal_api"]
+middleware = [
+    "cookie_auth",
+    "naughty_nice_check",
+    "gift_policies",
+    "gift_transform",
+]
+backends = ["gift_router"]
+
+# ------------------------
+# Middleware
+#-------------------------
+
+# Cookie-based authentication
+# Note: Milk freshness verification happens at the edge
+[middleware.cookie_auth]
+type = "basic_auth"
+
+[middleware.cookie_auth.options]
+username = "santa"
+password = "hohoho2024"
+token_path = "./tmp/elf_token"
+
+# Naughty/Nice classification middleware
+# Queries the Registry for gift eligibility
+[middleware.naughty_nice_check]
+type = "passthru"
+
+[middleware.naughty_nice_check.options]
+description = "Verify recipient status before gift processing"
+
+# Gift Distribution Security Policies
+[middleware.gift_policies]
+type = "policies"
+
+[middleware.gift_policies.options]
+policies = ["north_pole_security"]
+
+# Gift format transformation
+# Converts between Elf Production Format (EPF) and Universal Gift Schema (UGS)
+[middleware.gift_transform]
+type = "transform"
+
+[middleware.gift_transform.options]
+transform_ref = "epf_to_ugs"
+
+# ------------------------
+# Endpoints
+#-------------------------
+
+[endpoints.gift_api]
+service = "http"
+[endpoints.gift_api.options]
+path_prefix = "/gifts"
+
+[endpoints.fleet_api]
+service = "http"
+[endpoints.fleet_api.options]
+path_prefix = "/fleet"
+
+[endpoints.coal_api]
+service = "http"
+[endpoints.coal_api.options]
+path_prefix = "/coal"
+
+# ------------------------
+# Backends
+#-------------------------
+
+[backends.gift_router]
+service = "http"
+target_ref = "elf_production"
+
+# ------------------------
+# Policies
+#-------------------------
+
+[policies.north_pole_security]
+id = "north_pole_security"
+name = "North Pole Workshop Security"
+enabled = true
+rules = [
+    "workshop_networks",
+    "gift_paths",
+    "rate_limit",
+    "method_filter",
+    "time_restriction",
+]
+
+# ------------------------
+# Rules
+#-------------------------
+
+# Allow only North Pole internal networks
+[rules.workshop_networks]
+id = "workshop_networks"
+name = "Allow North Pole Networks Only"
+type = "ip_allow"
+weight = 95
+enabled = true
+
+[rules.workshop_networks.options]
+ip_addresses = [
+    "10.25.12.0/24",     # Main Workshop Floor
+    "10.25.13.0/24",     # Toy Assembly Division
+    "10.25.14.0/24",     # Quality Control Wing
+    "10.25.15.0/24",     # Wrapping & Packaging
+    "172.24.0.0/16",     # Reindeer Stables Network
+    "192.168.25.0/24",   # Santa's Office
+    "127.0.0.1/32"       # Localhost (Elf Development)
+]
+
+# Allowed gift operation paths
+[rules.gift_paths]
+id = "gift_paths"
+name = "Allow Gift API Paths Only"
+type = "path"
+weight = 90
+enabled = true
+
+[rules.gift_paths.options]
+paths = [
+    "/gifts/eligibility/{*path}",      # Nice List verification
+    "/gifts/production/{*path}",       # Toy production queue
+    "/gifts/status/{*path}",           # Gift tracking
+    "/gifts/delivery/{*path}",         # Delivery scheduling
+    "/fleet/status",                   # Reindeer availability
+    "/fleet/assign/{*path}",           # Reindeer assignment
+    "/fleet/route/{*path}",            # Route optimization
+    "/coal/distribute",                # Naughty list deliveries
+    "/coal/inventory",                 # Coal stock levels
+]
+mode = "allow"
+
+# Rate limiting - adjusted for Christmas Eve surge
+[rules.rate_limit]
+id = "rate_limit"
+name = "Gift Request Rate Limit"
+type = "rate_limit"
+weight = 50
+enabled = true
+
+[rules.rate_limit.options]
+max_requests = 1000000  # 1M requests/minute on Christmas Eve
+window_seconds = 60
+
+# HTTP methods for gift operations
+[rules.method_filter]
+id = "method_filter"
+name = "Allow Gift CRUD Methods"
+type = "method"
+weight = 85
+enabled = true
+
+[rules.method_filter.options]
+mode = "allow"
+methods = ["GET", "POST", "PUT", "DELETE"]
+
+# Time-based access control
+# Coal API only accessible December 24-25
+[rules.time_restriction]
+id = "time_restriction"
+name = "Christmas Eve Operations Window"
+type = "method"  # Placeholder - actual implementation would use time-based rule
+weight = 80
+enabled = true
+
+[rules.time_restriction.options]
+mode = "allow"
+methods = ["GET", "POST", "PUT", "DELETE"]
+# In production: restrict coal operations to Dec 24-25 only
