@@ -1,0 +1,9 @@
+[
+  {
+    "operation": "default",
+    "spec": {
+      "webhook.webhook_notify": "{\"source\":\"examples\",\"id\":\"abc-123\"}",
+      "secret": "supersecret"
+    }
+  }
+]

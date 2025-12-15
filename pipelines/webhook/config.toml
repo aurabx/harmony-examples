@@ -1,0 +1,51 @@
+# Webhook Middleware Example Configuration
+
+[proxy]
+id = "harmony-webhook-example"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "./tmp/webhook_example.log"
+
+[network.default]
+enable_wireguard = false
+interface = "eth0"
+
+[network.default.http]
+bind_address = "0.0.0.0"
+bind_port = 8080
+
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service type registrations
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware type registrations
+[middleware_types.webhook]
+module = ""
+
+[middleware_types.metadata_transform]
+module = ""
+
+[middleware_types.passthru]
+module = ""
+
+# Authentication used by webhook middleware
+[authentications.hook_basic]
+id = "hook_basic"
+method = "basic"
+
+[authentications.hook_basic.options]
+username = "demo"
+password = "demo123"

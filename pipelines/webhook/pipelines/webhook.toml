@@ -1,0 +1,44 @@
+# Webhook middleware example pipeline
+
+[pipelines.webhook]
+description = "Demonstrates webhook middleware with redaction, per-instance auth, and extra metadata"
+networks = ["default"]
+endpoints = ["http_api"]
+backends = ["echo_backend"]
+# Order: set metadata first so webhook can include it
+middleware = ["set_webhook_extra", "webhook_notify"]
+
+# Metadata transform: write a JSON string into metadata key `webhook.webhook_notify`
+# The webhook middleware will parse this string into JSON and include it under `extra`.
+[middleware.set_webhook_extra]
+type = "metadata_transform"
+[middleware.set_webhook_extra.options]
+spec_path = "set_webhook_metadata.json"
+apply = "left"
+transform_target = "metadata"
+fail_on_error = false
+
+# Webhook middleware configuration
+[middleware.webhook_notify]
+type = "webhook"
+authentication = "hook_basic"
+[middleware.webhook_notify.options]
+# Default endpoint for demo; adjust to your receiver
+endpoint = "http://127.0.0.1:9001/hook"
+# Send on both request and response
+apply = "both"
+# Optional: keep short; calls are fire-and-forget
+timeout_secs = 5
+# Redact sensitive fields in the webhook payload
+redact_headers = ["authorization", "cookie"]
+redact_metadata = ["secret"]
+
+# HTTP endpoint exposed by the proxy
+[endpoints.http_api]
+service = "http"
+[endpoints.http_api.options]
+path_prefix = "/"
+
+# Simple echo backend so requests succeed end-to-end
+[backends.echo_backend]
+service = "echo"
