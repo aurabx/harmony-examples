@@ -236,5 +236,20 @@
     "directory": "au-erequesting",
     "file": "au-erequesting/pipelines/fhir-to-http.toml",
     "type": "pipeline"
+  },
+  "webhook": {
+    "name": "Webhook Middleware",
+    "shortDescription": "Emit JSON payloads on request/response",
+    "description": "Demonstrates the webhook middleware for emitting JSON payloads on request/response, with per-instance authentication and header redaction.",
+    "tags": ["REST"],
+    "useCases": [
+      { "title": "Event Notification", "description": "Send webhook events on request/response" },
+      { "title": "Audit Logging", "description": "Emit payloads for external audit systems" }
+    ],
+    "prerequisites": ["HTTP Service"],
+    "directory": "webhook",
+    "file": "webhook/pipelines/webhook.toml",
+    "type": "pipeline",
+    "since": "0.11"
   }
 }
