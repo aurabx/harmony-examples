@@ -1,0 +1,67 @@
+# ------------------------
+# HTTP/3 Listener Pipeline
+# Receives HTTP/3 (QUIC) requests and forwards to HTTP backend
+# ------------------------
+
+[pipelines.http3_to_http]
+description = "HTTP/3 endpoint proxying to standard HTTP backend"
+networks = ["http3_net"]
+endpoints = ["api_endpoint"]
+middleware = [
+    "api_policies",
+    "passthru",
+]
+backends = ["http_backend"]
+
+# ------------------------
+# Middleware
+# ------------------------
+
+[middleware.api_policies]
+type = "policies"
+
+[middleware.api_policies.options]
+policies = ["open_access"]
+
+# ------------------------
+# Policies
+# ------------------------
+[policies.open_access]
+id = "open_access"
+name = "Open Access"
+enabled = true
+rules = ["allow_all"]
+
+# ------------------------
+# Rules
+# ------------------------
+[rules.allow_all]
+id = "allow_all"
+name = "Allow All"
+type = "allow_all"
+weight = 100
+enabled = true
+
+[rules.allow_all.options]
+
+# ------------------------
+# Endpoints
+# ------------------------
+
+# HTTP endpoint - receives both HTTP/1.x (port 8080) and HTTP/3 (port 443)
+# The Http3Adapter serves the same pipelines/endpoints as HttpAdapter
+[endpoints.api_endpoint]
+service = "http"
+[endpoints.api_endpoint.options]
+path_prefix = "/api"
+
+# ------------------------
+# Backends
+# ------------------------
+
+# Standard HTTP backend
+[backends.http_backend]
+service = "http"
+[backends.http_backend.options]
+base_url = "http://localhost:9000"
+# path_prefix = "/v1"

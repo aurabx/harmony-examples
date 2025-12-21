@@ -60,6 +60,38 @@
     "file": "http-http/pipelines/http-http.toml",
     "type": "pipeline"
   },
+  "http3-backend": {
+    "name": "HTTP to HTTP/3 Backend",
+    "shortDescription": "Proxy HTTP requests to HTTP/3 backends",
+    "description": "Receive standard HTTP requests and forward them to backend servers using HTTP/3 over QUIC transport. Provides benefits like no head-of-line blocking, faster connections with 0-RTT resumption, and built-in TLS 1.3 encryption.",
+    "tags": ["REST", "HTTP/3", "QUIC"],
+    "useCases": [
+      { "title": "Modern API Integration", "description": "Connect to HTTP/3-enabled APIs with improved performance" },
+      { "title": "High-Latency Networks", "description": "Better performance on lossy or high-latency networks" },
+      { "title": "Backend Modernization", "description": "Leverage HTTP/3 backends without changing client infrastructure" }
+    ],
+    "prerequisites": ["HTTP Service", "HTTP/3-capable backend"],
+    "directory": "http3-backend",
+    "file": "http3-backend/pipelines/http3-backend.toml",
+    "type": "pipeline",
+    "since": "0.11"
+  },
+  "http3-listener": {
+    "name": "HTTP/3 to HTTP Backend",
+    "shortDescription": "Accept HTTP/3 requests and proxy to HTTP backends",
+    "description": "Receive HTTP/3 (QUIC) requests from modern clients and forward them to standard HTTP backend servers. Terminate QUIC/TLS 1.3 at the edge while keeping existing backend infrastructure.",
+    "tags": ["REST", "HTTP/3", "QUIC"],
+    "useCases": [
+      { "title": "Edge Termination", "description": "Terminate HTTP/3 at the edge, forward HTTP internally" },
+      { "title": "Client Modernization", "description": "Support HTTP/3 clients without changing backends" },
+      { "title": "Gradual Migration", "description": "Add HTTP/3 support incrementally to existing infrastructure" }
+    ],
+    "prerequisites": ["HTTP/3 Listener", "TLS Certificate", "HTTP Backend"],
+    "directory": "http3-listener",
+    "file": "http3-listener/pipelines/http3-listener.toml",
+    "type": "pipeline",
+    "since": "0.11"
+  },
   "dicom-cstore-to-filesystem": {
     "name": "DICOM C-STORE to Filesystem",
     "shortDescription": "Store DICOM images to local filesystem",

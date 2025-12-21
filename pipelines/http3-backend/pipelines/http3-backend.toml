@@ -1,0 +1,88 @@
+# ------------------------
+# HTTP/3 Backend Pipeline
+# Demonstrates using HTTP/3 (QUIC) to connect to upstream servers
+# ------------------------
+
+[pipelines.http3_proxy]
+description = "HTTP endpoint proxying to HTTP/3 backend"
+networks = ["http_net"]
+endpoints = ["api_endpoint"]
+middleware = [
+    "api_policies",
+    "passthru",
+]
+backends = ["h3_backend"]
+
+# ------------------------
+# Middleware
+# ------------------------
+
+[middleware.api_policies]
+type = "policies"
+
+[middleware.api_policies.options]
+policies = ["open_access"]
+
+# ------------------------
+# Policies
+# ------------------------
+[policies.open_access]
+id = "open_access"
+name = "Open Access"
+enabled = true
+rules = ["allow_all"]
+
+# ------------------------
+# Rules
+# ------------------------
+[rules.allow_all]
+id = "allow_all"
+name = "Allow All"
+type = "allow_all"
+weight = 100
+enabled = true
+
+[rules.allow_all.options]
+
+# ------------------------
+# Endpoints
+# ------------------------
+
+# HTTP endpoint that receives incoming requests
+[endpoints.api_endpoint]
+service = "http"
+[endpoints.api_endpoint.options]
+path_prefix = "/api"
+
+# ------------------------
+# Backends
+# ------------------------
+
+# HTTP/3 backend using QUIC transport
+# This backend connects to an upstream server using HTTP/3 over QUIC
+[backends.h3_backend]
+service = "http3"
+[backends.h3_backend.options]
+# Target hostname - must support HTTP/3
+host = "cloudflare-quic.com"
+port = 443
+# Optional: base path prefix for all requests
+# base_path = "/v1"
+# Optional: timeout in seconds (default: 30)
+# timeout_secs = 30
+# Optional: custom CA certificate for self-signed servers
+# ca_cert_path = "./certs/custom-ca.pem"
+
+# ------------------------
+# Alternative: HTTP/3 Backend with Custom CA
+# Uncomment this section to use a backend with a self-signed certificate
+# ------------------------
+
+# [backends.internal_h3]
+# service = "http3"
+# [backends.internal_h3.options]
+# host = "internal.corp.local"
+# port = 8443
+# base_path = "/api"
+# ca_cert_path = "./certs/internal-ca.pem"
+# timeout_secs = 60

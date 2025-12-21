@@ -52,6 +52,8 @@ This repository contains example pipelines that showcase Harmony's capabilities 
 - **http-external** - HTTP proxy with external backend and access control
 - **http-internal** - HTTP proxy restricted to internal networks
 - **http-http** - Comprehensive HTTP proxy with combined security policies
+- **http3-backend** - HTTP to HTTP/3 backend proxy (QUIC outbound)
+- **http3-listener** - HTTP/3 to HTTP backend proxy (QUIC inbound)
 - **http-file-upload** - HTTP file upload handling with storage backend
 - **http-with-middleware** - Complete middleware chain demonstration
 

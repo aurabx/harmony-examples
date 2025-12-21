@@ -1,0 +1,56 @@
+# HTTP/3 Listener Example Configuration
+# Demonstrates receiving HTTP/3 (QUIC) requests and proxying to HTTP backend
+
+[proxy]
+id = "harmony-http3-listener"
+pipelines_path = "pipelines"
+
+# Runbeam Cloud Integration
+[runbeam]
+enabled = false
+# cloud_api_base_url = "https://api.runbeam.cloud"
+# poll_interval_secs = 30
+
+# Network configuration with HTTP/3 listener
+[network.http3_net]
+enable_wireguard = false
+interface = "wg0"
+
+# Optional: Also enable HTTP/1.x listener on same network
+[network.http3_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8080
+
+# HTTP/3 (QUIC) listener - receives incoming HTTP/3 connections
+[network.http3_net.http3]
+bind_address = "0.0.0.0"
+bind_port = 443
+cert_path = "./certs/server.crt"
+key_path = "./certs/server.key"
+
+# Logging
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "./tmp/harmony_http3_listener.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware types
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.policies]
+module = ""
