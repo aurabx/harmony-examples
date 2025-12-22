@@ -27,3 +27,4 @@ tmp
 **/tmp/**
 **/data/**
 /.phpunit.cache/**
+/pipelines/http3-listener/certs
