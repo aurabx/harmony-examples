@@ -3,13 +3,26 @@
     "name": "Basic Echo",
     "shortDescription": "Simple echo service for testing",
     "description": "A basic HTTP proxy that demonstrates simple request/response handling. Perfect for understanding the fundamentals of proxy configuration and routing.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "Learning & Testing", "description": "Understand proxy basics with a simple echo endpoint" },
-      { "title": "Development", "description": "Quick prototyping and validation of HTTP flows" },
-      { "title": "Health Checks", "description": "Simple endpoint for monitoring and diagnostics" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP service"],
+    "useCases": [
+      {
+        "title": "Learning & Testing",
+        "description": "Understand proxy basics with a simple echo endpoint"
+      },
+      {
+        "title": "Development",
+        "description": "Quick prototyping and validation of HTTP flows"
+      },
+      {
+        "title": "Health Checks",
+        "description": "Simple endpoint for monitoring and diagnostics"
+      }
+    ],
+    "prerequisites": [
+      "HTTP service"
+    ],
     "directory": "basic-echo",
     "file": "basic-echo/pipelines/basic-echo.toml",
     "type": "pipeline",
@@ -19,13 +32,26 @@
     "name": "External API Gateway",
     "shortDescription": "HTTP gateway for an API service",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "API Gateway", "description": "Central proxy for backend service routing" },
-      { "title": "Path-Based Routing", "description": "Route requests by URL path to different backends" },
-      { "title": "Request Filtering", "description": "Filter and transform requests before forwarding" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP Service"],
+    "useCases": [
+      {
+        "title": "API Gateway",
+        "description": "Central proxy for backend service routing"
+      },
+      {
+        "title": "Path-Based Routing",
+        "description": "Route requests by URL path to different backends"
+      },
+      {
+        "title": "Request Filtering",
+        "description": "Filter and transform requests before forwarding"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
     "directory": "http-external",
     "file": "http-external/pipelines/http-external.toml",
     "type": "pipeline",
@@ -35,13 +61,26 @@
     "name": "Internal API Gateway",
     "shortDescription": "HTTP backend to prevent external access to admin paths",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "Access control", "description": "Restrict access for admin services" },
-      { "title": "VPN routing", "description": "Route internal, VPN requests to different services" },
-      { "title": "Request Filtering", "description": "Filter and transform requests before forwarding" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP Service"],
+    "useCases": [
+      {
+        "title": "Access control",
+        "description": "Restrict access for admin services"
+      },
+      {
+        "title": "VPN routing",
+        "description": "Route internal, VPN requests to different services"
+      },
+      {
+        "title": "Request Filtering",
+        "description": "Filter and transform requests before forwarding"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
     "directory": "http-internal",
     "file": "http-internal/pipelines/http-internal.toml",
     "type": "pipeline",
@@ -51,11 +90,18 @@
     "name": "HTTP to HTTP",
     "shortDescription": "Basic HTTP API proxy",
     "description": "Basic HTTP API proxy demonstrating simple passthrough routing.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "Simple Proxy", "description": "Proxy HTTP requests to a backend service" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP Service"],
+    "useCases": [
+      {
+        "title": "Simple Proxy",
+        "description": "Proxy HTTP requests to a backend service"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
     "directory": "http-http",
     "file": "http-http/pipelines/http-http.toml",
     "type": "pipeline"
@@ -64,13 +110,29 @@
     "name": "HTTP to HTTP/3 Backend",
     "shortDescription": "Proxy HTTP requests to HTTP/3 backends",
     "description": "Receive standard HTTP requests and forward them to backend servers using HTTP/3 over QUIC transport. Provides benefits like no head-of-line blocking, faster connections with 0-RTT resumption, and built-in TLS 1.3 encryption.",
-    "tags": ["REST", "HTTP/3", "QUIC"],
-    "useCases": [
-      { "title": "Modern API Integration", "description": "Connect to HTTP/3-enabled APIs with improved performance" },
-      { "title": "High-Latency Networks", "description": "Better performance on lossy or high-latency networks" },
-      { "title": "Backend Modernization", "description": "Leverage HTTP/3 backends without changing client infrastructure" }
+    "tags": [
+      "REST",
+      "HTTP/3",
+      "QUIC"
     ],
-    "prerequisites": ["HTTP Service", "HTTP/3-capable backend"],
+    "useCases": [
+      {
+        "title": "Modern API Integration",
+        "description": "Connect to HTTP/3-enabled APIs with improved performance"
+      },
+      {
+        "title": "High-Latency Networks",
+        "description": "Better performance on lossy or high-latency networks"
+      },
+      {
+        "title": "Backend Modernization",
+        "description": "Leverage HTTP/3 backends without changing client infrastructure"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "HTTP/3-capable backend"
+    ],
     "directory": "http3-backend",
     "file": "http3-backend/pipelines/http3-backend.toml",
     "type": "pipeline",
@@ -80,13 +142,30 @@
     "name": "HTTP/3 to HTTP Backend",
     "shortDescription": "Accept HTTP/3 requests and proxy to HTTP backends",
     "description": "Receive HTTP/3 (QUIC) requests from modern clients and forward them to standard HTTP backend servers. Terminate QUIC/TLS 1.3 at the edge while keeping existing backend infrastructure.",
-    "tags": ["REST", "HTTP/3", "QUIC"],
-    "useCases": [
-      { "title": "Edge Termination", "description": "Terminate HTTP/3 at the edge, forward HTTP internally" },
-      { "title": "Client Modernization", "description": "Support HTTP/3 clients without changing backends" },
-      { "title": "Gradual Migration", "description": "Add HTTP/3 support incrementally to existing infrastructure" }
+    "tags": [
+      "REST",
+      "HTTP/3",
+      "QUIC"
     ],
-    "prerequisites": ["HTTP/3 Listener", "TLS Certificate", "HTTP Backend"],
+    "useCases": [
+      {
+        "title": "Edge Termination",
+        "description": "Terminate HTTP/3 at the edge, forward HTTP internally"
+      },
+      {
+        "title": "Client Modernization",
+        "description": "Support HTTP/3 clients without changing backends"
+      },
+      {
+        "title": "Gradual Migration",
+        "description": "Add HTTP/3 support incrementally to existing infrastructure"
+      }
+    ],
+    "prerequisites": [
+      "HTTP/3 Listener",
+      "TLS Certificate",
+      "HTTP Backend"
+    ],
     "directory": "http3-listener",
     "file": "http3-listener/pipelines/http3-listener.toml",
     "type": "pipeline",
@@ -96,12 +175,25 @@
     "name": "DICOM C-STORE to Filesystem",
     "shortDescription": "Store DICOM images to local filesystem",
     "description": "Receive DICOM files via the C-STORE protocol and store them using the local filesystem backend.",
-    "tags": ["Healthcare", "DICOM", "filesystem"],
-    "useCases": [
-      { "title": "Image Archival", "description": "Store incoming DICOM images to disk" },
-      { "title": "Local PACS", "description": "Simple file-based image storage" }
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "filesystem"
     ],
-    "prerequisites": ["DICOM Service", "Filesystem Service"],
+    "useCases": [
+      {
+        "title": "Image Archival",
+        "description": "Store incoming DICOM images to disk"
+      },
+      {
+        "title": "Local PACS",
+        "description": "Simple file-based image storage"
+      }
+    ],
+    "prerequisites": [
+      "DICOM Service",
+      "Filesystem Service"
+    ],
     "directory": "cstore-filesystem",
     "file": "cstore-filesystem/pipelines/main.toml",
     "type": "pipeline"
@@ -110,13 +202,29 @@
     "name": "DICOM Backend",
     "shortDescription": "HTTP to DICOM medical imaging proxy",
     "description": "Convert HTTP requests to DICOM operations (C-FIND, C-MOVE, C-STORE) targeting PACS systems. Enable REST access to DICOM infrastructure.",
-    "tags": ["Healthcare", "DICOM", "REST"],
-    "useCases": [
-      { "title": "REST to DICOM", "description": "Access DICOM PACS systems via HTTP/REST API" },
-      { "title": "Medical Imaging Integration", "description": "Query and retrieve DICOM studies from PACS" },
-      { "title": "System Interoperability", "description": "Bridge modern APIs with legacy DICOM infrastructure" }
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "REST"
     ],
-    "prerequisites": ["HTTP Service", "DICOM SCU Backend"],
+    "useCases": [
+      {
+        "title": "REST to DICOM",
+        "description": "Access DICOM PACS systems via HTTP/REST API"
+      },
+      {
+        "title": "Medical Imaging Integration",
+        "description": "Query and retrieve DICOM studies from PACS"
+      },
+      {
+        "title": "System Interoperability",
+        "description": "Bridge modern APIs with legacy DICOM infrastructure"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM SCU Backend"
+    ],
     "directory": "dicom-backend",
     "file": "dicom-backend/pipelines/dicom-backend.toml",
     "type": "pipeline"
@@ -125,13 +233,27 @@
     "name": "DICOM Receiver (SCP)",
     "shortDescription": "DICOM Service Class Provider endpoint",
     "description": "Receive DICOM images from medical modalities (CT, MRI, Ultrasound). Support C-ECHO, C-FIND, C-GET, and C-MOVE operations for PACS integration.",
-    "tags": ["Healthcare", "DICOM"],
-    "useCases": [
-      { "title": "Image Reception", "description": "Receive DICOM C-STORE from medical devices" },
-      { "title": "Study Routing", "description": "Route received studies to archive or processing" },
-      { "title": "Modality Gateway", "description": "Central point for medical device connectivity" }
+    "tags": [
+      "Healthcare",
+      "DICOM"
     ],
-    "prerequisites": ["DICOM Service"],
+    "useCases": [
+      {
+        "title": "Image Reception",
+        "description": "Receive DICOM C-STORE from medical devices"
+      },
+      {
+        "title": "Study Routing",
+        "description": "Route received studies to archive or processing"
+      },
+      {
+        "title": "Modality Gateway",
+        "description": "Central point for medical device connectivity"
+      }
+    ],
+    "prerequisites": [
+      "DICOM Service"
+    ],
     "directory": "dicom-scp",
     "file": "dicom-scp/pipelines/dicom-scp.toml",
     "type": "pipeline"
@@ -140,13 +262,29 @@
     "name": "DICOMweb Gateway",
     "shortDescription": "Web-based DICOM services",
     "description": "DICOM Service Class Provider supporting web protocols. Enables browser-based access to medical imaging with C-ECHO, C-FIND, C-GET, C-MOVE operations.",
-    "tags": ["Healthcare", "DICOM", "DICOMweb"],
-    "useCases": [
-      { "title": "Web Imaging Access", "description": "Access DICOM images through web protocols" },
-      { "title": "Cloud Integration", "description": "Enable cloud-based DICOM workflows" },
-      { "title": "Modern Viewer Support", "description": "Support web-based DICOM viewers and applications" }
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "DICOMweb"
     ],
-    "prerequisites": ["DICOMweb Service", "DICOM SCU Backend"],
+    "useCases": [
+      {
+        "title": "Web Imaging Access",
+        "description": "Access DICOM images through web protocols"
+      },
+      {
+        "title": "Cloud Integration",
+        "description": "Enable cloud-based DICOM workflows"
+      },
+      {
+        "title": "Modern Viewer Support",
+        "description": "Support web-based DICOM viewers and applications"
+      }
+    ],
+    "prerequisites": [
+      "DICOMweb Service",
+      "DICOM SCU Backend"
+    ],
     "directory": "dicomweb",
     "file": "dicomweb/pipelines/dicomweb.toml",
     "type": "pipeline"
@@ -155,13 +293,28 @@
     "name": "FHIR Integration",
     "shortDescription": "Connect to FHIR-compliant health systems",
     "description": "Proxy for FHIR resources with authentication and validation. Routes healthcare data to FHIR servers with security headers and JSON extraction.",
-    "tags": ["Healthcare", "FHIR"],
-    "useCases": [
-      { "title": "FHIR Server Integration", "description": "Connect to Firely or other FHIR servers with authentication" },
-      { "title": "Healthcare Interoperability", "description": "Secure FHIR resource exchange between health systems" },
-      { "title": "Data Extraction", "description": "Extract and route specific FHIR resources" }
+    "tags": [
+      "Healthcare",
+      "FHIR"
     ],
-    "prerequisites": ["HTTP Service", "Echo Backend"],
+    "useCases": [
+      {
+        "title": "FHIR Server Integration",
+        "description": "Connect to Firely or other FHIR servers with authentication"
+      },
+      {
+        "title": "Healthcare Interoperability",
+        "description": "Secure FHIR resource exchange between health systems"
+      },
+      {
+        "title": "Data Extraction",
+        "description": "Extract and route specific FHIR resources"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Echo Backend"
+    ],
     "directory": "fhir",
     "file": "fhir/pipelines/fhir.toml",
     "type": "pipeline"
@@ -170,13 +323,29 @@
     "name": "FHIR to DICOM Integration",
     "shortDescription": "Unified clinical and imaging data pipeline",
     "description": "Full bidirectional pipeline converting between FHIR and DICOM formats. Links clinical orders with imaging studies and produces FHIR ImagingStudy bundles.",
-    "tags": ["Healthcare", "FHIR", "DICOM"],
-    "useCases": [
-      { "title": "Radiology Workflow", "description": "Link FHIR radiology orders with DICOM imaging studies" },
-      { "title": "Comprehensive Records", "description": "Create FHIR ImagingStudy bundles with clinical context" },
-      { "title": "Data Normalization", "description": "Convert between FHIR and DICOM formats seamlessly" }
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "DICOM"
     ],
-    "prerequisites": ["HTTP Service", "DICOM Backend"],
+    "useCases": [
+      {
+        "title": "Radiology Workflow",
+        "description": "Link FHIR radiology orders with DICOM imaging studies"
+      },
+      {
+        "title": "Comprehensive Records",
+        "description": "Create FHIR ImagingStudy bundles with clinical context"
+      },
+      {
+        "title": "Data Normalization",
+        "description": "Convert between FHIR and DICOM formats seamlessly"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "DICOM Backend"
+    ],
     "directory": "fhir_dicom",
     "file": "fhir_dicom/pipelines/fhir_imagingstudy.toml",
     "type": "pipeline"
@@ -185,11 +354,22 @@
     "name": "Content Type Handling",
     "shortDescription": "Multi-format data negotiation",
     "description": "Handle multiple content types (JSON, FHIR JSON, DICOM JSON) automatically. Parse and route requests based on MIME type detection.",
-    "tags": ["REST"],
+    "tags": [
+      "REST"
+    ],
     "useCases": [
-      { "title": "Format Negotiation", "description": "Automatically detect and handle multiple content types" },
-      { "title": "Multi-Format Support", "description": "Accept JSON, FHIR+JSON, DICOM+JSON in same endpoint" },
-      { "title": "Flexible Integration", "description": "Connect diverse systems with format adaptation" }
+      {
+        "title": "Format Negotiation",
+        "description": "Automatically detect and handle multiple content types"
+      },
+      {
+        "title": "Multi-Format Support",
+        "description": "Accept JSON, FHIR+JSON, DICOM+JSON in same endpoint"
+      },
+      {
+        "title": "Flexible Integration",
+        "description": "Connect diverse systems with format adaptation"
+      }
     ],
     "prerequisites": [],
     "directory": "content-types",
@@ -200,13 +380,28 @@
     "name": "DICOM to JMIX",
     "shortDescription": "Share JMIX packages from DICOM services",
     "description": "Integrate JMIX applications with DICOM infrastructure. Secure proxy with performance optimization and schema validation.",
-    "tags": ["DICOM", "JMIX"],
-    "useCases": [
-      { "title": "JMIX to External Systems", "description": "Connect JMIX apps to third-party APIs and services" },
-      { "title": "DICOM Integration", "description": "Link JMIX applications with medical imaging systems" },
-      { "title": "Enterprise Integration", "description": "Enterprise-grade application connectivity" }
+    "tags": [
+      "DICOM",
+      "JMIX"
     ],
-    "prerequisites": ["JMIX Service", "DICOM Backend"],
+    "useCases": [
+      {
+        "title": "JMIX to External Systems",
+        "description": "Connect JMIX apps to third-party APIs and services"
+      },
+      {
+        "title": "DICOM Integration",
+        "description": "Link JMIX applications with medical imaging systems"
+      },
+      {
+        "title": "Enterprise Integration",
+        "description": "Enterprise-grade application connectivity"
+      }
+    ],
+    "prerequisites": [
+      "JMIX Service",
+      "DICOM Backend"
+    ],
     "directory": "jmix",
     "file": "jmix/pipelines/jmix-performance.toml",
     "type": "pipeline"
@@ -215,13 +410,29 @@
     "name": "SOAP to JSON Bridge",
     "shortDescription": "Convert SOAP to modern JSON APIs",
     "description": "Transform legacy SOAP messages to JSON format via JOLT. Enables modern client access to SOAP-based backend systems with JWT authentication.",
-    "tags": ["SOAP", "REST"],
-    "useCases": [
-      { "title": "Legacy System Modernization", "description": "Expose SOAP services as JSON APIs" },
-      { "title": "Client Migration", "description": "Support both SOAP and JSON clients during transition" },
-      { "title": "Format Translation", "description": "Automatic XML to JSON conversion with JOLT" }
+    "tags": [
+      "SOAP",
+      "REST"
     ],
-    "prerequisites": ["HTTP Service", "JWT Auth Middleware", "Transform Middleware"],
+    "useCases": [
+      {
+        "title": "Legacy System Modernization",
+        "description": "Expose SOAP services as JSON APIs"
+      },
+      {
+        "title": "Client Migration",
+        "description": "Support both SOAP and JSON clients during transition"
+      },
+      {
+        "title": "Format Translation",
+        "description": "Automatic XML to JSON conversion with JOLT"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "JWT Auth Middleware",
+      "Transform Middleware"
+    ],
     "directory": "soap-to-json",
     "file": "soap-to-json/pipelines/soap-to-json.toml",
     "type": "pipeline"
@@ -230,13 +441,27 @@
     "name": "Data Transformation",
     "shortDescription": "JSON data reshaping with JOLT",
     "description": "Transform and reshape JSON data using JOLT mappings. Convert between data formats, normalize schemas, and enrich data in flight.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "Schema Conversion", "description": "Transform patient records to FHIR format" },
-      { "title": "Data Normalization", "description": "Reshape and standardize JSON data" },
-      { "title": "Format Translation", "description": "Convert between different data schemas" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP Service", "Transform Middleware"],
+    "useCases": [
+      {
+        "title": "Schema Conversion",
+        "description": "Transform patient records to FHIR format"
+      },
+      {
+        "title": "Data Normalization",
+        "description": "Reshape and standardize JSON data"
+      },
+      {
+        "title": "Format Translation",
+        "description": "Convert between different data schemas"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
     "directory": "transform",
     "file": "transform/pipelines/transform-example.toml",
     "type": "pipeline"
@@ -245,12 +470,26 @@
     "name": "AU eRequesting: HTTP to FHIR",
     "shortDescription": "Convert HTTP service requests to AU eRequesting FHIR bundles",
     "description": "Convert HTTP service requests to AU eRequesting FHIR bundles and back to HTTP responses.",
-    "tags": ["Healthcare", "FHIR", "REST"],
-    "useCases": [
-      { "title": "eRequesting Integration", "description": "Integrate with the Australian eRequesting specification" },
-      { "title": "FHIR Bundle Generation", "description": "Generate compliant FHIR bundles from HTTP requests" }
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "REST"
     ],
-    "prerequisites": ["HTTP Service", "FHIR Service", "Transform Middleware"],
+    "useCases": [
+      {
+        "title": "eRequesting Integration",
+        "description": "Integrate with the Australian eRequesting specification"
+      },
+      {
+        "title": "FHIR Bundle Generation",
+        "description": "Generate compliant FHIR bundles from HTTP requests"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "FHIR Service",
+      "Transform Middleware"
+    ],
     "directory": "au-erequesting",
     "file": "au-erequesting/pipelines/http-to-fhir.toml",
     "type": "pipeline"
@@ -259,12 +498,26 @@
     "name": "AU eRequesting: FHIR to HTTP",
     "shortDescription": "Accept AU eRequesting FHIR bundles and convert to HTTP API calls",
     "description": "Accept AU eRequesting FHIR bundles and convert to HTTP API calls for backend services.",
-    "tags": ["Healthcare", "FHIR", "REST"],
-    "useCases": [
-      { "title": "FHIR to REST", "description": "Convert FHIR bundles to backend REST calls" },
-      { "title": "eRequesting Backend", "description": "Accept eRequesting messages for processing" }
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "REST"
     ],
-    "prerequisites": ["FHIR Service", "HTTP Service", "Transform Middleware"],
+    "useCases": [
+      {
+        "title": "FHIR to REST",
+        "description": "Convert FHIR bundles to backend REST calls"
+      },
+      {
+        "title": "eRequesting Backend",
+        "description": "Accept eRequesting messages for processing"
+      }
+    ],
+    "prerequisites": [
+      "FHIR Service",
+      "HTTP Service",
+      "Transform Middleware"
+    ],
     "directory": "au-erequesting",
     "file": "au-erequesting/pipelines/fhir-to-http.toml",
     "type": "pipeline"
@@ -273,12 +526,22 @@
     "name": "Webhook Middleware",
     "shortDescription": "Emit JSON payloads on request/response",
     "description": "Demonstrates the webhook middleware for emitting JSON payloads on request/response, with per-instance authentication and header redaction.",
-    "tags": ["REST"],
-    "useCases": [
-      { "title": "Event Notification", "description": "Send webhook events on request/response" },
-      { "title": "Audit Logging", "description": "Emit payloads for external audit systems" }
+    "tags": [
+      "REST"
     ],
-    "prerequisites": ["HTTP Service"],
+    "useCases": [
+      {
+        "title": "Event Notification",
+        "description": "Send webhook events on request/response"
+      },
+      {
+        "title": "Audit Logging",
+        "description": "Emit payloads for external audit systems"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service"
+    ],
     "directory": "webhook",
     "file": "webhook/pipelines/webhook.toml",
     "type": "pipeline",
@@ -288,18 +551,65 @@
     "name": "Santa's Workshop",
     "shortDescription": "North Pole Gift Distribution Network",
     "description": "Mission-critical pipeline powering Santa's Gift Distribution Network. Integrates the Naughty/Nice Registry, Elf Production Management System (EPMS), and Reindeer Fleet Logistics API for seamless Christmas Eve operations.",
-    "tags": ["REST", "Christmas"],
-    "useCases": [
-      { "title": "Gift Routing", "description": "High-throughput gift routing with sub-millisecond latency to chimneys worldwide" },
-      { "title": "Naughty/Nice Classification", "description": "Real-time eligibility verification against the authoritative Nice List" },
-      { "title": "Reindeer Fleet Management", "description": "Load-balanced sleigh assignments with Rudolph failover support" }
+    "tags": [
+      "REST",
+      "Christmas"
     ],
-    "prerequisites": ["North Pole VPN", "Elf API Token", "Reindeer Fleet Credentials"],
+    "useCases": [
+      {
+        "title": "Gift Routing",
+        "description": "High-throughput gift routing with sub-millisecond latency to chimneys worldwide"
+      },
+      {
+        "title": "Naughty/Nice Classification",
+        "description": "Real-time eligibility verification against the authoritative Nice List"
+      },
+      {
+        "title": "Reindeer Fleet Management",
+        "description": "Load-balanced sleigh assignments with Rudolph failover support"
+      }
+    ],
+    "prerequisites": [
+      "North Pole VPN",
+      "Elf API Token",
+      "Reindeer Fleet Credentials"
+    ],
     "directory": "santas-workshop",
     "file": "santas-workshop/pipelines/santas-workshop.toml",
     "type": "pipeline",
     "featured": true,
     "runbeam": false,
     "deployVideo": "https://youtu.be/E8gmARGvPlI?si=VqC0jnuCLnPmm6dj"
+  },
+  "dicom_to_dicomweb": {
+    "name": "DICOM to DICOMweb",
+    "shortDescription": "Convert DICOM requests to the DICOMweb protocol",
+    "description": "Bridge that accepts incoming DICOM requests from imaging modalities and converts them to DICOMweb protocol for web-based access. Enables legacy DICOM devices to integrate with modern DICOMweb-based systems.",
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "DICOMweb",
+    ],
+    "useCases": [
+      {
+        "title": "Legacy DICOM Integration",
+        "description": "Connect traditional DICOM modalities to DICOMweb systems"
+      },
+      {
+        "title": "Protocol Translation",
+        "description": "Automatically convert DICOM network protocols to web standards"
+      },
+      {
+        "title": "Cloud integration",
+        "description": "Enable communication between DICOM and cloud providers"
+      }
+    ],
+    "prerequisites": [
+      "DICOM Modalities",
+      "DICOMweb Server"
+    ],
+    "directory": "dicom_to_dicomweb",
+    "file": "dicom_to_dicomweb/pipelines/bridge.toml",
+    "type": "pipeline"
   }
 }
