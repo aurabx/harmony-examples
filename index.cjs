@@ -2,6 +2,7 @@ const path = require('node:path');
 
 const pipelines = require('./pipelines.json');
 const transforms = require('./transforms.json');
+const workloadDiagrams = require('./workload-diagrams.json');
 
 const packageRoot = __dirname;
 
@@ -31,6 +32,7 @@ module.exports = {
   packageRoot,
   pipelines,
   transforms,
+  workloadDiagrams,
   getPipeline,
   getTransform,
   resolvePipelinePath,

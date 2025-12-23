@@ -1,5 +1,6 @@
 import pipelines from './pipelines.json' assert { type: 'json' };
 import transforms from './transforms.json' assert { type: 'json' };
+import workloadDiagrams from './workload-diagrams.json' assert { type: 'json' };
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 
@@ -31,6 +32,7 @@ export {
   packageRoot,
   pipelines,
   transforms,
+  workloadDiagrams,
   getPipeline,
   getTransform,
   resolvePipelinePath,

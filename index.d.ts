@@ -37,6 +37,7 @@ declare const api: {
   packageRoot: string;
   pipelines: PipelinesCatalog;
   transforms: TransformsCatalog;
+  workloadDiagrams: Record<string, any>;
   getPipeline: (id: string) => PipelineCatalogEntry | undefined;
   getTransform: (id: string) => TransformCatalogEntry | undefined;
   resolvePipelinePath: (id: string) => string | null;

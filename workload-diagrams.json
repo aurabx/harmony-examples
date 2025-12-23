@@ -1,0 +1,331 @@
+{
+  "basic-echo": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "localhost:8080", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "/echo", "status": "active" },
+      "middlewares": [],
+      "backend": { "label": "Echo Backend", "subLabel": "Reflect response", "status": "active" }
+    },
+    "targets": [
+      { "label": "HTTP Response", "subLabel": "Echo output", "status": "active" }
+    ]
+  },
+  "http-external": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "Various endpoints", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP", "subLabel": "Listen all paths", "status": "active" },
+      "middlewares": [
+        { "label": "Policy", "subLabel": "Block Admin APIs", "status": "active" },
+        { "label": "Rate Limit", "subLabel": "100/minute", "status": "active" },
+        { "label": "Method", "subLabel": "Allow HTTP GET, POST", "status": "active" }
+      ],
+      "backend": { "label": "HTTP", "subLabel": "To backend services", "status": "active" }
+    },
+    "targets": [
+      { "label": "Backend Services", "subLabel": "Internal services", "status": "active" }
+    ]
+  },
+  "http-internal": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "Various endpoints", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP", "subLabel": "Listen all paths", "status": "active" },
+      "middlewares": [
+        { "label": "Policy", "subLabel": "Block external IPs", "status": "active" },
+        { "label": "Method", "subLabel": "Allow all HTTP methods", "status": "active" }
+      ],
+      "backend": { "label": "HTTP", "subLabel": "To backend services", "status": "active" }
+    },
+    "targets": [
+      { "label": "Backend Services", "subLabel": "Internal services", "status": "active" }
+    ]
+  },
+  "fhir": {
+    "sources": [
+      { "label": "FHIR Clients", "subLabel": "REST requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "localhost:8081", "status": "active" },
+      "middlewares": [
+        { "label": "Authenticate", "subLabel": "Basic auth", "status": "active" },
+        { "label": "Extract", "subLabel": "JSON parsing", "status": "active" }
+      ],
+      "backend": { "label": "FHIR Proxy", "subLabel": "Forward to server", "status": "active" }
+    },
+    "targets": [
+      { "label": "Firely Server", "subLabel": "FHIR endpoint", "status": "active" }
+    ]
+  },
+  "http-to-dicom": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "REST API", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "Accept requests", "status": "active" },
+      "middlewares": [
+        { "label": "Parse", "subLabel": "HTTP to DICOM ops", "status": "active" },
+        { "label": "Route", "subLabel": "C-FIND/C-MOVE/C-STORE", "status": "active" }
+      ],
+      "backend": { "label": "DICOM SCU", "subLabel": "PACS client", "status": "active" }
+    },
+    "targets": [
+      { "label": "PACS System", "subLabel": "DICOM server", "status": "active" }
+    ]
+  },
+  "fhir-dicom": {
+    "sources": [
+      { "label": "FHIR Clients", "subLabel": "Clinical data", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "FHIR service", "subLabel": "", "status": "active" },
+      "middlewares": [
+        { "label": "Filter", "subLabel": "Limit to ImagingStudy", "status": "active" },
+        { "label": "Transform", "subLabel": "FHIR query to DICOM", "status": "active" }
+      ],
+      "backend": { "label": "DICOM", "subLabel": "DIMSE messaging", "status": "active" }
+    },
+    "targets": [
+      { "label": "PACS/VNA", "subLabel": "Imaging data", "status": "active" }
+    ]
+  },
+  "soap-to-json": {
+    "sources": [
+      { "label": "SOAP Clients", "subLabel": "XML/SOAP", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "POST /soap", "status": "active" },
+      "middlewares": [
+        { "label": "Parse", "subLabel": "XML detection", "status": "active" },
+        { "label": "Transform", "subLabel": "JOLT XML→JSON", "status": "active" },
+        { "label": "Authorize", "subLabel": "JWT Bearer token", "status": "active" }
+      ],
+      "backend": { "label": "Forward", "subLabel": "JSON payload", "status": "active" }
+    },
+    "targets": [
+      { "label": "JSON Backend", "subLabel": "localhost:9000", "status": "active" }
+    ]
+  },
+  "dicomweb-dicom": {
+    "sources": [
+      { "label": "Web Clients", "subLabel": "DICOMweb requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOMweb", "subLabel": "Web protocol", "status": "active" },
+      "middlewares": [
+        { "label": "Policy", "subLabel": "Block External APIs", "status": "active" },
+        { "label": "Policy", "subLabel": "Allow DICOMweb", "status": "active" },
+        { "label": "Policy", "subLabel": "Rate limit", "status": "active" },
+        { "label": "Transform", "subLabel": "Convert DICOMweb to DICOM", "status": "active" }
+      ],
+      "backend": { "label": "DICOM SCU", "subLabel": "Query DICOM services", "status": "active" }
+    },
+    "targets": [
+      { "label": "PACS", "subLabel": "DICOM resources", "status": "active" }
+    ]
+  },
+  "dicom-scp": {
+    "sources": [
+      { "label": "Modalities", "subLabel": "CT/MRI/US", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOM SCP", "subLabel": "Listen DICOM port", "status": "active" },
+      "middlewares": [
+        { "label": "Accept", "subLabel": "C-STORE/C-FIND", "status": "active" },
+        { "label": "Route", "subLabel": "By study type", "status": "active" }
+      ],
+      "backend": { "label": "Store", "subLabel": "Locally or forward", "status": "active" }
+    },
+    "targets": [
+      { "label": "PACS Archive", "subLabel": "Image storage", "status": "active" }
+    ]
+  },
+  "jmix": {
+    "sources": [
+      { "label": "Jmix Apps", "subLabel": "REST API", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "Jmix endpoint", "status": "active" },
+      "middlewares": [
+        { "label": "Authenticate", "subLabel": "Jmix auth", "status": "active" },
+        { "label": "Validate", "subLabel": "Schema check", "status": "active" },
+        { "label": "Optimize", "subLabel": "Performance tuning", "status": "active" }
+      ],
+      "backend": { "label": "Route", "subLabel": "To systems", "status": "active" }
+    },
+    "targets": [
+      { "label": "External Systems", "subLabel": "APIs/DICOM", "status": "active" }
+    ]
+  },
+  "transform": {
+    "sources": [
+      { "label": "JSON Data", "subLabel": "Input records", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "Input", "subLabel": "Accept JSON", "status": "active" },
+      "middlewares": [
+        { "label": "JOLT", "subLabel": "Transform spec", "status": "active" },
+        { "label": "Map", "subLabel": "Patient→FHIR", "status": "active" }
+      ],
+      "backend": { "label": "Output", "subLabel": "Transformed data", "status": "active" }
+    },
+    "targets": [
+      { "label": "FHIR Systems", "subLabel": "Normalized format", "status": "active" }
+    ]
+  },
+  "http-content-type": {
+    "sources": [
+      { "label": "JSON Clients", "subLabel": "application/json", "status": "active" },
+      { "label": "FHIR Clients", "subLabel": "application/fhir+json", "status": "active" },
+      { "label": "DICOM Clients", "subLabel": "application/dicom+json", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "Content Negotiation", "subLabel": "Auto-detect MIME", "status": "active" },
+      "middlewares": [
+        { "label": "Parse", "subLabel": "By content type", "status": "active" },
+        { "label": "Validate", "subLabel": "Format check", "status": "active" }
+      ],
+      "backend": { "label": "Route", "subLabel": "By format", "status": "active" }
+    },
+    "targets": [
+      { "label": "Appropriate Backend", "subLabel": "Matched format", "status": "active" }
+    ]
+  },
+  "http-http": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "REST requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "Accept requests", "status": "active" },
+      "middlewares": [],
+      "backend": { "label": "HTTP Passthrough", "subLabel": "Forward requests", "status": "active" }
+    },
+    "targets": [
+      { "label": "Backend Service", "subLabel": "HTTP server", "status": "active" }
+    ]
+  },
+  "http3-backend": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "HTTP/1.x requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "TCP port 8080", "status": "active" },
+      "middlewares": [],
+      "backend": { "label": "HTTP/3 Backend", "subLabel": "QUIC + TLS 1.3", "status": "active" }
+    },
+    "targets": [
+      { "label": "HTTP/3 Server", "subLabel": "QUIC-enabled API", "status": "active" }
+    ]
+  },
+  "http3-listener": {
+    "sources": [
+      { "label": "HTTP/3 Clients", "subLabel": "QUIC requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP/3 Listener", "subLabel": "UDP port 443", "status": "active" },
+      "middlewares": [],
+      "backend": { "label": "HTTP Backend", "subLabel": "Standard HTTP", "status": "active" }
+    },
+    "targets": [
+      { "label": "HTTP Server", "subLabel": "Backend service", "status": "active" }
+    ]
+  },
+  "dicom-cstore-to-filesystem": {
+    "sources": [
+      { "label": "Modalities", "subLabel": "DICOM C-STORE", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOM SCP", "subLabel": "Listen DICOM port", "status": "active" },
+      "middlewares": [
+        { "label": "Accept", "subLabel": "C-STORE operations", "status": "active" }
+      ],
+      "backend": { "label": "Filesystem", "subLabel": "Store files", "status": "active" }
+    },
+    "targets": [
+      { "label": "Local Filesystem", "subLabel": "DICOM file storage", "status": "active" }
+    ]
+  },
+  "au-erequesting-http-to-fhir": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "Service requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "Accept requests", "status": "active" },
+      "middlewares": [
+        { "label": "Transform", "subLabel": "HTTP to FHIR", "status": "active" },
+        { "label": "Validate", "subLabel": "eRequesting spec", "status": "active" }
+      ],
+      "backend": { "label": "FHIR Bundle", "subLabel": "Generate bundles", "status": "active" }
+    },
+    "targets": [
+      { "label": "FHIR System", "subLabel": "AU eRequesting", "status": "active" }
+    ]
+  },
+  "au-erequesting-fhir-to-http": {
+    "sources": [
+      { "label": "FHIR Clients", "subLabel": "FHIR bundles", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "FHIR Listener", "subLabel": "Accept bundles", "status": "active" },
+      "middlewares": [
+        { "label": "Parse", "subLabel": "FHIR extraction", "status": "active" },
+        { "label": "Transform", "subLabel": "FHIR to HTTP", "status": "active" }
+      ],
+      "backend": { "label": "HTTP Client", "subLabel": "REST calls", "status": "active" }
+    },
+    "targets": [
+      { "label": "Backend Services", "subLabel": "HTTP APIs", "status": "active" }
+    ]
+  },
+  "webhook": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "REST requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "Accept requests", "status": "active" },
+      "middlewares": [
+        { "label": "Webhook", "subLabel": "Emit JSON payloads", "status": "active" }
+      ],
+      "backend": { "label": "Echo Backend", "subLabel": "Reflect response", "status": "active" }
+    },
+    "targets": []
+  },
+  "santas-workshop": {
+    "sources": [
+      { "label": "Children's Letters", "subLabel": "Gift requests", "status": "active" },
+      { "label": "Nice List", "subLabel": "Eligibility data", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "Gift API", "subLabel": "localhost:2512", "status": "active" },
+      "middlewares": [
+        { "label": "Cookie Auth", "subLabel": "Milk & cookies", "status": "active" },
+        { "label": "Naughty/Nice", "subLabel": "List verification", "status": "active" },
+        { "label": "Gift Transform", "subLabel": "EPF to UGS", "status": "active" }
+      ],
+      "backend": { "label": "Elf Production", "subLabel": "Workshop queue", "status": "active" }
+    },
+    "targets": [
+      { "label": "Reindeer Fleet", "subLabel": "Delivery logistics", "status": "active" },
+      { "label": "Chimneys", "subLabel": "Worldwide", "status": "active" }
+    ]
+  },
+  "dicom_to_dicomweb": {
+    "sources": [
+      { "label": "DICOM Modalities", "subLabel": "DIMSE operations", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOM SCP", "subLabel": "Listen DICOM port 11112", "status": "active" },
+      "middlewares": [
+        { "label": "Convert", "subLabel": "DICOM to DICOMweb", "status": "active" }
+      ],
+      "backend": { "label": "DICOMweb", "subLabel": "HTTP to DICOMweb API", "status": "active" }
+    },
+    "targets": [
+      { "label": "DICOMweb Server", "subLabel": "Web-based DICOM access", "status": "active" }
+    ]
+  }
+}

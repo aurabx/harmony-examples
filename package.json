@@ -14,12 +14,14 @@
     },
     "./pipelines.json": "./pipelines.json",
     "./transforms.json": "./transforms.json",
+    "./workload-diagrams.json": "./workload-diagrams.json",
     "./pipelines/*": "./pipelines/*",
     "./transforms/*": "./transforms/*"
   },
   "files": [
     "pipelines.json",
     "transforms.json",
+    "workload-diagrams.json",
 
     "pipelines/**/README.md",
     "pipelines/**/config.toml",
