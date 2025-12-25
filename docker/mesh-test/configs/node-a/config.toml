@@ -1,0 +1,105 @@
+# ============================================================================
+# Node A Configuration - Mesh Backend Node
+# ============================================================================
+# This node:
+#   - Receives incoming mesh traffic (ingress)
+#   - Forwards requests to the Python backend server
+#   - Acts as the "destination" in the mesh topology
+# ============================================================================
+
+[proxy]
+id = "harmony-node-a"
+pipelines_path = "pipelines"
+
+# Disable Runbeam Cloud for local testing
+[runbeam]
+enabled = false
+
+# ============================================================================
+# Management API
+# ============================================================================
+[management]
+enabled = true
+base_path = "admin"
+network = "management"
+
+# ============================================================================
+# Networks
+# ============================================================================
+[network.default]
+enable_wireguard = false
+interface = "wg0"
+
+[network.default.http]
+bind_address = "0.0.0.0"
+bind_port = 8080
+
+[network.management]
+enable_wireguard = false
+interface = "wg0"
+
+[network.management.http]
+bind_address = "0.0.0.0"
+bind_port = 9090
+
+# ============================================================================
+# Logging
+# ============================================================================
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "/tmp/harmony/harmony.log"
+
+# ============================================================================
+# Storage
+# ============================================================================
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "/tmp/harmony"
+
+# ============================================================================
+# Service Types
+# ============================================================================
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+# ============================================================================
+# Middleware Types
+# ============================================================================
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.mesh_auth]
+module = ""
+
+# ============================================================================
+# Mesh Configuration - INGRESS SIDE
+# ============================================================================
+# Node A defines:
+#   - An ingress point (receives mesh traffic)
+#   - Routes incoming mesh requests to the api_endpoint
+# ============================================================================
+
+[ingress.api_ingress]
+type = "http"
+endpoint = "api_endpoint"
+# URLs that identify requests destined for this ingress point
+urls = ["http://node-a.mesh.local:8080/api"]
+description = "API ingress for mesh traffic"
+enabled = true
+
+[mesh.test_mesh]
+type = "http"
+provider = "local"
+auth_type = "jwt"
+# Shared secret for mesh JWT authentication (same on both nodes)
+jwt_secret = "mesh-test-secret-key-change-in-production"
+ingress = ["api_ingress"]
+egress = []  # Node A doesn't send outbound mesh traffic
+description = "Test mesh for Docker networking demo"
+enabled = true

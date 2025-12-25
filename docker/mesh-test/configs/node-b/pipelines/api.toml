@@ -1,0 +1,40 @@
+# ============================================================================
+# Node B Pipeline - Mesh Forwarder
+# ============================================================================
+# Receives external requests and forwards them via mesh egress to Node A
+# ============================================================================
+
+[pipelines.api_pipeline]
+description = "Receive external requests and forward via mesh to Node A"
+networks = ["default"]
+endpoints = ["api_endpoint"]
+middleware = ["passthru"]
+backends = ["mesh_to_node_a"]
+
+# ============================================================================
+# Middleware
+# ============================================================================
+
+[middleware.passthru]
+type = "passthru"
+
+# ============================================================================
+# Endpoints
+# ============================================================================
+
+[endpoints.api_endpoint]
+service = "http"
+[endpoints.api_endpoint.options]
+path_prefix = "/api"
+
+# ============================================================================
+# Backends
+# ============================================================================
+
+# This backend sends requests through the mesh to Node A
+# The mesh_auth middleware will automatically sign requests with JWT
+[backends.mesh_to_node_a]
+service = "http"
+[backends.mesh_to_node_a.options]
+# Target Node A's mesh ingress URL
+base_url = "http://node-a.mesh.local:8080"

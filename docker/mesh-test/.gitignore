@@ -1,0 +1,6 @@
+# Ignore runtime files
+tmp/
+*.log
+
+# Keep the directory structure
+!tmp/.gitkeep

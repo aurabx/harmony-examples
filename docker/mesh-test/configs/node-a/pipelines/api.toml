@@ -1,0 +1,45 @@
+# ============================================================================
+# Node A Pipeline - API Handler
+# ============================================================================
+# Receives mesh traffic and forwards to Python backend server
+# ============================================================================
+
+[pipelines.api_pipeline]
+description = "Handle incoming mesh requests and forward to Python backend"
+networks = ["default"]
+endpoints = ["api_endpoint"]
+middleware = ["mesh_auth", "passthru"]
+backends = ["python_backend"]
+
+# ============================================================================
+# Middleware
+# ============================================================================
+
+# Validates incoming mesh JWT tokens
+[middleware.mesh_auth]
+type = "mesh_auth"
+[middleware.mesh_auth.options]
+# Mesh auth validates JWTs signed by mesh peers
+required = true
+
+[middleware.passthru]
+type = "passthru"
+
+# ============================================================================
+# Endpoints
+# ============================================================================
+
+[endpoints.api_endpoint]
+service = "http"
+[endpoints.api_endpoint.options]
+path_prefix = "/"
+
+# ============================================================================
+# Backends
+# ============================================================================
+
+[backends.python_backend]
+service = "http"
+[backends.python_backend.options]
+# Forward to the Python server running in Docker
+base_url = "http://backend.mesh.local:5000"

@@ -1,0 +1,87 @@
+# Mesh Networking Test Setup
+#
+# This compose file creates a two-node mesh for testing mesh routing:
+#
+# ┌─────────────────┐      Mesh (JWT Auth)      ┌─────────────────┐
+# │     Node B      │ ────────────────────────► │     Node A      │
+# │  (Entry Point)  │                           │ (Backend Node)  │
+# │   Port: 8081    │                           │   Port: 8080    │
+# └─────────────────┘                           └────────┬────────┘
+#                                                        │
+#                                                        ▼
+#                                               ┌─────────────────┐
+#                                               │  Python Server  │
+#                                               │   Port: 5000    │
+#                                               └─────────────────┘
+#
+# Test flow:
+#   curl http://localhost:8081/api/test
+#   → Node B receives request
+#   → Node B forwards via mesh egress to Node A
+#   → Node A receives via mesh ingress
+#   → Node A forwards to Python backend
+#   → Response flows back
+#
+services:
+  # Node A: Backend node that receives mesh traffic and forwards to Python server
+  node-a:
+    build:
+      context: ../../../harmony-proxy
+      dockerfile: ../../../harmony-proxy/Dockerfile
+      args:
+        TARGETARCH: arm64  # Change to amd64 for x86_64
+    container_name: harmony-mesh-node-a
+    volumes:
+      - ./configs/node-a:/etc/harmony:ro
+      - ./tmp/node-a:/tmp/harmony
+    ports:
+      - "8080:8080"
+      - "9080:9090"
+    environment:
+      - RUST_LOG=harmony=debug
+    depends_on:
+      - python-server
+    networks:
+      mesh-network:
+        aliases:
+          - node-a.mesh.local
+
+  # Node B: Entry point that receives external requests and forwards via mesh
+  node-b:
+    build:
+      context: ../../../harmony-proxy
+      dockerfile: ../../../harmony-proxy/Dockerfile
+      args:
+        TARGETARCH: arm64  # Change to amd64 for x86_64
+    container_name: harmony-mesh-node-b
+    volumes:
+      - ./configs/node-b:/etc/harmony:ro
+      - ./tmp/node-b:/tmp/harmony
+    ports:
+      - "8081:8080"
+      - "9081:9090"
+    environment:
+      - RUST_LOG=harmony=debug
+    depends_on:
+      - node-a
+    networks:
+      mesh-network:
+        aliases:
+          - node-b.mesh.local
+
+  # Simple Python HTTP server as the ultimate backend
+  python-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: harmony-mesh-python
+    ports:
+      - "5050:5000"  # External 5050 -> internal 5000 (5000 often used by macOS)
+    networks:
+      mesh-network:
+        aliases:
+          - backend.mesh.local
+
+networks:
+  mesh-network:
+    driver: bridge
