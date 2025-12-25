@@ -1,0 +1,70 @@
+# Healthcare Data Mesh Configuration
+# Defines mesh networking for secure inter-organization healthcare data exchange
+
+# ============================================================================
+# MESH DEFINITION
+# Groups ingress and egress points for the healthcare data mesh
+# ============================================================================
+
+[mesh.healthcare]
+type = "http3"              # Use HTTP/3 for modern, efficient communication
+provider = "local"          # Self-managed mesh (use "runbeam" for cloud-managed)
+auth_type = "jwt"           # JWT-based authentication between mesh members
+
+# JWT Configuration (choose one of the following options):
+# Option 1: HS256 symmetric key (simpler, all members share the same secret)
+jwt_secret = "healthcare-mesh-shared-secret-min-32-characters"
+
+# Option 2: RS256 asymmetric keys (more secure, requires key distribution)
+# jwt_private_key_path = "/etc/harmony/mesh/private.pem"  # For signing (egress)
+# jwt_public_key_path = "/etc/harmony/mesh/public.pem"    # For verification (ingress)
+
+ingress = ["fhir_ingress", "dicomweb_ingress"]
+egress = ["partner_egress", "imaging_egress"]
+description = "Healthcare data mesh for secure inter-organization data exchange"
+enabled = true
+
+# ============================================================================
+# INGRESS DEFINITIONS
+# Define how other mesh members can send requests to this proxy
+# ============================================================================
+
+# FHIR API Ingress - allows partners to query patient data
+[ingress.fhir_ingress]
+type = "http"
+endpoint = "mesh_fhir_endpoint"
+urls = [
+    "https://fhir.myorganization.com/r4",
+    "https://fhir-backup.myorganization.com/r4"
+]
+description = "FHIR R4 API ingress for partner queries"
+enabled = true
+
+# DICOMweb Ingress - allows imaging centers to push studies
+[ingress.dicomweb_ingress]
+type = "http3"
+endpoint = "mesh_fhir_endpoint"  # Routes to same endpoint for demo
+urls = [
+    "https://dicom.myorganization.com/wado-rs"
+]
+description = "DICOMweb ingress for imaging data"
+enabled = true
+
+# ============================================================================
+# EGRESS DEFINITIONS  
+# Define how this proxy can send requests to other mesh members
+# ============================================================================
+
+# Partner Organization Egress - send queries to partner FHIR server
+[egress.partner_egress]
+type = "http3"
+backend = "partner_fhir"
+description = "Egress to partner organization FHIR server"
+enabled = true
+
+# Imaging Center Egress - send requests to imaging center DICOMweb server
+[egress.imaging_egress]
+type = "http3"
+backend = "imaging_center"
+description = "Egress to imaging center DICOMweb server"
+enabled = true

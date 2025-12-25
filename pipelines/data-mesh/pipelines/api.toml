@@ -1,0 +1,106 @@
+# API Pipeline - Exposes endpoints for mesh ingress
+# This pipeline defines the endpoints that other mesh members can route to
+
+# ------------------------
+# Pipeline for internal API
+# ------------------------
+[pipelines.internal_api]
+description = "Internal API endpoint accessible via mesh"
+networks = ["internal"]
+endpoints = ["fhir_endpoint"]
+middleware = ["api_policies", "passthru"]
+backends = ["fhir_backend"]
+
+# ------------------------
+# Pipeline for mesh-accessible API
+# ------------------------
+[pipelines.mesh_api]
+description = "API endpoint exposed to mesh network"
+networks = ["mesh_external"]
+endpoints = ["mesh_fhir_endpoint"]
+middleware = ["mesh_policies", "passthru"]
+backends = ["fhir_backend"]
+
+# ------------------------
+# Middleware
+# ------------------------
+[middleware.api_policies]
+type = "policies"
+
+[middleware.api_policies.options]
+policies = ["internal_access"]
+
+[middleware.mesh_policies]
+type = "policies"
+
+[middleware.mesh_policies.options]
+policies = ["mesh_access"]
+
+[middleware.passthru]
+type = "passthru"
+
+# ------------------------
+# Policies
+# ------------------------
+[policies.internal_access]
+id = "internal_access"
+name = "Internal Access"
+enabled = true
+rules = ["allow_all"]
+
+[policies.mesh_access]
+id = "mesh_access"
+name = "Mesh Access"
+enabled = true
+rules = ["allow_all"]
+# Note: In production, use mesh authentication middleware to validate JWT tokens
+
+# ------------------------
+# Rules
+# ------------------------
+[rules.allow_all]
+id = "allow_all"
+name = "Allow All"
+type = "allow_all"
+weight = 100
+enabled = true
+
+[rules.allow_all.options]
+
+# ------------------------
+# Endpoints
+# ------------------------
+[endpoints.fhir_endpoint]
+service = "fhir"
+
+[endpoints.fhir_endpoint.options]
+path_prefix = "/fhir/r4"
+
+[endpoints.mesh_fhir_endpoint]
+service = "fhir"
+
+[endpoints.mesh_fhir_endpoint.options]
+path_prefix = "/mesh/fhir/r4"
+
+# ------------------------
+# Backends
+# ------------------------
+[backends.fhir_backend]
+service = "echo"  # Using echo for demo; replace with actual FHIR server
+
+[backends.fhir_backend.options]
+path_prefix = "/fhir"
+
+# Backend for outgoing mesh requests to partner organization
+[backends.partner_fhir]
+service = "http"
+
+[backends.partner_fhir.options]
+base_url = "https://partner.example.com/fhir/r4"
+
+# Backend for outgoing mesh requests to imaging center
+[backends.imaging_center]
+service = "http"
+
+[backends.imaging_center.options]
+base_url = "https://imaging.example.com/dicomweb"

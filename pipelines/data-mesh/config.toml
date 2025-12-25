@@ -1,0 +1,64 @@
+# Data Mesh Example Configuration
+# Demonstrates mesh networking between Harmony proxies for secure inter-service communication
+
+[proxy]
+id = "harmony-mesh-node"
+pipelines_path = "pipelines"
+mesh_path = "mesh"
+
+# Runbeam Cloud Integration
+[runbeam]
+enabled = false
+# cloud_api_base_url = "https://api.runbeam.cloud"
+# poll_interval_secs = 30
+
+# Network configuration - HTTP listener for local services
+[network.internal]
+enable_wireguard = false
+interface = "wg0"
+
+[network.internal.http]
+bind_address = "127.0.0.1"
+bind_port = 8080
+
+# Network configuration - External HTTPS listener for mesh traffic
+# Note: In production, configure cert_path and key_path for TLS
+[network.mesh_external]
+enable_wireguard = false
+interface = "wg0"
+
+[network.mesh_external.http]
+bind_address = "0.0.0.0"
+bind_port = 8443
+# cert_path = "/etc/harmony/certs/fullchain.pem"
+# key_path = "/etc/harmony/certs/privkey.pem"
+
+# Logging
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "./tmp/harmony_mesh.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.fhir]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware types
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.policies]
+module = ""
