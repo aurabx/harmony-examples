@@ -1,0 +1,38 @@
+[project]
+name = "harmony-examples"
+description = "Example pipeline configurations and templates for Harmony/Runbeam"
+language = "php"
+version = "0.8.1"
+
+[commands]
+build = "composer install"
+test = "composer test"
+
+[entry_points]
+main = "src/TemplateLoader.php"
+pipelines = "pipelines/"
+transforms = "transforms/"
+
+[dependencies]
+internal = []
+external = ["phpunit/phpunit"]
+
+[related_projects]
+upstream = ["harmony-proxy"]
+downstream = ["runbeam", "website"]
+
+[concepts.pipeline_templates]
+files = ["pipelines/", "pipelines.json"]
+summary = "Ready-to-use pipeline configs: basic-echo, fhir, dicom-scp, dicomweb, jmix, transforms"
+
+[concepts.transform_specs]
+files = ["transforms/", "transforms.json"]
+summary = "Shared JOLT transform specifications for common data transformations"
+
+[concepts.template_loader]
+files = ["src/TemplateLoader.php"]
+summary = "PHP utility class for loading pipeline and transform catalogs programmatically"
+
+[concepts.healthcare_examples]
+files = ["pipelines/fhir/", "pipelines/dicom-scp/", "pipelines/dicomweb/", "pipelines/jmix/"]
+summary = "Healthcare protocol examples: FHIR endpoints, DICOM SCP/SCU, DICOMweb bridge, JMIX packaging"
