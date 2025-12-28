@@ -21,6 +21,45 @@ endpoints = ["mesh_fhir_endpoint"]
 middleware = ["mesh_policies", "passthru"]
 backends = ["fhir_backend"]
 
+# FHIR API Ingress - allows partners to query patient data
+[pipelines.mesh_api.mesh.ingress.fhir_ingress]
+type = "http"
+mode = "mesh"
+endpoint = "mesh_fhir_endpoint"
+urls = [
+    "https://fhir.myorganization.com/r4",
+    "https://fhir-backup.myorganization.com/r4"
+]
+description = "FHIR R4 API ingress for partner queries"
+enabled = true
+
+# DICOMweb Ingress - allows imaging centers to push studies
+[pipelines.mesh_api.mesh.ingress.dicomweb_ingress]
+type = "http3"
+mode = "mesh"
+endpoint = "mesh_fhir_endpoint"
+urls = [
+    "https://dicom.myorganization.com/wado-rs"
+]
+description = "DICOMweb ingress for imaging data"
+enabled = true
+
+# Partner Organization Egress - send queries to partner FHIR server
+[pipelines.mesh_api.mesh.egress.partner_egress]
+type = "http3"
+mode = "mesh"
+backend = "partner_fhir"
+description = "Egress to partner organization FHIR server"
+enabled = true
+
+# Imaging Center Egress - send requests to imaging center DICOMweb server
+[pipelines.mesh_api.mesh.egress.imaging_egress]
+type = "http3"
+mode = "mesh"
+backend = "imaging_center"
+description = "Egress to imaging center DICOMweb server"
+enabled = true
+
 # ------------------------
 # Middleware
 # ------------------------

@@ -1,14 +1,14 @@
 # ============================================================================
-# Node A Configuration - Mesh Backend Node
+# Node B Configuration - Mesh Entry Point Node
 # ============================================================================
 # This node:
-#   - Receives incoming mesh traffic (ingress)
-#   - Forwards requests to the Python backend server
-#   - Acts as the "destination" in the mesh topology
+#   - Receives external HTTP requests
+#   - Forwards requests via mesh egress to Node A
+#   - Acts as the "entry point" in the mesh topology
 # ============================================================================
 
 [proxy]
-id = "harmony-node-a"
+id = "harmony-node-b"
 pipelines_path = "pipelines"
 
 # Disable Runbeam Cloud for local testing
@@ -78,20 +78,12 @@ module = ""
 module = ""
 
 # ============================================================================
-# Mesh Configuration - INGRESS SIDE
+# Mesh Configuration - EGRESS SIDE
 # ============================================================================
-# Node A defines:
-#   - An ingress point (receives mesh traffic)
-#   - Routes incoming mesh requests to the api_endpoint
+# Node B defines mesh authentication for outgoing requests
+# Remote ingress defines the URLs of mesh members we can route to
+# Egress points are defined in the pipeline under pipelines.{name}.mesh.egress
 # ============================================================================
-
-[ingress.api_ingress]
-type = "http"
-endpoint = "api_endpoint"
-# URLs that identify requests destined for this ingress point
-urls = ["http://node-a.mesh.local:8080/api"]
-description = "API ingress for mesh traffic"
-enabled = true
 
 [mesh.test_mesh]
 type = "http"
@@ -99,7 +91,15 @@ provider = "local"
 auth_type = "jwt"
 # Shared secret for mesh JWT authentication (same on both nodes)
 jwt_secret = "mesh-test-secret-key-change-in-production"
-ingress = ["api_ingress"]
-egress = []  # Node A doesn't send outbound mesh traffic
+# Reference both remote ingress (for egress URL matching) and local egress
+ingress = ["node_a_api"]  # Remote ingress name for URL matching
+egress = ["node_a_egress"]
 description = "Test mesh for Docker networking demo"
 enabled = true
+
+# ============================================================================
+# Remote Ingress - URLs of remote mesh members
+# ============================================================================
+
+[remote_ingress.node_a_api]
+urls = ["http://node-a.mesh.local:8080"]

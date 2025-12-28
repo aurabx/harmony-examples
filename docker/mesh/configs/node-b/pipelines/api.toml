@@ -38,3 +38,14 @@ service = "http"
 [backends.mesh_to_node_a.options]
 # Target Node A's mesh ingress URL
 base_url = "http://node-a.mesh.local:8080"
+
+# ============================================================================
+# Mesh Egress
+# ============================================================================
+
+[pipelines.api_pipeline.mesh.egress.node_a_egress]
+type = "http"
+backend = "mesh_to_node_a"
+description = "Egress point for sending traffic to Node A"
+mode = "default"
+enabled = true

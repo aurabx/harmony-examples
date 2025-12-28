@@ -1,14 +1,14 @@
 # ============================================================================
-# Node B Configuration - Mesh Entry Point Node
+# Node A Configuration - Mesh Backend Node
 # ============================================================================
 # This node:
-#   - Receives external HTTP requests
-#   - Forwards requests via mesh egress to Node A
-#   - Acts as the "entry point" in the mesh topology
+#   - Receives incoming mesh traffic (ingress)
+#   - Forwards requests to the Python backend server
+#   - Acts as the "destination" in the mesh topology
 # ============================================================================
 
 [proxy]
-id = "harmony-node-b"
+id = "harmony-node-a"
 pipelines_path = "pipelines"
 
 # Disable Runbeam Cloud for local testing
@@ -78,18 +78,11 @@ module = ""
 module = ""
 
 # ============================================================================
-# Mesh Configuration - EGRESS SIDE
+# Mesh Configuration - INGRESS SIDE
 # ============================================================================
-# Node B defines:
-#   - An egress point (sends mesh traffic to Node A)
-#   - Routes outbound requests through the mesh backend
+# Node A defines mesh authentication for incoming requests
+# Ingress points are defined in the pipeline under pipelines.{name}.mesh.ingress
 # ============================================================================
-
-[egress.node_a_egress]
-type = "http"
-backend = "mesh_to_node_a"
-description = "Egress point for sending traffic to Node A"
-enabled = true
 
 [mesh.test_mesh]
 type = "http"
@@ -97,7 +90,7 @@ provider = "local"
 auth_type = "jwt"
 # Shared secret for mesh JWT authentication (same on both nodes)
 jwt_secret = "mesh-test-secret-key-change-in-production"
-ingress = []  # Node B doesn't receive inbound mesh traffic
-egress = ["node_a_egress"]
+ingress = ["api_ingress"]
+egress = []
 description = "Test mesh for Docker networking demo"
 enabled = true

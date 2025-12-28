@@ -43,3 +43,16 @@ service = "http"
 [backends.python_backend.options]
 # Forward to the Python server running in Docker
 base_url = "http://backend.mesh.local:5000"
+
+# ============================================================================
+# Mesh Ingress
+# ============================================================================
+
+[pipelines.api_pipeline.mesh.ingress.api_ingress]
+type = "http"
+endpoint = "api_endpoint"
+# URLs that identify requests destined for this ingress point
+urls = ["http://node-a.mesh.local:8080/api"]
+description = "API ingress for mesh traffic"
+mode = "default"
+enabled = true
