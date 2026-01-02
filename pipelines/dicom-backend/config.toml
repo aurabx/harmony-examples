@@ -5,6 +5,12 @@
 id = "harmony-dicom-backend"
 log_level = "debug"
 pipelines_path = "pipelines"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 # Network configuration
 [network.http_net]

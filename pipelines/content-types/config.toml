@@ -6,6 +6,7 @@ id = "content-types-example"
 pipelines_path = "pipelines"
 transforms_path = "transforms"
 jwks_cache_duration_hours = 24
+primary_provider = "local"
 
 # Content parsing size limits (optional - these are the defaults)
 [proxy.content_limits]
@@ -20,8 +21,10 @@ log_level = "info"
 log_to_file = true
 log_file_path = "./tmp/harmony.log"
 
-[runbeam]
-enabled = false
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 [management]
 enabled = true

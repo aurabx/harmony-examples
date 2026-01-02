@@ -4,12 +4,12 @@
 [proxy]
 id = "harmony-basic-echo"
 pipelines_path = "pipelines"
+primary_provider = "local"
 
-# Runbeam Cloud Integration
-[runbeam]
-enabled = false
-# cloud_api_base_url = "https://api.runbeam.cloud"
-# poll_interval_secs = 30
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 # Network configuration
 [network.http_net]

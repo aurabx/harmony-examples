@@ -1,6 +1,12 @@
 [proxy]
 id = "file-upload-example"
 pipelines_path = "pipelines"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 [logging]
 log_level = "info"

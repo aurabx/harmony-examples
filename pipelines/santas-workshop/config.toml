@@ -4,13 +4,12 @@
 [proxy]
 id = "harmony-north-pole"
 pipelines_path = "pipelines"
+primary_provider = "local"
 
-# Runbeam Cloud Integration
-# Note: North Pole operates on internal cloud infrastructure
-[runbeam]
-enabled = false
-# cloud_api_base_url = "https://api.northpole.christmas"
-# poll_interval_secs = 30
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 # Network configuration
 # Port 2512 = December 25, 12:00 🎄

@@ -10,10 +10,12 @@
 [proxy]
 id = "harmony-node-a"
 pipelines_path = "pipelines"
+primary_provider = "local"
 
-# Disable Runbeam Cloud for local testing
-[runbeam]
-enabled = false
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 # ============================================================================
 # Management API

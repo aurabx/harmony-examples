@@ -6,6 +6,12 @@ id = "harmony-soap-to-json"
 log_level = "debug"
 pipelines_path = "pipelines"
 transforms_path = "transforms"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
 
 # Network configuration
 [network.http_net]
