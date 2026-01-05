@@ -1,5 +1,5 @@
 [proxy]
-id = "dicom-to-dicomweb"
+name = "dicom-to-dicomweb"
 log_level = "debug"
 pipelines_path = "pipelines"
 primary_provider = "local"

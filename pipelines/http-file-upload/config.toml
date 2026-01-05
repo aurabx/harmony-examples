@@ -1,5 +1,5 @@
 [proxy]
-id = "file-upload-example"
+name = "file-upload-example"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

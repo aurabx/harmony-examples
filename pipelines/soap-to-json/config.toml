@@ -2,7 +2,7 @@
 # Demonstrates SOAP/XML to JSON conversion with Bearer token authentication and JOLT transformation
 
 [proxy]
-id = "harmony-soap-to-json"
+name = "harmony-soap-to-json"
 log_level = "debug"
 pipelines_path = "pipelines"
 transforms_path = "transforms"

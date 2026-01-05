@@ -2,7 +2,7 @@
 # This configuration shows how to configure size limits for various content types
 
 [proxy]
-id = "content-types-example"
+name = "content-types-example"
 pipelines_path = "pipelines"
 transforms_path = "transforms"
 jwks_cache_duration_hours = 24

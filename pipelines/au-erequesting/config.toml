@@ -2,7 +2,7 @@
 # Demonstrates converting HTTP API requests to FHIR bundles and back
 
 [proxy]
-id = "harmony-au-erequesting"
+name = "harmony-au-erequesting"
 log_level = "debug"
 pipelines_path = "pipelines"
 transforms_path = "transforms"

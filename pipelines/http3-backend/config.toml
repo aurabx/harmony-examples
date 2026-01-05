@@ -2,7 +2,7 @@
 # Demonstrates HTTP/3 (QUIC) backend connectivity with TLS 1.3
 
 [proxy]
-id = "harmony-http3-backend"
+name = "harmony-http3-backend"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

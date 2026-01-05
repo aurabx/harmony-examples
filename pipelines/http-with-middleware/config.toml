@@ -18,7 +18,7 @@
 # ==============================================================================
 
 [proxy]
-id = "harmony-smoketest"
+name = "harmony-smoketest"
 pipelines_path = "pipelines"
 transforms_path = "transforms"
 primary_provider = "local"

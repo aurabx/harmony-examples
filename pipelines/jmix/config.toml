@@ -2,7 +2,7 @@
 # Demonstrates JMIX endpoint with performance optimization flags
 
 [proxy]
-id = "harmony-jmix"
+name = "harmony-jmix"
 log_level = "debug"
 pipelines_path = "pipelines"
 primary_provider = "local"

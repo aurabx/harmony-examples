@@ -1,5 +1,5 @@
 [proxy]
-id = "cstore-filesystem"
+name = "cstore-filesystem"
 pipelines_path = "pipelines"
 transforms_path = "transforms"
 primary_provider = "local"

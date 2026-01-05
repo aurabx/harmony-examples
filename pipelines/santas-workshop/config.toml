@@ -2,7 +2,7 @@
 # Powers the North Pole's mission-critical gift distribution network
 
 [proxy]
-id = "harmony-north-pole"
+name = "harmony-north-pole"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

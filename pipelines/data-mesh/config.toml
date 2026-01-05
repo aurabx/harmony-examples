@@ -2,7 +2,7 @@
 # Demonstrates mesh networking between Harmony proxies for secure inter-service communication
 
 [proxy]
-id = "harmony-mesh-node"
+name = "harmony-mesh-node"
 pipelines_path = "pipelines"
 mesh_path = "mesh"
 primary_provider = "local"

@@ -2,7 +2,7 @@
 # Demonstrates a simple HTTP passthrough pipeline with echo backend
 
 [proxy]
-id = "harmony-basic-echo"
+name = "harmony-basic-echo"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

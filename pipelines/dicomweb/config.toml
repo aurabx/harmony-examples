@@ -3,7 +3,7 @@
 #-------------------------
 [proxy]
 # The name of the proxy, required
-id = "harmony-dicomweb"
+name = "harmony-dicomweb"
 # The log level. Defaults to 'error'
 log_level = "debug"
 # Directories are resolved relative to this config file's directory

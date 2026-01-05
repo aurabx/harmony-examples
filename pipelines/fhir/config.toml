@@ -2,7 +2,7 @@
 # Demonstrates FHIR endpoint proxying to a real FHIR server with bearer token authentication
 
 [proxy]
-id = "harmony-fhir"
+name = "harmony-fhir"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

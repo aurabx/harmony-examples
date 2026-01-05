@@ -8,7 +8,7 @@
 # ============================================================================
 
 [proxy]
-id = "harmony-node-a"
+name = "harmony-node-a"
 pipelines_path = "pipelines"
 primary_provider = "local"
 

@@ -2,7 +2,7 @@
 # Demonstrates JOLT transformation middleware for data transformation
 
 [proxy]
-id = "harmony-transform"
+name = "harmony-transform"
 log_level = "debug"
 pipelines_path = "pipelines"
 transforms_path = "transforms"

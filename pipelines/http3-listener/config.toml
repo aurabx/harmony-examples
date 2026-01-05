@@ -2,7 +2,7 @@
 # Demonstrates receiving HTTP/3 (QUIC) requests and proxying to HTTP backend
 
 [proxy]
-id = "harmony-http3-listener"
+name = "harmony-http3-listener"
 pipelines_path = "pipelines"
 primary_provider = "local"
 
