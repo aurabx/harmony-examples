@@ -32,6 +32,13 @@ connection.port = 8042
 connection.base_path = "/dicom-web"
 connection.protocol = "http"
 
+# Service types
+[services.dicom_scp]
+module = ""
+
+[services.http]
+module = ""
+
 # Register middleware types
 [middleware_types.dicom_to_dicomweb]
 module = ""

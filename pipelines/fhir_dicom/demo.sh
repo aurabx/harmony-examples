@@ -43,8 +43,20 @@ if command -v jq &> /dev/null; then
     echo -e "${GREEN}✓ jq found (will use for pretty printing)${NC}"
 fi
 
+# Check Orthanc is available on port 4242
+ORTHANC_HOST="localhost"
+ORTHANC_PORT=4242
+echo -e "${YELLOW}Checking Orthanc DICOM server on $ORTHANC_HOST:$ORTHANC_PORT...${NC}"
+if ! nc -z "$ORTHANC_HOST" "$ORTHANC_PORT" 2>/dev/null; then
+    echo -e "${RED}Error: Orthanc DICOM server not available on $ORTHANC_HOST:$ORTHANC_PORT${NC}"
+    echo -e "${YELLOW}Please start Orthanc before running this demo.${NC}"
+    echo "  Example: docker run -p 4242:4242 -p 8042:8042 orthancteam/orthanc"
+    exit 1
+fi
+echo -e "${GREEN}✓ Orthanc is available${NC}"
+
 echo -e "${GREEN}✓ All required prerequisites found${NC}"
-echo -e "${YELLOW}Note: This example uses mock_dicom backend (no external PACS required)${NC}"
+echo -e "${YELLOW}Note: This example requires Orthanc DICOM server${NC}"
 echo ""
 
 # Setup directories

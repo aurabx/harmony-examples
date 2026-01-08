@@ -62,3 +62,20 @@ module = ""
 
 [middleware_types.policies]
 module = ""
+
+# ------------------------
+# Target Definitions
+#-------------------------
+[targets.partner_fhir_server]
+connection.host = "partner.example.com"
+connection.port = 443
+connection.protocol = "https"
+connection.base_path = "/fhir/r4"
+timeout_secs = 60
+
+[targets.imaging_center_server]
+connection.host = "imaging.example.com"
+connection.port = 443
+connection.protocol = "https"
+connection.base_path = "/dicomweb"
+timeout_secs = 60

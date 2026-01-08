@@ -121,33 +121,25 @@ fi
 echo -e "${GREEN}✓ Backend is ready${NC}"
 echo ""
 
-# Determine harmony binary location
-HARMONY_BIN=""
-if command -v harmony &> /dev/null; then
-    HARMONY_BIN="harmony"
-elif [ -f "$PROJECT_ROOT/target/debug/harmony" ]; then
-    HARMONY_BIN="$PROJECT_ROOT/target/debug/harmony"
-elif [ -f "$PROJECT_ROOT/harmony-proxy/target/debug/harmony" ]; then
-    HARMONY_BIN="$PROJECT_ROOT/harmony-proxy/target/debug/harmony"
-else
-    echo -e "${RED}Error: harmony binary not found${NC}"
+# Require harmony binary on PATH
+if ! command -v harmony &> /dev/null; then
+    echo -e "${RED}Error: harmony binary not found in PATH. Please install Harmony.${NC}"
     exit 1
 fi
-
-echo -e "${YELLOW}Using harmony binary: $HARMONY_BIN${NC}"
+echo -e "${YELLOW}Using harmony binary: harmony${NC}"
 echo ""
 
 # Start Harmony in background
 echo -e "${YELLOW}Starting Harmony HTTP/3 listener...${NC}"
 cd "$SCRIPT_DIR"
-$HARMONY_BIN --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
+harmony --config ./config.toml > "$TMP_DIR/harmony.log" 2>&1 &
 HARMONY_PID=$!
 echo -e "${GREEN}✓ Harmony started (PID: $HARMONY_PID)${NC}"
 
 # Wait for Harmony to be ready
 echo -e "${YELLOW}Waiting for Harmony to be ready...${NC}"
 for i in {1..30}; do
-    if curl -s http://127.0.0.1:$HARMONY_HTTP_PORT/ > /dev/null 2>&1; then
+    if curl -s http://127.0.0.1:$HARMONY_HTTP_PORT/api > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Harmony is ready${NC}"
         break
     fi
@@ -159,14 +151,17 @@ for i in {1..30}; do
     sleep 1
 done
 
+# Small delay to ensure all connections are stable
+sleep 1
+
 echo ""
 echo -e "${BLUE}=== Running Tests ===${NC}"
 echo ""
 
 # Test 1: HTTP/1.x request
 echo -e "${YELLOW}Test 1: HTTP/1.x request to Harmony${NC}"
-echo "  Command: curl http://127.0.0.1:$HARMONY_HTTP_PORT/"
-RESPONSE=$(curl -s -w "\n%{http_code}" http://127.0.0.1:$HARMONY_HTTP_PORT/)
+echo "  Command: curl http://127.0.0.1:$HARMONY_HTTP_PORT/api"
+RESPONSE=$(curl -s -w "\n%{http_code}" http://127.0.0.1:$HARMONY_HTTP_PORT/api)
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 
@@ -183,8 +178,8 @@ echo ""
 # Test 2: HTTP/3 request (if curl supports it)
 echo -e "${YELLOW}Test 2: HTTP/3 (QUIC) request to Harmony${NC}"
 if [ "$CURL_SUPPORTS_HTTP3" = true ]; then
-    echo "  Command: curl --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/"
-    RESPONSE=$(curl -s -w "\n%{http_code}" --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/)
+    echo "  Command: curl --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/api"
+    RESPONSE=$(curl -s -w "\n%{http_code}" --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/api)
     HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
     BODY=$(echo "$RESPONSE" | sed '$d')
     
@@ -204,8 +199,8 @@ echo ""
 
 # Test 3: JSON endpoint via HTTP/1.x
 echo -e "${YELLOW}Test 3: JSON endpoint via HTTP/1.x${NC}"
-echo "  Command: curl http://127.0.0.1:$HARMONY_HTTP_PORT/data.json"
-RESPONSE=$(curl -s -w "\n%{http_code}" http://127.0.0.1:$HARMONY_HTTP_PORT/data.json)
+echo "  Command: curl http://127.0.0.1:$HARMONY_HTTP_PORT/api/data.json"
+RESPONSE=$(curl -s -w "\n%{http_code}" http://127.0.0.1:$HARMONY_HTTP_PORT/api/data.json)
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 
@@ -223,8 +218,8 @@ echo ""
 # Test 4: JSON endpoint via HTTP/3 (if supported)
 echo -e "${YELLOW}Test 4: JSON endpoint via HTTP/3${NC}"
 if [ "$CURL_SUPPORTS_HTTP3" = true ]; then
-    echo "  Command: curl --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/data.json"
-    RESPONSE=$(curl -s -w "\n%{http_code}" --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/data.json)
+    echo "  Command: curl --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/api/data.json"
+    RESPONSE=$(curl -s -w "\n%{http_code}" --http3 -k https://127.0.0.1:$HARMONY_HTTP3_PORT/api/data.json)
     HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
     BODY=$(echo "$RESPONSE" | sed '$d')
     

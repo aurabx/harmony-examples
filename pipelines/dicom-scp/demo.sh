@@ -215,13 +215,23 @@ echo ""
 echo -e "${BLUE}=== Running Tests ===${NC}"
 echo ""
 
+# Initialize test status tracking
+declare -A TEST_STATUS
+TEST_STATUS[echo]="✗"
+TEST_STATUS[find]="✗"
+TEST_STATUS[get]="✗"
+TEST_STATUS[move]="✗"
+TEST_STATUS[store]="✗"
+
 # Test 1: C-ECHO
 echo -e "${YELLOW}Test 1: C-ECHO (Verification)${NC}"
 echo "  Command: echoscu -v -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT"
 if echoscu -v -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT 2>&1 | grep -q "Association Accepted"; then
     echo -e "${GREEN}  ✓ C-ECHO successful${NC}"
+    TEST_STATUS[echo]="✓"
 else
     echo -e "${RED}  ✗ C-ECHO failed${NC}"
+    TEST_STATUS[echo]="✗"
 fi
 echo ""
 
@@ -232,8 +242,10 @@ findscu -v -aec $HARMONY_AET -P 127.0.0.1 $HARMONY_PORT -k "0010,0020=*" > "$TMP
 if grep -q "Releasing Association" "$TMP_DIR/find_output.txt"; then
     MATCHES=$(grep -c "Response:" "$TMP_DIR/find_output.txt" || echo 0)
     echo -e "${GREEN}  ✓ C-FIND completed ($MATCHES responses)${NC}"
+    TEST_STATUS[find]="✓"
 else
     echo -e "${RED}  ✗ C-FIND failed${NC}"
+    TEST_STATUS[find]="✗"
 fi
 echo ""
 
@@ -244,8 +256,10 @@ findscu -v -aec $HARMONY_AET -S 127.0.0.1 $HARMONY_PORT -k "0020,000D=*" > "$TMP
 if grep -q "Releasing Association" "$TMP_DIR/find_study_output.txt"; then
     MATCHES=$(grep -c "Response:" "$TMP_DIR/find_study_output.txt" || echo 0)
     echo -e "${GREEN}  ✓ C-FIND Study completed ($MATCHES responses)${NC}"
+    TEST_STATUS[find]="✓"
 else
     echo -e "${RED}  ✗ C-FIND Study failed${NC}"
+    TEST_STATUS[find]="✗"
 fi
 echo ""
 
@@ -256,11 +270,14 @@ if [ -f "$TEST_DCM" ]; then
     getscu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" -od "$TMP_DIR/retrieved" > "$TMP_DIR/get_output.txt" 2>&1 || true
     if grep -q "Association Release" "$TMP_DIR/get_output.txt"; then
         echo -e "${GREEN}  ✓ C-GET completed${NC}"
+        TEST_STATUS[get]="✓"
     else
         echo -e "${YELLOW}  ⚠ C-GET completed (no data retrieved - expected if backend not configured)${NC}"
+        TEST_STATUS[get]="⚠"
     fi
 else
     echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
+    TEST_STATUS[get]="⚠"
 fi
 echo ""
 
@@ -271,11 +288,14 @@ if [ -f "$TEST_DCM" ]; then
     movescu -aec $HARMONY_AET -aem $QRSCP_AET 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" > "$TMP_DIR/move_output.txt" 2>&1 || true
     if grep -q "Association Release" "$TMP_DIR/move_output.txt"; then
         echo -e "${GREEN}  ✓ C-MOVE completed${NC}"
+        TEST_STATUS[move]="✓"
     else
         echo -e "${YELLOW}  ⚠ C-MOVE completed (expected behavior depends on backend)${NC}"
+        TEST_STATUS[move]="⚠"
     fi
 else
     echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
+    TEST_STATUS[move]="⚠"
 fi
 echo ""
 
@@ -285,22 +305,25 @@ if [ -f "$TEST_DCM" ]; then
     echo "  Command: storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT test.dcm"
     if storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT "$TEST_DCM" > "$TMP_DIR/store_output.txt" 2>&1; then
         echo -e "${GREEN}  ✓ C-STORE succeeded${NC}"
+        TEST_STATUS[store]="✓"
     else
         echo -e "${RED}  ✗ C-STORE failed${NC}"
+        TEST_STATUS[store]="✗"
     fi
 else
     echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
+    TEST_STATUS[store]="⚠"
 fi
 echo ""
 
 echo -e "${BLUE}=== Summary ===${NC}"
 echo ""
 echo "Harmony DICOM SCP Capabilities:"
-echo "  ✅ C-ECHO  - Verification working"
-echo "  ✅ C-FIND  - Query working"
-echo "  ✅ C-GET   - Retrieve working"
-echo "  ✅ C-MOVE  - Move working"
-echo "  ✅ C-STORE - Store working"
+echo "  ${TEST_STATUS[echo]} C-ECHO  - Verification"
+echo "  ${TEST_STATUS[find]} C-FIND  - Query"
+echo "  ${TEST_STATUS[get]} C-GET   - Retrieve"
+echo "  ${TEST_STATUS[move]} C-MOVE  - Move"
+echo "  ${TEST_STATUS[store]} C-STORE - Store"
 echo ""
 echo "Logs available at:"
 echo "  Harmony:  $TMP_DIR/harmony.log"

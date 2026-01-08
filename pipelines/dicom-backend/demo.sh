@@ -34,6 +34,11 @@ if ! command -v harmony &> /dev/null; then
     exit 1
 fi
 
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}Error: jq not found. Please install jq.${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}✓ All prerequisites found${NC}"
 echo -e "${YELLOW}Note: This example requires Orthanc PACS at localhost:4242${NC}"
 echo -e "${YELLOW}      If Orthanc is not available, tests will show connection errors${NC}"
@@ -43,6 +48,60 @@ echo ""
 echo -e "${YELLOW}Setting up test environment...${NC}"
 mkdir -p "$TMP_DIR"
 echo -e "${GREEN}✓ Test environment ready${NC}"
+echo ""
+
+# Check Orthanc availability (DICOM on 4242, HTTP API on 8042)
+echo -e "${YELLOW}Checking Orthanc PACS availability...${NC}"
+if ! curl -s -u orthanc:orthanc http://localhost:8042/system 2>/dev/null | grep -q '"ApiVersion"'; then
+    echo -e "${RED}✗ Orthanc HTTP API not available at localhost:8042${NC}"
+    echo -e "${YELLOW}To start Orthanc:${NC}"
+    echo "  docker run -p 4242:4242 -p 8042:8042 --name orthanc orthancteam/orthanc"
+    echo ""
+    echo -e "${YELLOW}Abandoning demo - tests require Orthanc to be running${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ Orthanc HTTP API is available (port 8042)${NC}"
+
+# Also verify DICOM port is accessible
+if ! nc -z localhost 4242 2>/dev/null; then
+    echo -e "${RED}✗ Orthanc DICOM port not available at localhost:4242${NC}"
+    echo -e "${YELLOW}Abandoning demo - DICOM port 4242 required${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ Orthanc DICOM port is available (port 4242)${NC}"
+echo ""
+
+# Initialize test status tracking
+declare -A TEST_STATUS
+TEST_STATUS[echo]=""
+TEST_STATUS[find]=""
+TEST_STATUS[get]=""
+TEST_STATUS[store]=""
+
+# Fetch study data from Orthanc for realistic demo
+echo -e "${YELLOW}Fetching study data from Orthanc...${NC}"
+ORTHANC_STUDIES=$(curl -s -u orthanc:orthanc http://localhost:8042/studies 2>/dev/null)
+if [ -n "$ORTHANC_STUDIES" ] && [ "$ORTHANC_STUDIES" != "[]" ]; then
+    FIRST_STUDY_ID=$(echo "$ORTHANC_STUDIES" | jq -r '.[0]' 2>/dev/null)
+    if [ -n "$FIRST_STUDY_ID" ] && [ "$FIRST_STUDY_ID" != "null" ]; then
+        STUDY_INFO=$(curl -s -u orthanc:orthanc "http://localhost:8042/studies/$FIRST_STUDY_ID" 2>/dev/null)
+        STUDY_UID=$(echo "$STUDY_INFO" | jq -r '.MainDicomTags.StudyInstanceUID' 2>/dev/null)
+        PATIENT_ID=$(echo "$STUDY_INFO" | jq -r '.PatientMainDicomTags.PatientID' 2>/dev/null)
+        PATIENT_NAME=$(echo "$STUDY_INFO" | jq -r '.PatientMainDicomTags.PatientName' 2>/dev/null)
+        echo -e "${GREEN}✓ Found study data from Orthanc${NC}"
+        echo "  PatientID: $PATIENT_ID"
+        echo "  PatientName: $PATIENT_NAME"
+        echo "  StudyInstanceUID: $STUDY_UID"
+    else
+        echo -e "${YELLOW}⚠ Could not parse Orthanc response, using defaults${NC}"
+        STUDY_UID="1.2.3.4.5.6"
+        PATIENT_ID="*"
+    fi
+else
+    echo -e "${YELLOW}⚠ Orthanc not available or empty, using defaults${NC}"
+    STUDY_UID="1.2.3.4.5.6"
+    PATIENT_ID="*"
+fi
 echo ""
 
 # Cleanup function
@@ -77,7 +136,7 @@ echo -e "${GREEN}✓ Harmony started (PID: $HARMONY_PID)${NC}"
 # Wait for Harmony to be ready
 echo -e "${YELLOW}Waiting for Harmony to be ready...${NC}"
 for i in {1..30}; do
-    if curl -s http://127.0.0.1:$HARMONY_PORT/trigger-dicom > /dev/null 2>&1; then
+    if curl -s http://127.0.0.1:$HARMONY_PORT/echo > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Harmony is ready${NC}"
         break
     fi
@@ -95,17 +154,14 @@ echo ""
 
 # Test 1: C-FIND operation
 echo -e "${YELLOW}Test 1: Trigger C-FIND operation${NC}"
+# Query identifier in DICOM JSON format
 CFIND_REQUEST='{
-  "operation": "C-FIND",
-  "level": "STUDY",
-  "query": {
-    "PatientID": "*",
-    "StudyInstanceUID": ""
-  }
+  "00100020": {"vr": "LO", "Value": ["*"]},
+  "0020000D": {"vr": "UI", "Value": []}
 }'
-echo "  Command: curl -X POST http://127.0.0.1:$HARMONY_PORT/trigger-dicom"
+echo "  Command: curl -X POST http://127.0.0.1:$HARMONY_PORT/find"
 echo "  Payload: C-FIND request for all studies"
-RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/trigger-dicom \
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/find \
     -H "Content-Type: application/json" \
     -d "$CFIND_REQUEST")
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
@@ -113,73 +169,113 @@ BODY=$(echo "$RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" = "200" ]; then
     echo -e "${GREEN}  ✓ C-FIND operation successful (HTTP $HTTP_CODE)${NC}"
-    echo "  Response: $BODY" | head -c 200
-    echo "..."
+    echo "  Response:"
+    echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+    TEST_STATUS[find]="✓"
 else
     echo -e "${YELLOW}  ⚠ C-FIND operation returned HTTP $HTTP_CODE${NC}"
-    echo "  This may indicate Orthanc PACS is not available"
-    echo "  Response: $BODY"
+    echo "  Response:"
+    echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+    TEST_STATUS[find]="✗"
 fi
 echo ""
 
 # Test 2: C-FIND with specific patient
 echo -e "${YELLOW}Test 2: C-FIND for specific patient${NC}"
-CFIND_PATIENT='{
-  "operation": "C-FIND",
-  "level": "PATIENT",
-  "query": {
-    "PatientID": "12345",
-    "PatientName": ""
-  }
-}'
-echo "  Command: curl -X POST (C-FIND for PatientID=12345)"
-RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/trigger-dicom \
+# Query identifier in DICOM JSON format
+CFIND_PATIENT="{
+  \"00100020\": {\"vr\": \"LO\", \"Value\": [\"$PATIENT_ID\"]},
+  \"00100010\": {\"vr\": \"PN\", \"Value\": []}
+}"
+echo "  Command: curl -X POST http://127.0.0.1:$HARMONY_PORT/find (PatientID=$PATIENT_ID)"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/find \
     -H "Content-Type: application/json" \
     -d "$CFIND_PATIENT")
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
+BODY=$(echo "$RESPONSE" | sed '$d')
+
 if [ "$HTTP_CODE" = "200" ]; then
     echo -e "${GREEN}  ✓ Patient-level C-FIND successful (HTTP $HTTP_CODE)${NC}"
+    echo "  Response:"
+    echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 else
     echo -e "${YELLOW}  ⚠ Patient-level C-FIND returned HTTP $HTTP_CODE${NC}"
+    echo "  Response:"
+    echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 fi
 echo ""
 
-# Test 3: C-MOVE operation
-echo -e "${YELLOW}Test 3: Trigger C-MOVE operation${NC}"
-CMOVE_REQUEST='{
-  "operation": "C-MOVE",
-  "destination": "HARMONY_SCU",
-  "query": {
-    "StudyInstanceUID": "1.2.3.4.5.6"
-  }
-}'
-echo "  Command: curl -X POST (C-MOVE request)"
-RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/trigger-dicom \
+# Test 3: C-GET operation (retrieves images over the same association)
+echo -e "${YELLOW}Test 3: Trigger C-GET operation${NC}"
+# Query identifier in DICOM JSON format
+CGET_REQUEST="{
+  \"0020000D\": {\"vr\": \"UI\", \"Value\": [\"$STUDY_UID\"]}
+}"
+echo "  Command: curl -X POST http://127.0.0.1:$HARMONY_PORT/get (StudyInstanceUID=$STUDY_UID)"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/get \
     -H "Content-Type: application/json" \
-    -d "$CMOVE_REQUEST")
+    -d "$CGET_REQUEST")
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
+BODY=$(echo "$RESPONSE" | sed '$d')
+
 if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
-    echo -e "${GREEN}  ✓ C-MOVE operation accepted (HTTP $HTTP_CODE)${NC}"
+    echo -e "${GREEN}  ✓ C-GET operation successful (HTTP $HTTP_CODE)${NC}"
+    # Show summary without pixel data
+    INSTANCE_COUNT=$(echo "$BODY" | jq '.file_count // .instances | length' 2>/dev/null || echo "?")
+    FOLDER_PATH=$(echo "$BODY" | jq -r '.folder_path // "N/A"' 2>/dev/null || echo "N/A")
+    echo "  Retrieved $INSTANCE_COUNT instance(s)"
+    echo "  Stored to: $FOLDER_PATH"
+    CGET_FOLDER_PATH="$FOLDER_PATH"
+    TEST_STATUS[get]="✓"
 else
-    echo -e "${YELLOW}  ⚠ C-MOVE operation returned HTTP $HTTP_CODE${NC}"
+    echo -e "${YELLOW}  ⚠ C-GET operation returned HTTP $HTTP_CODE${NC}"
+    # Show error summary
+    echo "$BODY" | jq '{operation, success, error}' 2>/dev/null || echo "$BODY"
+    CGET_FOLDER_PATH=""
+    TEST_STATUS[get]="✗"
+fi
+echo ""
+
+# Test 4: C-STORE operation (send a DICOM file to PACS)
+echo -e "${YELLOW}Test 4: Trigger C-STORE operation${NC}"
+if [ -n "$CGET_FOLDER_PATH" ] && [ -d "$CGET_FOLDER_PATH" ]; then
+    # Find a .dcm file from the C-GET results
+    DICOM_FILE=$(find "$CGET_FOLDER_PATH" -name "*.dcm" -type f 2>/dev/null | head -1)
+    if [ -n "$DICOM_FILE" ]; then
+        echo "  Command: curl -X POST http://127.0.0.1:$HARMONY_PORT/store (file: $(basename "$DICOM_FILE"))"
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST http://127.0.0.1:$HARMONY_PORT/store \
+            -H "Content-Type: application/dicom" \
+            --data-binary @"$DICOM_FILE")
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+        BODY=$(echo "$RESPONSE" | sed '$d')
+
+        if [ "$HTTP_CODE" = "200" ]; then
+            echo -e "${GREEN}  ✓ C-STORE operation successful (HTTP $HTTP_CODE)${NC}"
+            echo "  Response:"
+            echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+            TEST_STATUS[store]="✓"
+        else
+            echo -e "${YELLOW}  ⚠ C-STORE operation returned HTTP $HTTP_CODE${NC}"
+            echo "  Response:"
+            echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+            TEST_STATUS[store]="✗"
+        fi
+    else
+        echo -e "${YELLOW}  ⚠ No DICOM files found from C-GET to use for C-STORE test${NC}"
+    fi
+else
+    echo -e "${YELLOW}  ⚠ Skipping C-STORE test (no files from C-GET)${NC}"
 fi
 echo ""
 
 echo -e "${BLUE}=== Summary ===${NC}"
 echo ""
-echo "DICOM Backend Capabilities:"
-echo "  ✅ HTTP to DICOM protocol translation"
-echo "  ✅ C-FIND operations (PATIENT, STUDY, SERIES, IMAGE levels)"
-echo "  ✅ C-MOVE operations"
-echo "  ✅ RESTful API for DICOM operations"
-echo ""
-echo "Supported Operations:"
-echo "  C-ECHO:  Verify connection"
-echo "  C-FIND:  Query for studies, series, images"
-echo "  C-MOVE:  Retrieve studies from PACS"
-echo "  C-STORE: Send DICOM objects to PACS"
+echo "Harmony DICOM SCU Capabilities:"
+echo "  ${TEST_STATUS[find]:-⚪} C-FIND  - Query working"
+echo "  ${TEST_STATUS[get]:-⚪} C-GET   - Retrieve working"
+echo "  ${TEST_STATUS[store]:-⚪} C-STORE - Store working"
 echo ""
 echo "Configuration:"
 echo "  DICOM Backend: Orthanc (localhost:4242)"

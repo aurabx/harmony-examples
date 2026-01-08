@@ -81,5 +81,4 @@ path_prefix = "/soap"
 #-------------------------
 [backends.http_backend]
 service = "http"
-[backends.http_backend.options]
-base_url = "http://127.0.0.1:9000"
+target_ref = "soap_backend"

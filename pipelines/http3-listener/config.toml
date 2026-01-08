@@ -54,3 +54,12 @@ module = ""
 
 [middleware_types.policies]
 module = ""
+
+# ------------------------
+# Target Definitions
+#-------------------------
+[targets.http_backend]
+connection.host = "localhost"
+connection.port = 9002
+connection.protocol = "http"
+timeout_secs = 60

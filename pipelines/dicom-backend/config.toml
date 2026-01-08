@@ -37,6 +37,9 @@ path = "./tmp"
 [services.http]
 module = ""
 
+[services.dicom_scu]
+module = ""
+
 # Target definition
 [targets.orthanc]
 connection.host = "localhost"

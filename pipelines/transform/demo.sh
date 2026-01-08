@@ -67,13 +67,6 @@ cleanup() {
 # Setup trap for cleanup
 trap cleanup EXIT INT TERM
 
-# Build Harmony
-echo -e "${YELLOW}Building Harmony...${NC}"
-cd "$PROJECT_ROOT"
-cargo build --release --quiet
-echo -e "${GREEN}✓ Build complete${NC}"
-echo ""
-
 # Start Harmony in background
 echo -e "${YELLOW}Starting Harmony transform service on port $HARMONY_PORT...${NC}"
 cd "$SCRIPT_DIR"

@@ -8,9 +8,10 @@ middleware = []
 # Define the DICOM SCP endpoint
 [endpoints.dicom_listener]
 service = "dicom_scp"
+peer_ref = "listener_config"
 [endpoints.dicom_listener.options]
 local_aet = "HARMONY_SCP"
-port = 11112
+# Bind address and port are inherited from peer_ref (listener_config)
 enable_echo = true
 enable_store = true
 

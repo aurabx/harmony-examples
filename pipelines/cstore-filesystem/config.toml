@@ -24,12 +24,20 @@ path = "data"
 enable_wireguard = false
 interface = "eth0"
 
-[network.default.http]
-bind_address = "127.0.0.1"
-bind_port = 8080
+[network.default.tcp_config]
+bind_address = "0.0.0.0"
+bind_port = 11112
 
 [services.dicom_scp]
 module = ""
 
 [services.storage]
 module = ""
+
+# ------------------------
+# Peer Definitions
+#-------------------------
+[peers.listener_config]
+connection.host = "0.0.0.0"
+connection.port = 11112
+connection.protocol = "dicom"

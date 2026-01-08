@@ -62,6 +62,4 @@ path_prefix = "/api"
 # Standard HTTP backend
 [backends.http_backend]
 service = "http"
-[backends.http_backend.options]
-base_url = "http://localhost:9000"
-# path_prefix = "/v1"
+target_ref = "http_backend"

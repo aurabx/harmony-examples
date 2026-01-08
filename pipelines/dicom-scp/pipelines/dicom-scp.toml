@@ -6,7 +6,7 @@ description = "DICOM endpoint (SCP) that accepts DIMSE connections"
 networks = ["dicom_net"]
 endpoints = ["dicom_scp"]
 middleware = []
-backends = []
+backends = ["dicom_pacs"]
 
 # ------------------------
 # DICOM Endpoint (SCP)
@@ -21,3 +21,11 @@ enable_echo = true
 enable_find = true
 enable_move = true
 enable_get = true
+
+# Backend configuration
+[backends.dicom_pacs]
+service = "dicom_scu"
+target_ref = "orthanc"
+[backends.dicom_pacs.options]
+aet = "ORTHANC"
+local_aet = "HARMONY_SCU"

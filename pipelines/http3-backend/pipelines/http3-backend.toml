@@ -62,16 +62,7 @@ path_prefix = "/api"
 # This backend connects to an upstream server using HTTP/3 over QUIC
 [backends.h3_backend]
 service = "http3"
-[backends.h3_backend.options]
-# Target hostname - must support HTTP/3
-host = "cloudflare-quic.com"
-port = 443
-# Optional: base path prefix for all requests
-# base_path = "/v1"
-# Optional: timeout in seconds (default: 30)
-# timeout_secs = 30
-# Optional: custom CA certificate for self-signed servers
-# ca_cert_path = "./certs/custom-ca.pem"
+target_ref = "cloudflare_quic"
 
 # ------------------------
 # Alternative: HTTP/3 Backend with Custom CA

@@ -122,12 +122,12 @@ if ! command -v curl &> /dev/null; then
   echo -e "${RED}Error: curl not found${NC}"
   exit 1
 fi
+if ! command -v harmony &> /dev/null; then
+  echo -e "${RED}Error: harmony binary not found in PATH. Please install Harmony.${NC}"
+  exit 1
+fi
 echo -e "${GREEN}✓ Prerequisites found${NC}"
 echo ""
-
-if [ ! -x "$PROJECT_ROOT/target/release/harmony" ]; then
-  (cd "$PROJECT_ROOT")
-fi
 
 # Start DICOMweb server
 echo -e "${YELLOW}Starting DICOMweb backend server on port $DICOMWEB_PORT...${NC}"

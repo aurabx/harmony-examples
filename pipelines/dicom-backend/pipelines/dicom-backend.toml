@@ -10,11 +10,12 @@ backends = ["dicom_pacs"]
 
 # ------------------------
 # Endpoint
+# The path determines the DICOM operation: /find, /move, /get, /echo, /store
 #-------------------------
 [endpoints.http_to_dicom]
 service = "http"
 [endpoints.http_to_dicom.options]
-path_prefix = "/trigger-dicom"
+path_prefix = "/"
 
 # ------------------------
 # DICOM Backend

@@ -133,13 +133,9 @@ path_prefix = "/fhir"
 # Backend for outgoing mesh requests to partner organization
 [backends.partner_fhir]
 service = "http"
-
-[backends.partner_fhir.options]
-base_url = "https://partner.example.com/fhir/r4"
+target_ref = "partner_fhir_server"
 
 # Backend for outgoing mesh requests to imaging center
 [backends.imaging_center]
 service = "http"
-
-[backends.imaging_center.options]
-base_url = "https://imaging.example.com/dicomweb"
+target_ref = "imaging_center_server"

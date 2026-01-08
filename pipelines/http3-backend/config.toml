@@ -49,3 +49,12 @@ module = ""
 
 [middleware_types.policies]
 module = ""
+
+# ------------------------
+# Target Definitions
+#-------------------------
+[targets.cloudflare_quic]
+connection.host = "cloudflare-quic.com"
+connection.port = 443
+connection.protocol = "http3"
+timeout_secs = 30

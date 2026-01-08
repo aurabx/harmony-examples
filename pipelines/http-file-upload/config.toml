@@ -16,3 +16,10 @@ log_file_path = "./tmp/harmony.log"
 [network.default]
 http.bind_address = "127.0.0.1"
 http.bind_port = 8080
+
+# Service types
+[services.http]
+module = ""
+
+[services.storage]
+module = ""
