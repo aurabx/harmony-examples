@@ -49,19 +49,42 @@ To use this pipeline in your Harmony deployment, follow the [Adding Pipelines gu
 
 ## Prerequisites
 
-- **DICOM Client**: DCMTK tools (`storescu`) or Orthanc for sending DICOM files
-- **Port Availability**: Port 11112 must be available for DICOM listener
+- **DICOM Client**: DCMTK tools (`echoscu`, `findscu`, `storescu`, etc.)
+- **DICOM Backend**: Orthanc server for query/retrieve backend operations
+- **Port Availability**: 
+  - Port 11112 for Harmony DICOM listener
+  - Port 4242 for Orthanc DICOM port (if running locally)
+  - Port 8042 for Orthanc HTTP API (if running locally)
 
-### Installing DCMTK (Optional)
+### Installing Required Tools
 
-**macOS:**
+**DCMTK (Required for testing):**
+
+macOS:
 ```bash
 brew install dcmtk
 ```
 
-**Linux:**
+Linux:
 ```bash
 apt-get install dcmtk
+```
+
+**Orthanc (Required as DICOM backend):**
+
+macOS:
+```bash
+brew install orthanc
+```
+
+Linux:
+```bash
+apt-get install orthanc
+```
+
+Docker:
+```bash
+docker run -p 4242:4242 -p 8042:8042 orthancteam/orthanc
 ```
 
 ## Configuration
@@ -69,17 +92,47 @@ apt-get install dcmtk
 - **Proxy ID**: `harmony-dicom-scp`
 - **DICOM Listener**: `0.0.0.0:11112`
 - **AE Title**: `HARMONY_SCP`
+- **Backend**: Orthanc DICOM server at `localhost:4242`
+- **Backend AE Title**: `ORTHANC`
 - **Log File**: `./tmp/harmony_dicom_scp.log`
 - **Storage**: `./tmp` (received DICOM files stored here)
 
 ## How to Run
 
-1. From the project root, run:
+### Quick Start with Demo Script
+
+The easiest way to test this example is using the included demo script, which automatically sets up Orthanc and runs all tests:
+
 ```bash
-cargo run -- --config examples/dicom-scp/config.toml
+cd pipelines/dicom-scp
+./demo.sh
 ```
 
-2. The service will start and bind DICOM listener to `0.0.0.0:11112`
+The demo script will:
+1. Start an Orthanc instance as the DICOM backend
+2. Create test DICOM data and store it in Orthanc
+3. Start Harmony DICOM SCP
+4. Run comprehensive tests (C-ECHO, C-FIND, C-GET, C-MOVE, C-STORE)
+5. Display results and logs
+
+### Manual Setup
+
+1. **Start Orthanc backend:**
+```bash
+# Using Docker
+docker run -d -p 4242:4242 -p 8042:8042 --name orthanc orthancteam/orthanc
+
+# Or using installed Orthanc
+orthanc /path/to/orthanc-config.json
+```
+
+2. **Start Harmony:**
+```bash
+cd pipelines/dicom-scp
+harmony --config ./config.toml
+```
+
+3. The service will start and bind DICOM listener to `0.0.0.0:11112`
 
 ## Testing
 
@@ -193,17 +246,32 @@ Currently, the SCP queries and retrieves from configured backends/data sources. 
 - **Association Rejected**: Verify client uses correct AE title (`HARMONY_SCP`)
 - **Connection Timeout**: Check firewall settings and network connectivity
 - **Permission Denied**: Ensure write permissions for `./tmp` directory
+- **PDU Size Errors**: If you encounter "PDU too large" errors, increase `max_pdu` in the endpoint or backend options (see Configuration section below)
 
 ## DICOM Association Parameters
 
 - **Called AE Title**: `HARMONY_SCP`
-- **Maximum PDU Size**: 16384 bytes (default)
+- **Maximum PDU Size**: 65536 bytes (default), configurable via `max_pdu` option (range: 16384-131072)
 - **Transfer Syntaxes**: ImplicitVRLittleEndian, ExplicitVRLittleEndian
 - **SOP Classes Supported**:
   - Verification SOP Class (C-ECHO)
   - Patient Root Query/Retrieve (C-FIND, C-GET, C-MOVE)
   - Study Root Query/Retrieve (C-FIND, C-GET, C-MOVE)
   - Storage SOP Classes (C-STORE) - Coming soon
+
+### Configuring PDU Size
+
+If you need to increase the maximum PDU size for large DICOM messages, configure it in your endpoint or backend options:
+
+```toml
+# For the SCP endpoint
+[endpoints.dicom_scp.options]
+max_pdu = 131072  # 128 KB
+
+# For the SCU backend
+[backends.dicom_pacs.options]
+max_pdu = 131072  # 128 KB
+```
 
 ## Verification
 

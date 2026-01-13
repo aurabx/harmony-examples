@@ -14,6 +14,8 @@ NC='\033[0m' # No Color
 # Configuration
 HARMONY_PORT=8081
 MGMT_PORT=9091
+ORTHANC_DICOM_PORT=4242
+ORTHANC_HTTP_PORT=8042
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TMP_DIR="$SCRIPT_DIR/tmp"
@@ -37,32 +39,64 @@ if ! command -v harmony &> /dev/null; then
     exit 1
 fi
 
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}Error: docker not found. Please install Docker:${NC}"
+    echo "  macOS: https://docs.docker.com/desktop/install/mac-install/"
+    echo "  Linux: https://docs.docker.com/engine/install/"
+    exit 1
+fi
+
 HAS_JQ=false
 if command -v jq &> /dev/null; then
     HAS_JQ=true
     echo -e "${GREEN}✓ jq found (will use for pretty printing)${NC}"
 fi
 
-# Check Orthanc is available on port 4242
-ORTHANC_HOST="localhost"
-ORTHANC_PORT=4242
-echo -e "${YELLOW}Checking Orthanc DICOM server on $ORTHANC_HOST:$ORTHANC_PORT...${NC}"
-if ! nc -z "$ORTHANC_HOST" "$ORTHANC_PORT" 2>/dev/null; then
-    echo -e "${RED}Error: Orthanc DICOM server not available on $ORTHANC_HOST:$ORTHANC_PORT${NC}"
-    echo -e "${YELLOW}Please start Orthanc before running this demo.${NC}"
-    echo "  Example: docker run -p 4242:4242 -p 8042:8042 orthancteam/orthanc"
-    exit 1
-fi
-echo -e "${GREEN}✓ Orthanc is available${NC}"
-
 echo -e "${GREEN}✓ All required prerequisites found${NC}"
-echo -e "${YELLOW}Note: This example requires Orthanc DICOM server${NC}"
 echo ""
 
 # Setup directories
 echo -e "${YELLOW}Setting up test environment...${NC}"
 mkdir -p "$TMP_DIR"
 echo -e "${GREEN}✓ Test environment ready${NC}"
+echo ""
+
+# Setup Orthanc Docker container
+echo -e "${YELLOW}Setting up Orthanc Docker container...${NC}"
+
+# Stop and remove any existing Orthanc container
+docker rm -f harmony-fhir-orthanc-test 2>/dev/null || true
+
+# Start Orthanc in Docker
+echo -e "${YELLOW}Starting Orthanc on DICOM port $ORTHANC_DICOM_PORT, HTTP port $ORTHANC_HTTP_PORT...${NC}"
+docker run -d \
+  --name harmony-fhir-orthanc-test \
+  -p $ORTHANC_DICOM_PORT:4242 \
+  -p $ORTHANC_HTTP_PORT:8042 \
+  -e ORTHANC__DICOM_AET="ORTHANC" \
+  -e ORTHANC__OVERWRITE_INSTANCES=true \
+  orthancteam/orthanc:latest > "$TMP_DIR/orthanc_container.log" 2>&1
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Orthanc Docker container started${NC}"
+else
+    echo -e "${RED}Error: Failed to start Orthanc container${NC}"
+    exit 1
+fi
+
+# Wait for Orthanc to be ready
+echo -e "${YELLOW}Waiting for Orthanc to be ready...${NC}"
+for i in {1..30}; do
+    if curl -s http://127.0.0.1:$ORTHANC_HTTP_PORT/system > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Orthanc is ready${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}Error: Orthanc did not start in time${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 echo ""
 
 # Cleanup function
@@ -75,6 +109,13 @@ cleanup() {
         echo "  Stopping Harmony (PID: $HARMONY_PID)..."
         kill $HARMONY_PID
         wait $HARMONY_PID 2>/dev/null || true
+    fi
+    
+    # Stop Orthanc Docker container
+    if docker ps -q -f name=harmony-fhir-orthanc-test | grep -q .; then
+        echo "  Stopping Orthanc Docker container..."
+        docker stop harmony-fhir-orthanc-test > /dev/null 2>&1
+        docker rm harmony-fhir-orthanc-test > /dev/null 2>&1
     fi
     
     echo -e "${GREEN}✓ Cleanup complete${NC}"

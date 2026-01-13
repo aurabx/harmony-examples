@@ -13,6 +13,8 @@ NC='\033[0m' # No Color
 
 # Configuration
 HARMONY_PORT=8085
+ORTHANC_DICOM_PORT=4242
+ORTHANC_HTTP_PORT=8042
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TMP_DIR="$SCRIPT_DIR/tmp"
@@ -39,9 +41,14 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}Error: docker not found. Please install Docker:${NC}"
+    echo "  macOS: https://docs.docker.com/desktop/install/mac-install/"
+    echo "  Linux: https://docs.docker.com/engine/install/"
+    exit 1
+fi
+
 echo -e "${GREEN}✓ All prerequisites found${NC}"
-echo -e "${YELLOW}Note: This example requires Orthanc PACS at localhost:4242${NC}"
-echo -e "${YELLOW}      If Orthanc is not available, tests will show connection errors${NC}"
 echo ""
 
 # Setup directories
@@ -50,33 +57,50 @@ mkdir -p "$TMP_DIR"
 echo -e "${GREEN}✓ Test environment ready${NC}"
 echo ""
 
-# Check Orthanc availability (DICOM on 4242, HTTP API on 8042)
-echo -e "${YELLOW}Checking Orthanc PACS availability...${NC}"
-if ! curl -s -u orthanc:orthanc http://localhost:8042/system 2>/dev/null | grep -q '"ApiVersion"'; then
-    echo -e "${RED}✗ Orthanc HTTP API not available at localhost:8042${NC}"
-    echo -e "${YELLOW}To start Orthanc:${NC}"
-    echo "  docker run -p 4242:4242 -p 8042:8042 --name orthanc orthancteam/orthanc"
-    echo ""
-    echo -e "${YELLOW}Abandoning demo - tests require Orthanc to be running${NC}"
-    exit 1
-fi
-echo -e "${GREEN}✓ Orthanc HTTP API is available (port 8042)${NC}"
+# Setup Orthanc Docker container
+echo -e "${YELLOW}Setting up Orthanc Docker container...${NC}"
 
-# Also verify DICOM port is accessible
-if ! nc -z localhost 4242 2>/dev/null; then
-    echo -e "${RED}✗ Orthanc DICOM port not available at localhost:4242${NC}"
-    echo -e "${YELLOW}Abandoning demo - DICOM port 4242 required${NC}"
+# Stop and remove any existing Orthanc container
+docker rm -f harmony-dicom-backend-orthanc 2>/dev/null || true
+
+# Start Orthanc in Docker
+echo -e "${YELLOW}Starting Orthanc on DICOM port $ORTHANC_DICOM_PORT, HTTP port $ORTHANC_HTTP_PORT...${NC}"
+docker run -d \
+  --name harmony-dicom-backend-orthanc \
+  -p $ORTHANC_DICOM_PORT:4242 \
+  -p $ORTHANC_HTTP_PORT:8042 \
+  -e ORTHANC__DICOM_AET="ORTHANC" \
+  -e ORTHANC__OVERWRITE_INSTANCES=true \
+  orthancteam/orthanc:latest > "$TMP_DIR/orthanc_container.log" 2>&1
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Orthanc Docker container started${NC}"
+else
+    echo -e "${RED}Error: Failed to start Orthanc container${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ Orthanc DICOM port is available (port 4242)${NC}"
+
+# Wait for Orthanc to be ready
+echo -e "${YELLOW}Waiting for Orthanc to be ready...${NC}"
+for i in {1..30}; do
+    if curl -s http://127.0.0.1:$ORTHANC_HTTP_PORT/system > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Orthanc is ready${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}Error: Orthanc did not start in time${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 echo ""
 
 # Initialize test status tracking
-declare -A TEST_STATUS
-TEST_STATUS[echo]=""
-TEST_STATUS[find]=""
-TEST_STATUS[get]=""
-TEST_STATUS[store]=""
+# Use simple variables instead of associative arrays for shell compatibility
+TEST_STATUS_echo=""
+TEST_STATUS_find=""
+TEST_STATUS_get=""
+TEST_STATUS_store=""
 
 # Fetch study data from Orthanc for realistic demo
 echo -e "${YELLOW}Fetching study data from Orthanc...${NC}"
@@ -114,6 +138,13 @@ cleanup() {
         echo "  Stopping Harmony (PID: $HARMONY_PID)..."
         kill $HARMONY_PID
         wait $HARMONY_PID 2>/dev/null || true
+    fi
+    
+    # Stop Orthanc Docker container
+    if docker ps -q -f name=harmony-dicom-backend-orthanc | grep -q .; then
+        echo "  Stopping Orthanc Docker container..."
+        docker stop harmony-dicom-backend-orthanc > /dev/null 2>&1
+        docker rm harmony-dicom-backend-orthanc > /dev/null 2>&1
     fi
     
     echo -e "${GREEN}✓ Cleanup complete${NC}"
@@ -171,12 +202,12 @@ if [ "$HTTP_CODE" = "200" ]; then
     echo -e "${GREEN}  ✓ C-FIND operation successful (HTTP $HTTP_CODE)${NC}"
     echo "  Response:"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
-    TEST_STATUS[find]="✓"
+    TEST_STATUS_find="✓"
 else
     echo -e "${YELLOW}  ⚠ C-FIND operation returned HTTP $HTTP_CODE${NC}"
     echo "  Response:"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
-    TEST_STATUS[find]="✗"
+    TEST_STATUS_find="✗"
 fi
 echo ""
 
@@ -228,13 +259,13 @@ if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
     echo "  Retrieved $INSTANCE_COUNT instance(s)"
     echo "  Stored to: $FOLDER_PATH"
     CGET_FOLDER_PATH="$FOLDER_PATH"
-    TEST_STATUS[get]="✓"
+    TEST_STATUS_get="✓"
 else
     echo -e "${YELLOW}  ⚠ C-GET operation returned HTTP $HTTP_CODE${NC}"
     # Show error summary
     echo "$BODY" | jq '{operation, success, error}' 2>/dev/null || echo "$BODY"
     CGET_FOLDER_PATH=""
-    TEST_STATUS[get]="✗"
+    TEST_STATUS_get="✗"
 fi
 echo ""
 
@@ -255,12 +286,12 @@ if [ -n "$CGET_FOLDER_PATH" ] && [ -d "$CGET_FOLDER_PATH" ]; then
             echo -e "${GREEN}  ✓ C-STORE operation successful (HTTP $HTTP_CODE)${NC}"
             echo "  Response:"
             echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
-            TEST_STATUS[store]="✓"
+            TEST_STATUS_store="✓"
         else
             echo -e "${YELLOW}  ⚠ C-STORE operation returned HTTP $HTTP_CODE${NC}"
             echo "  Response:"
             echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
-            TEST_STATUS[store]="✗"
+            TEST_STATUS_store="✗"
         fi
     else
         echo -e "${YELLOW}  ⚠ No DICOM files found from C-GET to use for C-STORE test${NC}"
@@ -273,9 +304,9 @@ echo ""
 echo -e "${BLUE}=== Summary ===${NC}"
 echo ""
 echo "Harmony DICOM SCU Capabilities:"
-echo "  ${TEST_STATUS[find]:-⚪} C-FIND  - Query working"
-echo "  ${TEST_STATUS[get]:-⚪} C-GET   - Retrieve working"
-echo "  ${TEST_STATUS[store]:-⚪} C-STORE - Store working"
+echo "  ${TEST_STATUS_find:-⚪} C-FIND  - Query working"
+echo "  ${TEST_STATUS_get:-⚪} C-GET   - Retrieve working"
+echo "  ${TEST_STATUS_store:-⚪} C-STORE - Store working"
 echo ""
 echo "Configuration:"
 echo "  DICOM Backend: Orthanc (localhost:4242)"

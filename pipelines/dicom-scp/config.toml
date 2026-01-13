@@ -48,9 +48,9 @@ connection.host = "0.0.0.0"
 connection.port = 11112
 connection.protocol = "dicom"
 
-# Target definition for local dcmqrscp backend
-[targets.qrscp]
+# Target definition for Orthanc DICOM backend
+[targets.orthanc]
 connection.host = "localhost"
-connection.port = 11113
+connection.port = 4242
 connection.protocol = "dicom"
 

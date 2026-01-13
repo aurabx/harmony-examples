@@ -17,10 +17,15 @@ peer_ref = "listener_config"
 [endpoints.dicom_scp.options]
 local_aet = "HARMONY_SCP"
 # Bind address and port are inherited from peer_ref (listener_config)
+max_pdu = 32768
 enable_echo = true
 enable_find = true
 enable_move = true
 enable_get = true
+
+# AET table for C-MOVE destinations
+[endpoints.dicom_scp.options.aet_table]
+ORTHANC = { ae_title = "ORTHANC", host = "localhost", port = 4242 }
 
 # Backend configuration
 [backends.dicom_pacs]
@@ -29,3 +34,4 @@ target_ref = "orthanc"
 [backends.dicom_pacs.options]
 aet = "ORTHANC"
 local_aet = "HARMONY_SCU"
+max_pdu = 32768

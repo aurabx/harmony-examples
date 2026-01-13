@@ -14,14 +14,14 @@ NC='\033[0m' # No Color
 # Configuration
 HARMONY_PORT=11112
 HARMONY_AET="HARMONY_SCP"
-QRSCP_PORT=11113
-QRSCP_AET="QR_SCP"
+ORTHANC_DICOM_PORT=4242
+ORTHANC_HTTP_PORT=8042
+ORTHANC_AET="ORTHANC"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TMP_DIR="$SCRIPT_DIR/tmp"
 export TMP_DIR
-QRSCP_DIR="$TMP_DIR/qrscp"
-QRSCP_DB="$QRSCP_DIR/db"
+ORTHANC_DIR="$TMP_DIR/orthanc"
 
 echo -e "${BLUE}=== DICOM SCP Demo ===${NC}"
 echo "This script demonstrates Harmony's DICOM SCP capabilities"
@@ -29,7 +29,7 @@ echo ""
 
 # Check for required tools
 echo -e "${YELLOW}Checking prerequisites...${NC}"
-for tool in echoscu findscu getscu movescu storescu dcmqrscp dcmqridx; do
+for tool in echoscu findscu getscu movescu storescu; do
     if ! command -v $tool &> /dev/null; then
         echo -e "${RED}Error: $tool not found. Please install DCMTK:${NC}"
         echo "  macOS: brew install dcmtk"
@@ -37,6 +37,13 @@ for tool in echoscu findscu getscu movescu storescu dcmqrscp dcmqridx; do
         exit 1
     fi
 done
+
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}Error: docker not found. Please install Docker:${NC}"
+    echo "  macOS: https://docs.docker.com/desktop/install/mac-install/"
+    echo "  Linux: https://docs.docker.com/engine/install/"
+    exit 1
+fi
 
 if ! command -v harmony &> /dev/null; then
     echo -e "${RED}Error: harmony not found. Please install Harmony.${NC}"
@@ -49,7 +56,7 @@ echo ""
 # Setup directories
 echo -e "${YELLOW}Setting up test environment...${NC}"
 mkdir -p "$TMP_DIR"
-mkdir -p "$QRSCP_DB"
+mkdir -p "$ORTHANC_DIR"
 
 # Create test DICOM file
 echo -e "${YELLOW}Creating test DICOM file...${NC}"
@@ -122,40 +129,49 @@ if [ ! -f "$TEST_DCM" ]; then
     echo -e "${YELLOW}⚠ Could not create test DICOM file, some tests may be skipped${NC}"
 fi
 
-# Setup dcmqrscp (for C-GET/C-MOVE testing)
-echo -e "${YELLOW}Setting up dcmqrscp instance...${NC}"
-QRSCP_CFG="$QRSCP_DIR/dcmqrscp.cfg"
-cat > "$QRSCP_CFG" << EOF
-# dcmqrscp configuration
-MaxPDUSize = 16384
-MaxAssociations = 16
+# Setup Orthanc (for C-GET/C-MOVE testing)
+echo -e "${YELLOW}Setting up Orthanc Docker container...${NC}"
 
-HostTable BEGIN
-HostTable END
+# Stop and remove any existing Orthanc container
+docker rm -f harmony-orthanc-test 2>/dev/null || true
 
-VendorTable BEGIN
-VendorTable END
+# Start Orthanc in Docker with Harmony as a known modality
+echo -e "${YELLOW}Starting Orthanc on DICOM port $ORTHANC_DICOM_PORT, HTTP port $ORTHANC_HTTP_PORT...${NC}"
+docker run -d \
+  --name harmony-orthanc-test \
+  -p $ORTHANC_DICOM_PORT:4242 \
+  -p $ORTHANC_HTTP_PORT:8042 \
+  -e ORTHANC__DICOM_AET="$ORTHANC_AET" \
+  -e ORTHANC__OVERWRITE_INSTANCES=true \
+  -e ORTHANC__DICOM_MODALITIES='{"HARMONY":["HARMONY_SCU","host.docker.internal",'$HARMONY_PORT']}' \
+  orthancteam/orthanc:latest > "$TMP_DIR/orthanc_container.log" 2>&1
 
-AETable BEGIN
-$QRSCP_AET  $QRSCP_DB  RW  (9, 1024mb)  ANY
-AETable END
-EOF
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Orthanc Docker container started${NC}"
+else
+    echo -e "${RED}Error: Failed to start Orthanc container${NC}"
+    exit 1
+fi
 
-# Start dcmqrscp in background
-echo -e "${YELLOW}Starting dcmqrscp on port $QRSCP_PORT...${NC}"
-dcmqrscp -c "$QRSCP_CFG" $QRSCP_PORT > "$TMP_DIR/dcmqrscp.log" 2>&1 &
-QRSCP_PID=$!
-echo -e "${GREEN}✓ dcmqrscp started (PID: $QRSCP_PID)${NC}"
+# Wait for Orthanc to be ready
+echo -e "${YELLOW}Waiting for Orthanc to be ready...${NC}"
+for i in {1..30}; do
+    if curl -s http://127.0.0.1:$ORTHANC_HTTP_PORT/system > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Orthanc is ready${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}Error: Orthanc did not start in time${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 
-# Wait for dcmqrscp to be ready
-sleep 2
-
-# Store test file to dcmqrscp if available
+# Store test file to Orthanc if available
 if [ -f "$TEST_DCM" ]; then
-    echo -e "${YELLOW}Storing test file to dcmqrscp...${NC}"
-    storescu -aec $QRSCP_AET 127.0.0.1 $QRSCP_PORT "$TEST_DCM" > /dev/null 2>&1 || true
-    dcmqridx "$QRSCP_DB" > /dev/null 2>&1 || true
-    echo -e "${GREEN}✓ Test data stored${NC}"
+    echo -e "${YELLOW}Storing test file to Orthanc...${NC}"
+    storescu -aec $ORTHANC_AET 127.0.0.1 $ORTHANC_DICOM_PORT "$TEST_DCM" > /dev/null 2>&1 || true
+    echo -e "${GREEN}✓ Test data stored in Orthanc${NC}"
 fi
 
 echo ""
@@ -172,11 +188,11 @@ cleanup() {
         wait $HARMONY_PID 2>/dev/null || true
     fi
     
-    # Kill dcmqrscp
-    if [ ! -z "$QRSCP_PID" ] && kill -0 $QRSCP_PID 2>/dev/null; then
-        echo "  Stopping dcmqrscp (PID: $QRSCP_PID)..."
-        kill $QRSCP_PID
-        wait $QRSCP_PID 2>/dev/null || true
+    # Stop Orthanc Docker container
+    if docker ps -q -f name=harmony-orthanc-test | grep -q .; then
+        echo "  Stopping Orthanc Docker container..."
+        docker stop harmony-orthanc-test > /dev/null 2>&1
+        docker rm harmony-orthanc-test > /dev/null 2>&1
     fi
     
     echo -e "${GREEN}✓ Cleanup complete${NC}"
@@ -216,50 +232,68 @@ echo -e "${BLUE}=== Running Tests ===${NC}"
 echo ""
 
 # Initialize test status tracking
-declare -A TEST_STATUS
-TEST_STATUS[echo]="✗"
-TEST_STATUS[find]="✗"
-TEST_STATUS[get]="✗"
-TEST_STATUS[move]="✗"
-TEST_STATUS[store]="✗"
+# Use simple variables instead of associative arrays for shell compatibility
+TEST_STATUS_echo="✗"
+TEST_STATUS_store="✗"
+TEST_STATUS_find="✗"
+TEST_STATUS_get="✗"
+TEST_STATUS_move="✗"
 
 # Test 1: C-ECHO
 echo -e "${YELLOW}Test 1: C-ECHO (Verification)${NC}"
 echo "  Command: echoscu -v -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT"
 if echoscu -v -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT 2>&1 | grep -q "Association Accepted"; then
     echo -e "${GREEN}  ✓ C-ECHO successful${NC}"
-    TEST_STATUS[echo]="✓"
+    TEST_STATUS_echo="✓"
 else
     echo -e "${RED}  ✗ C-ECHO failed${NC}"
-    TEST_STATUS[echo]="✗"
+    TEST_STATUS_echo="✗"
 fi
 echo ""
 
-# Test 2: C-FIND Patient Level
-echo -e "${YELLOW}Test 2: C-FIND (Patient Query)${NC}"
-echo "  Command: findscu -v -aec $HARMONY_AET -P 127.0.0.1 $HARMONY_PORT -k 0010,0020=\"*\""
-findscu -v -aec $HARMONY_AET -P 127.0.0.1 $HARMONY_PORT -k "0010,0020=*" > "$TMP_DIR/find_output.txt" 2>&1
-if grep -q "Releasing Association" "$TMP_DIR/find_output.txt"; then
-    MATCHES=$(grep -c "Response:" "$TMP_DIR/find_output.txt" || echo 0)
-    echo -e "${GREEN}  ✓ C-FIND completed ($MATCHES responses)${NC}"
-    TEST_STATUS[find]="✓"
+# Test 2: C-STORE (store test data first so we can query it later)
+echo -e "${YELLOW}Test 2: C-STORE${NC}"
+if [ -f "$TEST_DCM" ]; then
+    echo "  Command: storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT test.dcm"
+    if storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT "$TEST_DCM" > "$TMP_DIR/store_output.txt" 2>&1; then
+        echo -e "${GREEN}  ✓ C-STORE succeeded${NC}"
+        TEST_STATUS_store="✓"
+        
+        # Verify data is in Orthanc
+        sleep 1
+        ORTHANC_RESPONSE=$(curl -s -u orthanc:orthanc http://127.0.0.1:$ORTHANC_HTTP_PORT/studies)
+        ORTHANC_STUDIES=$(echo "$ORTHANC_RESPONSE" | grep -o '"' | wc -l | tr -d ' ')
+        if [ "$ORTHANC_STUDIES" -gt 0 ]; then
+            echo -e "${GREEN}  ✓ Verified: Study stored in Orthanc${NC}"
+        else
+            echo -e "${YELLOW}  ⚠ Warning: No studies found in Orthanc via HTTP API${NC}"
+        fi
+    else
+        echo -e "${RED}  ✗ C-STORE failed${NC}"
+        TEST_STATUS_store="✗"
+    fi
+else
+    echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
+    TEST_STATUS_store="⚠"
+fi
+echo ""
+
+# Test 3: C-FIND Study Level - Query for the specific study we just stored
+echo -e "${YELLOW}Test 3: C-FIND (Query stored study)${NC}"
+echo "  Command: findscu -v -aec $HARMONY_AET -S 127.0.0.1 $HARMONY_PORT -k 0020,000D=\"1.2.3.4.5.6.7\""
+findscu -v -aec $HARMONY_AET -S 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" > "$TMP_DIR/find_specific_output.txt" 2>&1
+if grep -q "Releasing Association" "$TMP_DIR/find_specific_output.txt"; then
+    MATCHES=$(grep "^I: Find Response:" "$TMP_DIR/find_specific_output.txt" | wc -l | tr -d ' ')
+    if [ "$MATCHES" -gt 0 ]; then
+        echo -e "${GREEN}  ✓ C-FIND found stored study ($MATCHES results)${NC}"
+        TEST_STATUS_find="✓"
+    else
+        echo -e "${YELLOW}  ⚠ C-FIND succeeded but found no results${NC}"
+        TEST_STATUS_find="⚠"
+    fi
 else
     echo -e "${RED}  ✗ C-FIND failed${NC}"
-    TEST_STATUS[find]="✗"
-fi
-echo ""
-
-# Test 3: C-FIND Study Level
-echo -e "${YELLOW}Test 3: C-FIND (Study Query)${NC}"
-echo "  Command: findscu -v -aec $HARMONY_AET -S 127.0.0.1 $HARMONY_PORT -k 0020,000D=\"*\""
-findscu -v -aec $HARMONY_AET -S 127.0.0.1 $HARMONY_PORT -k "0020,000D=*" > "$TMP_DIR/find_study_output.txt" 2>&1
-if grep -q "Releasing Association" "$TMP_DIR/find_study_output.txt"; then
-    MATCHES=$(grep -c "Response:" "$TMP_DIR/find_study_output.txt" || echo 0)
-    echo -e "${GREEN}  ✓ C-FIND Study completed ($MATCHES responses)${NC}"
-    TEST_STATUS[find]="✓"
-else
-    echo -e "${RED}  ✗ C-FIND Study failed${NC}"
-    TEST_STATUS[find]="✗"
+    TEST_STATUS_find="✗"
 fi
 echo ""
 
@@ -267,67 +301,66 @@ echo ""
 echo -e "${YELLOW}Test 4: C-GET (Retrieve)${NC}"
 echo "  Command: getscu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT -k 0020,000D=\"1.2.3.4.5.6.7\""
 if [ -f "$TEST_DCM" ]; then
+    mkdir -p "$TMP_DIR/retrieved"
+    rm -rf "$TMP_DIR/retrieved"/* 2>/dev/null || true
     getscu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" -od "$TMP_DIR/retrieved" > "$TMP_DIR/get_output.txt" 2>&1 || true
-    if grep -q "Association Release" "$TMP_DIR/get_output.txt"; then
-        echo -e "${GREEN}  ✓ C-GET completed${NC}"
-        TEST_STATUS[get]="✓"
+    # Count all files in retrieved directory (getscu doesn't always add .dcm extension)
+    RETRIEVED_COUNT=$(find "$TMP_DIR/retrieved" -type f 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$RETRIEVED_COUNT" -gt 0 ]; then
+        echo -e "${GREEN}  ✓ C-GET retrieved $RETRIEVED_COUNT file(s)${NC}"
+        TEST_STATUS_get="✓"
+    elif grep -q "Association Release" "$TMP_DIR/get_output.txt"; then
+        echo -e "${YELLOW}  ⚠ C-GET completed but no files retrieved (check logs)${NC}"
+        TEST_STATUS_get="⚠"
     else
-        echo -e "${YELLOW}  ⚠ C-GET completed (no data retrieved - expected if backend not configured)${NC}"
-        TEST_STATUS[get]="⚠"
+        echo -e "${RED}  ✗ C-GET failed${NC}"
+        TEST_STATUS_get="✗"
     fi
 else
     echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
-    TEST_STATUS[get]="⚠"
+    TEST_STATUS_get="⚠"
 fi
 echo ""
 
 # Test 5: C-MOVE
 echo -e "${YELLOW}Test 5: C-MOVE${NC}"
-echo "  Command: movescu -aec $HARMONY_AET -aem $QRSCP_AET 127.0.0.1 $HARMONY_PORT -k 0020,000D=\"1.2.3.4.5.6.7\""
+echo "  Command: movescu -aec $HARMONY_AET -aem $ORTHANC_AET 127.0.0.1 $HARMONY_PORT -k 0020,000D=\"1.2.3.4.5.6.7\""
 if [ -f "$TEST_DCM" ]; then
-    movescu -aec $HARMONY_AET -aem $QRSCP_AET 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" > "$TMP_DIR/move_output.txt" 2>&1 || true
-    if grep -q "Association Release" "$TMP_DIR/move_output.txt"; then
-        echo -e "${GREEN}  ✓ C-MOVE completed${NC}"
-        TEST_STATUS[move]="✓"
+    movescu -aec $HARMONY_AET -aem $ORTHANC_AET 127.0.0.1 $HARMONY_PORT -k "0020,000D=1.2.3.4.5.6.7" > "$TMP_DIR/move_output.txt" 2>&1
+    MOVE_EXIT_CODE=$?
+    # movescu returns 0 on success - check exit code and/or association release
+    if [ $MOVE_EXIT_CODE -eq 0 ] || grep -q "Association Release" "$TMP_DIR/move_output.txt"; then
+        # Check if there were any errors or just verify it completed
+        if grep -q "Sub-Operations Complete" "$TMP_DIR/move_output.txt" || [ $MOVE_EXIT_CODE -eq 0 ]; then
+            echo -e "${GREEN}  ✓ C-MOVE completed successfully${NC}"
+            TEST_STATUS_move="✓"
+        else
+            echo -e "${YELLOW}  ⚠ C-MOVE completed (check logs for sub-operation status)${NC}"
+            TEST_STATUS_move="⚠"
+        fi
     else
-        echo -e "${YELLOW}  ⚠ C-MOVE completed (expected behavior depends on backend)${NC}"
-        TEST_STATUS[move]="⚠"
+        echo -e "${RED}  ✗ C-MOVE failed${NC}"
+        TEST_STATUS_move="✗"
     fi
 else
     echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
-    TEST_STATUS[move]="⚠"
+    TEST_STATUS_move="⚠"
 fi
 echo ""
 
-# Test 6: C-STORE (should succeed)
-echo -e "${YELLOW}Test 6: C-STORE${NC}"
-if [ -f "$TEST_DCM" ]; then
-    echo "  Command: storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT test.dcm"
-    if storescu -aec $HARMONY_AET 127.0.0.1 $HARMONY_PORT "$TEST_DCM" > "$TMP_DIR/store_output.txt" 2>&1; then
-        echo -e "${GREEN}  ✓ C-STORE succeeded${NC}"
-        TEST_STATUS[store]="✓"
-    else
-        echo -e "${RED}  ✗ C-STORE failed${NC}"
-        TEST_STATUS[store]="✗"
-    fi
-else
-    echo -e "${YELLOW}  ⚠ Skipped (no test data)${NC}"
-    TEST_STATUS[store]="⚠"
-fi
-echo ""
 
 echo -e "${BLUE}=== Summary ===${NC}"
 echo ""
 echo "Harmony DICOM SCP Capabilities:"
-echo "  ${TEST_STATUS[echo]} C-ECHO  - Verification"
-echo "  ${TEST_STATUS[find]} C-FIND  - Query"
-echo "  ${TEST_STATUS[get]} C-GET   - Retrieve"
-echo "  ${TEST_STATUS[move]} C-MOVE  - Move"
-echo "  ${TEST_STATUS[store]} C-STORE - Store"
+echo "  ${TEST_STATUS_echo} C-ECHO  - Verification"
+echo "  ${TEST_STATUS_store} C-STORE - Store"
+echo "  ${TEST_STATUS_find} C-FIND  - Query"
+echo "  ${TEST_STATUS_get} C-GET   - Retrieve"
+echo "  ${TEST_STATUS_move} C-MOVE  - Move"
 echo ""
 echo "Logs available at:"
 echo "  Harmony:  $TMP_DIR/harmony.log"
-echo "  DCMQRSCP: $TMP_DIR/dcmqrscp.log"
+echo "  Orthanc:  $TMP_DIR/orthanc.log"
 echo ""
 echo -e "${GREEN}Demo complete!${NC}"
 echo ""
