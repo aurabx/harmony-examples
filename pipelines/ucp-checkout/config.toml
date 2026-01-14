@@ -1,0 +1,115 @@
+# ==============================================================================
+# UCP Checkout Example Configuration
+# ==============================================================================
+# This configuration demonstrates Universal Commerce Protocol (UCP) checkout
+# capability using Harmony as a UCP-compliant commerce gateway.
+#
+# Features Demonstrated:
+# ✅ UCP profile discovery (capability advertisement)
+# ✅ Checkout session lifecycle (create, update, complete)
+# ✅ Cart calculations and totals
+# ✅ Payment handler negotiation
+# ✅ JOLT-based UCP schema transformations
+# ✅ RESTful UCP endpoints
+#
+# UCP Specification: https://ucp.dev
+# ==============================================================================
+
+[proxy]
+name = "harmony-ucp-checkout"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+[logging]
+log_level = "debug"
+log_to_file = true
+log_file_path = "./tmp/ucp_checkout.log"
+
+# ==============================================================================
+# NETWORKS
+# ==============================================================================
+
+[network.http_net]
+enable_wireguard = false
+interface = "eth0"
+
+[network.http_net.http]
+bind_address = "0.0.0.0"
+bind_port = 8085
+
+[network.management]
+enable_wireguard = false
+interface = "eth0"
+
+[network.management.http]
+bind_address = "127.0.0.1"
+bind_port = 9095
+
+# ==============================================================================
+# MANAGEMENT API
+# ==============================================================================
+
+[management]
+enabled = true
+base_path = "admin"
+network = "management"
+
+# ==============================================================================
+# STORAGE
+# ==============================================================================
+
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# ==============================================================================
+# SERVICE TYPE REGISTRATIONS
+# ==============================================================================
+
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+[services.management]
+module = ""
+
+# ==============================================================================
+# MIDDLEWARE TYPE REGISTRATIONS
+# ==============================================================================
+
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.transform]
+module = ""
+
+[middleware_types.policies]
+module = ""
+
+# ==============================================================================
+# BACKEND DEFINITIONS
+# ==============================================================================
+
+# Mock commerce backend (simulates a merchant's commerce system)
+[backends.commerce_backend]
+service = "echo"
+
+# ==============================================================================
+# TARGET DEFINITIONS
+# ==============================================================================
+
+[targets.mock_commerce]
+connection.host = "127.0.0.1"
+connection.port = 8888
+connection.protocol = "http"
+timeout_secs = 60

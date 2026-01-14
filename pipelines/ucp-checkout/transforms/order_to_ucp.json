@@ -1,0 +1,31 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "order_number": "confirmation.number",
+      "order_status": "confirmation.status",
+      "created_at": "confirmation.timestamp",
+      "gateway_token": "payment.token",
+      "payment_method": "payment.method"
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "ucp": {
+        "version": "2026-01-11"
+      },
+      "status": "confirmed",
+      "next_steps": [
+        {
+          "action": "track_shipment",
+          "url": "/v1/orders/{id}/tracking"
+        },
+        {
+          "action": "view_receipt",
+          "url": "/v1/orders/{id}/receipt"
+        }
+      ]
+    }
+  }
+]

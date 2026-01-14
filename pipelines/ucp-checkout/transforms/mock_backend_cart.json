@@ -1,0 +1,37 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "line_items": {
+        "*": {
+          "item": {
+            "id": "items[&2].sku",
+            "price": "items[&2].unit_price"
+          },
+          "quantity": "items[&1].qty"
+        }
+      },
+      "buyer": {
+        "email": "customer.email",
+        "first_name": "customer.fname",
+        "last_name": "customer.lname"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "cart_id": "cart_${=randomLong}",
+      "status": "OPEN",
+      "currency_code": "USD",
+      "items": [],
+      "pricing": {
+        "subtotal_cents": 10000,
+        "tax_cents": 1000,
+        "shipping_cents": 500,
+        "total_cents": 11500
+      },
+      "allowed_methods": ["CREDIT_CARD", "DIGITAL_WALLET"]
+    }
+  }
+]

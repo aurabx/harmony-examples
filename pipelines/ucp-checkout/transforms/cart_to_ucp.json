@@ -1,0 +1,104 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "cart_id": "id",
+      "currency_code": "currency",
+      "status": "status",
+      "customer": {
+        "email": "buyer.email",
+        "fname": "buyer.first_name",
+        "lname": "buyer.last_name"
+      },
+      "items": {
+        "*": {
+          "sku": "line_items[&1].item.id",
+          "unit_price": "line_items[&1].item.price",
+          "qty": "line_items[&1].quantity"
+        }
+      },
+      "pricing": {
+        "subtotal_cents": "totals[0].amount",
+        "tax_cents": "totals[1].amount",
+        "shipping_cents": "totals[2].amount",
+        "total_cents": "totals[3].amount"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "ucp": {
+        "version": "2026-01-11"
+      },
+      "status": "ready_for_complete",
+      "totals": [
+        {
+          "type": "subtotal",
+          "label": "Subtotal"
+        },
+        {
+          "type": "tax",
+          "label": "Tax"
+        },
+        {
+          "type": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "type": "total",
+          "label": "Total"
+        }
+      ],
+      "payment": {
+        "handlers": [
+          {
+            "id": "google-pay-handler",
+            "name": "com.google.pay",
+            "version": "2026-01-11",
+            "spec": "https://pay.google.com/gp/p/ucp/2026-01-11/",
+            "config_schema": "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/config.json",
+            "instrument_schemas": [
+              "https://pay.google.com/gp/p/ucp/2026-01-11/schemas/card_payment_instrument.json"
+            ],
+            "config": {
+              "merchant_info": {
+                "merchant_id": "demo-merchant-123",
+                "merchant_name": "Harmony Demo Store"
+              },
+              "allowed_payment_methods": [
+                {
+                  "type": "CARD",
+                  "parameters": {
+                    "allowed_card_networks": [
+                      "VISA",
+                      "MASTERCARD",
+                      "AMEX"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "required_fields": [
+          {
+            "field": "billing_address",
+            "type": "address",
+            "required": true
+          }
+        ]
+      },
+      "links": [
+        {
+          "rel": "self",
+          "href": "/v1/checkout/sessions/&1"
+        },
+        {
+          "rel": "complete",
+          "href": "/v1/checkout/sessions/&1/complete"
+        }
+      ]
+    }
+  }
+]

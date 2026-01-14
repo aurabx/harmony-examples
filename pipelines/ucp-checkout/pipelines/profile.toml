@@ -1,0 +1,28 @@
+# ==============================================================================
+# UCP Profile Discovery Pipeline
+# ==============================================================================
+# Implements UCP profile endpoint for capability discovery
+# Endpoint: GET /.well-known/ucp/profile
+# ==============================================================================
+
+[pipelines.ucp_profile]
+network = "http_net"
+path = "/.well-known/ucp/profile"
+method = "GET"
+backend_ref = "commerce_backend"
+
+middleware = [
+    "profile_response"
+]
+
+# ==============================================================================
+# MIDDLEWARE DEFINITIONS
+# ==============================================================================
+
+[middleware.profile_response]
+type = "transform"
+
+[middleware.profile_response.options]
+spec_path = "profile_response.json"
+apply = "right"
+fail_on_error = true

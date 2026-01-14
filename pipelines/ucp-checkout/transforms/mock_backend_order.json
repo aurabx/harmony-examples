@@ -1,0 +1,26 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "payment_token": "gateway_token",
+      "payment_method": "payment_method",
+      "billing_address": {
+        "street_address": "billing_addr.line1",
+        "extended_address": "billing_addr.line2",
+        "address_locality": "billing_addr.city",
+        "address_region": "billing_addr.state",
+        "postal_code": "billing_addr.zip",
+        "address_country": "billing_addr.country"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "order_number": "ORD-${=randomLong}",
+      "order_status": "PROCESSING",
+      "created_at": "2026-01-11T12:00:00Z",
+      "payment_status": "AUTHORIZED"
+    }
+  }
+]

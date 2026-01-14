@@ -1,0 +1,54 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "*": {
+        "@": "original_response"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "ucp": {
+        "version": "2026-01-11",
+        "services": {
+          "dev.ucp.shopping": {
+            "version": "2026-01-11",
+            "spec": "https://ucp.dev/specification/overview",
+            "rest": {
+              "schema": "https://ucp.dev/services/shopping/rest.openapi.json",
+              "endpoint": "http://localhost:8085/v1"
+            }
+          }
+        },
+        "capabilities": [
+          {
+            "name": "dev.ucp.shopping.checkout",
+            "version": "2026-01-11",
+            "spec": "https://ucp.dev/specification/checkout",
+            "schema": "https://ucp.dev/schemas/shopping/checkout.json"
+          },
+          {
+            "name": "dev.ucp.shopping.discounts",
+            "version": "2026-01-11",
+            "spec": "https://ucp.dev/specification/discounts",
+            "schema": "https://ucp.dev/schemas/shopping/discounts.json",
+            "extends": "dev.ucp.shopping.checkout"
+          }
+        ]
+      },
+      "business": {
+        "id": "harmony-demo-merchant",
+        "name": "Harmony Demo Store",
+        "website": "https://example.com"
+      }
+    }
+  },
+  {
+    "operation": "remove",
+    "spec": {
+      "original_response": ""
+    }
+  }
+]

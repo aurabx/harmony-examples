@@ -611,5 +611,39 @@
     "directory": "dicom_to_dicomweb",
     "file": "dicom_to_dicomweb/pipelines/bridge.toml",
     "type": "pipeline"
+  },
+  "ucp-checkout": {
+    "name": "UCP Checkout",
+    "shortDescription": "Universal Commerce Protocol checkout capability",
+    "description": "Implements Universal Commerce Protocol (UCP) checkout capability for agentic commerce. Enables AI agents to discover capabilities, create checkout sessions, negotiate payment handlers, and complete purchases on behalf of users using standardized UCP endpoints.",
+    "tags": [
+      "REST",
+      "Commerce",
+      "UCP",
+      "AI Agents"
+    ],
+    "useCases": [
+      {
+        "title": "Agentic Commerce",
+        "description": "Enable AI agents to complete purchases autonomously"
+      },
+      {
+        "title": "UCP Gateway",
+        "description": "Expose commerce capabilities via standardized UCP endpoints"
+      },
+      {
+        "title": "Payment Negotiation",
+        "description": "Dynamic payment handler selection with Google Pay, Shop Pay, card tokenization"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware",
+      "JSON Extractor"
+    ],
+    "directory": "ucp-checkout",
+    "file": "ucp-checkout/pipelines/checkout-create.toml",
+    "type": "pipeline",
+    "featured": true
   }
 }

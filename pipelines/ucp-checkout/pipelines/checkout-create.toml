@@ -1,0 +1,37 @@
+# ==============================================================================
+# UCP Checkout Session Create Pipeline
+# ==============================================================================
+# Implements UCP checkout session creation
+# Endpoint: POST /v1/checkout/sessions
+# ==============================================================================
+
+[pipelines.checkout_create]
+network = "http_net"
+path = "/v1/checkout/sessions"
+method = "POST"
+backend_ref = "commerce_backend"
+
+middleware = [
+    "ucp_to_backend",
+    "backend_to_ucp"
+]
+
+# ==============================================================================
+# MIDDLEWARE DEFINITIONS
+# ==============================================================================
+
+[middleware.ucp_to_backend]
+type = "transform"
+
+[middleware.ucp_to_backend.options]
+spec_path = "mock_backend_cart.json"
+apply = "left"
+fail_on_error = true
+
+[middleware.backend_to_ucp]
+type = "transform"
+
+[middleware.backend_to_ucp.options]
+spec_path = "cart_to_ucp.json"
+apply = "right"
+fail_on_error = true
