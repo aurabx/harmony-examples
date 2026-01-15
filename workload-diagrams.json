@@ -327,5 +327,42 @@
     "targets": [
       { "label": "DICOMweb Server", "subLabel": "Web-based DICOM access", "status": "active" }
     ]
+  },
+  "ucp-checkout": {
+    "sources": [
+      { "label": "AI Agents & Clients", "subLabel": "UCP shopping flows", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": {
+        "label": "HTTP Listener",
+        "subLabel": "0.0.0.0:8085 /.well-known/ucp/profile + /v1/checkout/sessions",
+        "status": "active"
+      },
+      "middlewares": [
+        {
+          "label": "Profile Transform",
+          "subLabel": "profile_response (GET /.well-known/ucp/profile)",
+          "status": "active"
+        },
+        {
+          "label": "UCP → Mock Cart",
+          "subLabel": "ucp_to_backend (POST/PATCH /v1/checkout/sessions)",
+          "status": "active"
+        },
+        {
+          "label": "Mock Cart → UCP",
+          "subLabel": "backend_to_ucp (response mapping)",
+          "status": "active"
+        }
+      ],
+      "backend": {
+        "label": "Mock Commerce Backend",
+        "subLabel": "echo service (commerce_backend)",
+        "status": "active"
+      }
+    },
+    "targets": [
+      { "label": "UCP Checkout Sessions", "subLabel": "Profiles, carts, orders", "status": "active" }
+    ]
   }
 }

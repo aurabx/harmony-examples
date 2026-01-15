@@ -22,6 +22,57 @@ Each pipeline example can be used as a starting point for your own deployments. 
 
 For detailed instructions on adding and managing pipelines, see the [Adding Pipelines guide](https://docs.runbeam.io/harmony/guides/adding-pipelines).
 
+### Creating Pipelines from Templates
+
+Runbeam provides a template system for easily creating pipelines. Templates can contain:
+
+- **Single pipeline templates**: A template that creates one pipeline configuration
+- **Multiple pipeline templates**: A template that creates multiple related pipelines at once
+
+To create a pipeline from a template in Runbeam:
+
+1. Navigate to the Templates section
+2. Select a template
+3. For single-pipeline templates: Click "Create Pipeline"
+4. For multi-pipeline templates: Click "Create Pipeline" to create individual pipelines, or "Create All Pipelines" to create them all at once
+5. Review the created pipelines and customize as needed
+
+#### Defining Multiple Pipelines in a Template
+
+If you're creating a template with multiple related pipelines (e.g., a checkout flow with separate pipelines for checkout creation, payment processing, and order confirmation), use the `files` configuration in your template definition:
+
+```json
+{
+  "my-multi-pipeline-template": {
+    "name": "Multi-Pipeline Template",
+    "description": "Template with multiple related pipelines",
+    "files": [
+      "my-template/pipelines/pipeline-one.toml",
+      "my-template/pipelines/pipeline-two.toml",
+      "my-template/pipelines/pipeline-three.toml"
+    ],
+    "type": "pipeline",
+    "prerequisites": [],
+    "tags": []
+  }
+}
+```
+
+Single-pipeline templates continue to work with the `file` configuration:
+
+```json
+{
+  "my-single-pipeline-template": {
+    "name": "Single Pipeline Template",
+    "description": "Simple single pipeline template",
+    "file": "my-template/pipelines/pipeline.toml",
+    "type": "pipeline",
+    "prerequisites": [],
+    "tags": []
+  }
+}
+```
+
 ## About Harmony and Runbeam
 
 **Harmony** is a high-performance API gateway and proxy runtime built in Rust, designed for healthcare data integration, protocol translation, and advanced middleware processing.
