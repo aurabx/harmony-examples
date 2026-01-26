@@ -364,5 +364,83 @@
     "targets": [
       { "label": "UCP Checkout Sessions", "subLabel": "Profiles, carts, orders", "status": "active" }
     ]
+  },
+  "dicom-to-jmix": {
+    "sources": [
+      { "label": "DICOM Modalities", "subLabel": "C-STORE images", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOM SCP", "subLabel": "AET: JMIX_RECEIVER", "status": "active" },
+      "middlewares": [
+        { "label": "JMIX Builder", "subLabel": "Package to envelope", "status": "active" }
+      ],
+      "backend": { "label": "JMIX Backend", "subLabel": "Upstream storage", "status": "active" }
+    },
+    "targets": [
+      { "label": "Upstream JMIX Server", "subLabel": "Envelope storage", "status": "active" }
+    ]
+  },
+  "jmix-backend": {
+    "sources": [
+      { "label": "JMIX Clients", "subLabel": "POST/GET requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "/jmix endpoint", "status": "active" },
+      "middlewares": [
+        { "label": "Access Control", "subLabel": "Method filtering", "status": "active" }
+      ],
+      "backend": { "label": "JMIX Backend", "subLabel": "Forward to upstream", "status": "active" }
+    },
+    "targets": [
+      { "label": "Upstream JMIX Server", "subLabel": "Envelope storage", "status": "active" }
+    ]
+  },
+  "data-mesh": {
+    "sources": [
+      { "label": "Internal Clients", "subLabel": "Local services", "status": "active" },
+      { "label": "Mesh Partners", "subLabel": "External orgs", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "FHIR Listener", "subLabel": "Internal + Mesh", "status": "active" },
+      "middlewares": [
+        { "label": "Mesh Policies", "subLabel": "Access control", "status": "active" }
+      ],
+      "backend": { "label": "Mesh Egress", "subLabel": "Partner routing", "status": "active" }
+    },
+    "targets": [
+      { "label": "Partner FHIR", "subLabel": "External orgs", "status": "active" },
+      { "label": "Imaging Centers", "subLabel": "DICOMweb", "status": "active" }
+    ]
+  },
+  "http-file-upload": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "Binary uploads", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "POST /upload", "status": "active" },
+      "middlewares": [],
+      "backend": { "label": "Storage Backend", "subLabel": "Local filesystem", "status": "active" }
+    },
+    "targets": [
+      { "label": "Local Filesystem", "subLabel": "UUID-named files", "status": "active" }
+    ]
+  },
+  "http-with-middleware": {
+    "sources": [
+      { "label": "HTTP Clients", "subLabel": "JSON requests", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "HTTP Listener", "subLabel": "/api/* paths", "status": "active" },
+      "middlewares": [
+        { "label": "Basic Auth", "subLabel": "User/password", "status": "active" },
+        { "label": "Policies", "subLabel": "IP, rate, method", "status": "active" },
+        { "label": "Path Filter", "subLabel": "Allow /api/*", "status": "active" },
+        { "label": "Transform", "subLabel": "JOLT req/res", "status": "active" }
+      ],
+      "backend": { "label": "HTTP Backend", "subLabel": "Forward requests", "status": "active" }
+    },
+    "targets": [
+      { "label": "Backend Server", "subLabel": "HTTP service", "status": "active" }
+    ]
   }
 }

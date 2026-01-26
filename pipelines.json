@@ -707,5 +707,97 @@
     "directory": "dicom-to-jmix",
     "file": "dicom-to-jmix/pipelines/dicom-to-jmix.toml",
     "type": "pipeline"
+  },
+  "data-mesh": {
+    "name": "Data Mesh",
+    "shortDescription": "Secure inter-proxy communication network",
+    "description": "Demonstrates Harmony's Data Mesh feature for secure inter-proxy communication. Enables multiple Harmony instances to communicate as a distributed network with secure authentication and routing between mesh members.",
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "Mesh"
+    ],
+    "useCases": [
+      {
+        "title": "Multi-Org Data Exchange",
+        "description": "Secure healthcare data exchange between organizations"
+      },
+      {
+        "title": "Mesh Networking",
+        "description": "Configure ingress/egress for inter-service communication"
+      },
+      {
+        "title": "Partner Integration",
+        "description": "Connect to partner FHIR servers and imaging centers"
+      }
+    ],
+    "prerequisites": [
+      "FHIR Service",
+      "HTTP Service"
+    ],
+    "directory": "data-mesh",
+    "file": "data-mesh/pipelines/api.toml",
+    "type": "pipeline"
+  },
+  "http-file-upload": {
+    "name": "HTTP File Upload",
+    "shortDescription": "Upload files to local storage via HTTP",
+    "description": "Route HTTP requests with binary payloads directly to the storage backend (local filesystem). Supports automatic UUID-based naming for uploaded files.",
+    "tags": [
+      "REST",
+      "Storage"
+    ],
+    "useCases": [
+      {
+        "title": "File Uploads",
+        "description": "Handle file uploads in HTTP APIs"
+      },
+      {
+        "title": "Binary Storage",
+        "description": "Store binary data with automatic naming"
+      },
+      {
+        "title": "File Management",
+        "description": "Build file management services with Harmony"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Storage Backend"
+    ],
+    "directory": "http-file-upload",
+    "file": "http-file-upload/pipelines/upload.toml",
+    "type": "pipeline"
+  },
+  "http-with-middleware": {
+    "name": "HTTP with Middleware",
+    "shortDescription": "Comprehensive middleware chain example",
+    "description": "Comprehensive integration test of all major Harmony features in a single pipeline. Demonstrates authentication, access control, path filtering, JSON extraction, and JOLT transformations.",
+    "tags": [
+      "REST",
+      "Transform"
+    ],
+    "useCases": [
+      {
+        "title": "Learning Middleware",
+        "description": "Understand all Harmony middleware capabilities"
+      },
+      {
+        "title": "Production Template",
+        "description": "Use as a template for production pipelines"
+      },
+      {
+        "title": "Integration Testing",
+        "description": "Test complete middleware chains"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware",
+      "Basic Auth"
+    ],
+    "directory": "http-with-middleware",
+    "file": "http-with-middleware/pipelines/pipeline.toml",
+    "type": "pipeline"
   }
 }
