@@ -1,0 +1,84 @@
+# ------------------------
+# DICOM to JMIX Pipeline
+# Receives DICOM images via C-STORE and packages them into JMIX envelopes
+# for storage on an upstream JMIX server
+#-------------------------
+
+[pipelines.dicom_to_jmix]
+description = "DICOM SCP endpoint that packages received images into JMIX envelopes"
+networks = ["dicom_net"]
+endpoints = ["dicom_receiver"]
+middleware = [
+    "jmix_builder",
+]
+backends = ["jmix_upstream"]
+
+# ------------------------
+# DICOM Endpoint (SCP)
+# Accepts incoming DICOM connections and C-STORE operations
+#-------------------------
+[endpoints.dicom_receiver]
+service = "dicom_scp"
+peer_ref = "dicom_listener"
+
+[endpoints.dicom_receiver.options]
+local_aet = "JMIX_RECEIVER"
+max_pdu = 32768
+# Enable C-STORE to receive images
+enable_store = true
+# Enable C-ECHO for connectivity testing
+enable_echo = true
+# Disable query/retrieve operations (this is a receive-only endpoint)
+enable_find = false
+enable_move = false
+enable_get = false
+
+# ------------------------
+# Middleware
+# jmix_builder packages received DICOM files into JMIX envelopes
+#-------------------------
+[middleware.jmix_builder]
+type = "jmix_builder"
+
+[middleware.jmix_builder.options]
+# Skip SHA256 hash computation for faster processing
+skip_hashing = true
+# Include file listing in manifest
+skip_listing = false
+
+# ------------------------
+# Backend - Upstream JMIX Server
+# Forwards built JMIX envelopes to upstream storage
+#-------------------------
+[backends.jmix_upstream]
+service = "jmix_backend"
+target_ref = "upstream_jmix"
+
+[backends.jmix_upstream.options]
+# Path prefix for upstream JMIX API
+path_prefix = "/api"
+
+# Optional: Add authentication for upstream server
+# authentication_ref = "jmix_auth"
+
+
+# ========================
+# Optional: JMIX Query Pipeline
+# Provides HTTP access to query locally cached envelopes
+# ========================
+
+[pipelines.jmix_query]
+description = "HTTP endpoint for querying locally cached JMIX envelopes"
+networks = ["http_net"]
+endpoints = ["jmix_http"]
+middleware = ["passthru"]
+backends = []
+
+[endpoints.jmix_http]
+service = "jmix"
+
+[endpoints.jmix_http.options]
+path_prefix = "/jmix"
+
+[middleware.passthru]
+type = "passthru"

@@ -645,6 +645,7 @@
     "file": "ucp-checkout/pipelines/checkout-create.toml",
     "type": "pipeline",
     "featured": true
+  },
   "jmix-backend": {
     "name": "JMIX Backend Forwarding",
     "shortDescription": "Forward JMIX POST and GET requests to upstream servers",
@@ -675,5 +676,36 @@
     "file": "jmix-backend/pipelines/jmix-backend.toml",
     "type": "pipeline"
   },
+  "dicom-to-jmix": {
+    "name": "DICOM C-STORE to JMIX",
+    "shortDescription": "Receive DICOM images and package into JMIX envelopes",
+    "description": "Bridge pipeline that receives DICOM images via C-STORE and automatically packages them into JMIX envelopes for upstream storage. Ideal for converting DICOM workflows to JMIX distribution systems.",
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "JMIX"
+    ],
+    "useCases": [
+      {
+        "title": "DICOM to JMIX Gateway",
+        "description": "Convert traditional DICOM workflows to JMIX-based distribution"
+      },
+      {
+        "title": "Modality Integration",
+        "description": "Receive images from CT/MRI/Ultrasound and package for cloud storage"
+      },
+      {
+        "title": "PACS Bridge",
+        "description": "Integrate legacy PACS systems with modern JMIX repositories"
+      }
+    ],
+    "prerequisites": [
+      "DICOM Service",
+      "JMIX Service",
+      "Upstream JMIX Server"
+    ],
+    "directory": "dicom-to-jmix",
+    "file": "dicom-to-jmix/pipelines/dicom-to-jmix.toml",
+    "type": "pipeline"
   }
 }

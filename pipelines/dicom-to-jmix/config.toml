@@ -1,0 +1,74 @@
+# DICOM to JMIX Example Configuration
+# Receives DICOM images and packages them into JMIX envelopes for upstream storage
+
+[proxy]
+name = "harmony-dicom-to-jmix"
+log_level = "debug"
+pipelines_path = "pipelines"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration - DICOM SCP listener for receiving images
+[network.dicom_net]
+enable_wireguard = false
+interface = "wg0"
+
+# TCP network bind settings for DICOM DIMSE listener
+[network.dicom_net.tcp_config]
+bind_address = "0.0.0.0"
+bind_port = 11113
+
+# HTTP network for JMIX API access (optional - for querying built envelopes)
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8086
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_dicom_to_jmix.log"
+
+# Storage - used for temporary DICOM files and JMIX envelope building
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.dicom_scp]
+module = ""
+
+[services.jmix]
+module = ""
+
+[services.jmix_backend]
+module = ""
+
+# Middleware types
+[middleware_types.jmix_builder]
+module = ""
+
+[middleware_types.passthru]
+module = ""
+
+# Peer definition for the DICOM listener
+[peers.dicom_listener]
+connection.host = "0.0.0.0"
+connection.port = 11113
+connection.protocol = "dicom"
+
+# Target definition for upstream JMIX server
+[targets.upstream_jmix]
+connection.host = "jmix.example.com"
+connection.port = 443
+connection.protocol = "https"
+timeout_secs = 300
