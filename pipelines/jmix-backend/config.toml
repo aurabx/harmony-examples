@@ -1,0 +1,59 @@
+# JMIX Backend Example Configuration
+# Demonstrates forwarding JMIX POST and GET requests to an upstream JMIX server
+
+[proxy]
+name = "harmony-jmix-backend"
+log_level = "debug"
+pipelines_path = "pipelines"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8085
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_jmix_backend.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.jmix]
+module = ""
+
+[services.jmix_backend]
+module = ""
+
+# Middleware types
+[middleware_types.passthru]
+module = ""
+
+[middleware_types.policies]
+module = ""
+
+# Target definition for upstream JMIX server
+# This can be another Harmony instance, a JMIX repository, or any JMIX-compatible server
+[targets.upstream_jmix]
+connection.host = "jmix.example.com"
+connection.port = 443
+connection.protocol = "https"
+timeout_secs = 120

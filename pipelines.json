@@ -645,5 +645,35 @@
     "file": "ucp-checkout/pipelines/checkout-create.toml",
     "type": "pipeline",
     "featured": true
+  "jmix-backend": {
+    "name": "JMIX Backend Forwarding",
+    "shortDescription": "Forward JMIX POST and GET requests to upstream servers",
+    "description": "Proxy layer for forwarding JMIX envelope uploads (POST) and retrievals (GET) to upstream JMIX servers. Enables building JMIX distribution networks with security and access control.",
+    "tags": [
+      "JMIX",
+      "Healthcare"
+    ],
+    "useCases": [
+      {
+        "title": "JMIX Distribution Network",
+        "description": "Forward JMIX envelopes between organizations and systems"
+      },
+      {
+        "title": "Edge Proxy",
+        "description": "Add security and access control to existing JMIX infrastructure"
+      },
+      {
+        "title": "Multi-Tier Architecture",
+        "description": "Build hierarchical JMIX storage and distribution systems"
+      }
+    ],
+    "prerequisites": [
+      "JMIX Service",
+      "Upstream JMIX Server"
+    ],
+    "directory": "jmix-backend",
+    "file": "jmix-backend/pipelines/jmix-backend.toml",
+    "type": "pipeline"
+  },
   }
 }

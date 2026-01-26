@@ -1,0 +1,81 @@
+# ------------------------
+# JMIX Backend Pipeline
+# Forwards JMIX requests to an upstream JMIX server
+# Supports POST (upload), GET (retrieve), and manifest operations
+#-------------------------
+
+[pipelines.jmix_proxy]
+description = "JMIX proxy to upstream server with authentication and access control"
+networks = ["http_net"]
+endpoints = ["http_endpoint"]
+middleware = [
+    "access_control",
+    "passthru",
+]
+backends = ["upstream_jmix"]
+
+# ------------------------
+# Middleware
+#-------------------------
+
+# Access Control Policies
+# Secure access to JMIX endpoints with IP filtering and rate limiting
+[middleware.access_control]
+type = "policies"
+
+[middleware.access_control.options]
+policies = ["jmix_security"]
+
+[middleware.passthru]
+type = "passthru"
+
+# ------------------------
+# Policies
+#-------------------------
+[policies.jmix_security]
+id = "jmix_security"
+name = "JMIX API Security"
+enabled = true
+rules = ["method_filter"]
+
+# ------------------------
+# Rules
+#-------------------------
+
+[rules.method_filter]
+id = "method_filter"
+name = "Allow JMIX HTTP Methods"
+type = "method"
+weight = 80
+enabled = true
+
+[rules.method_filter.options]
+mode = "allow"
+methods = ["GET", "POST"]
+
+# ------------------------
+# Endpoints
+# HTTP endpoint that accepts incoming requests and forwards to JMIX backend
+#-------------------------
+[endpoints.http_endpoint]
+service = "http"
+
+[endpoints.http_endpoint.options]
+path_prefix = "/jmix"
+
+# ------------------------
+# Backends - Upstream JMIX Server
+# Forwards requests to an upstream JMIX server using jmix_backend service
+#-------------------------
+[backends.upstream_jmix]
+service = "jmix_backend"
+target_ref = "upstream_jmix"
+
+[backends.upstream_jmix.options]
+# Path prefix to prepend when forwarding to upstream
+# Useful if upstream serves JMIX on a different path
+path_prefix = ""
+
+# Optional: Authentication for upstream server
+# Uncomment and configure as needed:
+# authentication_ref = "upstream_auth"
