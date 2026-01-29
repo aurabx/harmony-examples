@@ -4,6 +4,7 @@
     "shortDescription": "Simple echo service for testing",
     "description": "A basic HTTP proxy that demonstrates simple request/response handling. Perfect for understanding the fundamentals of proxy configuration and routing.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -33,6 +34,7 @@
     "shortDescription": "HTTP gateway for an API service",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -62,6 +64,7 @@
     "shortDescription": "HTTP backend to prevent external access to admin paths",
     "description": "Full-featured HTTP gateway with path filtering, content-type negotiation, and flexible backend routing. Foundation for modern API integration.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -91,6 +94,7 @@
     "shortDescription": "Basic HTTP API proxy",
     "description": "Basic HTTP API proxy demonstrating simple passthrough routing.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -111,7 +115,6 @@
     "shortDescription": "Proxy HTTP requests to HTTP/3 backends",
     "description": "Receive standard HTTP requests and forward them to backend servers using HTTP/3 over QUIC transport. Provides benefits like no head-of-line blocking, faster connections with 0-RTT resumption, and built-in TLS 1.3 encryption.",
     "tags": [
-      "REST",
       "HTTP/3",
       "QUIC"
     ],
@@ -143,7 +146,6 @@
     "shortDescription": "Accept HTTP/3 requests and proxy to HTTP backends",
     "description": "Receive HTTP/3 (QUIC) requests from modern clients and forward them to standard HTTP backend servers. Terminate QUIC/TLS 1.3 at the edge while keeping existing backend infrastructure.",
     "tags": [
-      "REST",
       "HTTP/3",
       "QUIC"
     ],
@@ -178,7 +180,8 @@
     "tags": [
       "Healthcare",
       "DICOM",
-      "filesystem"
+      "Storage",
+      "Filesystem"
     ],
     "useCases": [
       {
@@ -205,6 +208,7 @@
     "tags": [
       "Healthcare",
       "DICOM",
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -295,7 +299,9 @@
     "description": "Proxy for FHIR resources with authentication and validation. Routes healthcare data to FHIR servers with security headers and JSON extraction.",
     "tags": [
       "Healthcare",
-      "FHIR"
+      "FHIR",
+      "HTTP",
+      "REST"
     ],
     "useCases": [
       {
@@ -326,7 +332,8 @@
     "tags": [
       "Healthcare",
       "FHIR",
-      "DICOM"
+      "DICOM",
+      "HTTP"
     ],
     "useCases": [
       {
@@ -355,6 +362,7 @@
     "shortDescription": "Multi-format data negotiation",
     "description": "Handle multiple content types (JSON, FHIR JSON, DICOM JSON) automatically. Parse and route requests based on MIME type detection.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -381,8 +389,10 @@
     "shortDescription": "Share JMIX packages from DICOM services",
     "description": "Integrate JMIX applications with DICOM infrastructure. Secure proxy with performance optimization and schema validation.",
     "tags": [
+      "Healthcare",
       "DICOM",
-      "JMIX"
+      "JMIX",
+      "HTTP"
     ],
     "useCases": [
       {
@@ -412,6 +422,8 @@
     "description": "Transform legacy SOAP messages to JSON format via JOLT. Enables modern client access to SOAP-based backend systems with JWT authentication.",
     "tags": [
       "SOAP",
+      "XML",
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -442,7 +454,9 @@
     "shortDescription": "JSON data reshaping with JOLT",
     "description": "Transform and reshape JSON data using JOLT mappings. Convert between data formats, normalize schemas, and enrich data in flight.",
     "tags": [
-      "REST"
+      "HTTP",
+      "REST",
+      "Transform"
     ],
     "useCases": [
       {
@@ -473,6 +487,7 @@
     "tags": [
       "Healthcare",
       "FHIR",
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -501,6 +516,7 @@
     "tags": [
       "Healthcare",
       "FHIR",
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -527,6 +543,7 @@
     "shortDescription": "Emit JSON payloads on request/response",
     "description": "Demonstrates the webhook middleware for emitting JSON payloads on request/response, with per-instance authentication and header redaction.",
     "tags": [
+      "HTTP",
       "REST"
     ],
     "useCases": [
@@ -552,8 +569,9 @@
     "shortDescription": "North Pole Gift Distribution Network",
     "description": "Mission-critical pipeline powering Santa's Gift Distribution Network. Integrates the Naughty/Nice Registry, Elf Production Management System (EPMS), and Reindeer Fleet Logistics API for seamless Christmas Eve operations.",
     "tags": [
+      "HTTP",
       "REST",
-      "Christmas"
+      "Demo"
     ],
     "useCases": [
       {
@@ -588,7 +606,8 @@
     "tags": [
       "Healthcare",
       "DICOM",
-      "DICOMweb"
+      "DICOMweb",
+      "HTTP"
     ],
     "useCases": [
       {
@@ -617,10 +636,10 @@
     "shortDescription": "Universal Commerce Protocol checkout capability",
     "description": "Implements Universal Commerce Protocol (UCP) checkout capability for agentic commerce. Enables AI agents to discover capabilities, create checkout sessions, negotiate payment handlers, and complete purchases on behalf of users using standardized UCP endpoints.",
     "tags": [
+      "HTTP",
       "REST",
       "Commerce",
-      "UCP",
-      "AI Agents"
+      "AI"
     ],
     "useCases": [
       {
@@ -639,7 +658,8 @@
     "prerequisites": [
       "HTTP Service",
       "Transform Middleware",
-      "JSON Extractor"
+      "JSON Extractor",
+      "AI"
     ],
     "directory": "ucp-checkout",
     "file": "ucp-checkout/pipelines/checkout-create.toml",
@@ -651,8 +671,9 @@
     "shortDescription": "Forward JMIX POST and GET requests to upstream servers",
     "description": "Proxy layer for forwarding JMIX envelope uploads (POST) and retrievals (GET) to upstream JMIX servers. Enables building JMIX distribution networks with security and access control.",
     "tags": [
+      "Healthcare",
       "JMIX",
-      "Healthcare"
+      "HTTP"
     ],
     "useCases": [
       {
@@ -683,7 +704,8 @@
     "tags": [
       "Healthcare",
       "DICOM",
-      "JMIX"
+      "DICOMweb",
+      "HTTP"
     ],
     "useCases": [
       {
@@ -715,7 +737,8 @@
     "tags": [
       "Healthcare",
       "FHIR",
-      "Mesh"
+      "HTTP",
+      "Mesh-Networking"
     ],
     "useCases": [
       {
@@ -744,8 +767,10 @@
     "shortDescription": "Upload files to local storage via HTTP",
     "description": "Route HTTP requests with binary payloads directly to the storage backend (local filesystem). Supports automatic UUID-based naming for uploaded files.",
     "tags": [
+      "HTTP",
       "REST",
-      "Storage"
+      "Storage",
+      "File-Transfer"
     ],
     "useCases": [
       {
@@ -774,8 +799,10 @@
     "shortDescription": "Comprehensive middleware chain example",
     "description": "Comprehensive integration test of all major Harmony features in a single pipeline. Demonstrates authentication, access control, path filtering, JSON extraction, and JOLT transformations.",
     "tags": [
+      "HTTP",
       "REST",
-      "Transform"
+      "Transform",
+      "Middleware"
     ],
     "useCases": [
       {
@@ -808,7 +835,8 @@
       "Healthcare",
       "DICOM",
       "AI",
-      "Transform"
+      "Transform",
+      "HTTP"
     ],
     "useCases": [
       {
@@ -827,7 +855,7 @@
     "prerequisites": [
       "DICOM Service",
       "HTTP Service",
-      "AI Cloud Backend"
+      "AI"
     ],
     "directory": "dicom-ai",
     "file": "dicom-ai/pipelines/dicom-to-ai.toml",
