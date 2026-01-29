@@ -799,5 +799,39 @@
     "directory": "http-with-middleware",
     "file": "http-with-middleware/pipelines/pipeline.toml",
     "type": "pipeline"
+  },
+  "dicom-ai": {
+    "name": "DICOM to AI Gateway",
+    "shortDescription": "Transform DICOM to JSON for cloud AI processing",
+    "description": "Receive DICOM images from PACS systems and transform them into JSON requests for cloud-based AI processing services. Extracts key metadata and restructures it for machine learning pipelines.",
+    "tags": [
+      "Healthcare",
+      "DICOM",
+      "AI",
+      "Transform"
+    ],
+    "useCases": [
+      {
+        "title": "Medical Image Analysis",
+        "description": "Route DICOM studies to cloud AI for automated analysis"
+      },
+      {
+        "title": "AI Pipeline Integration",
+        "description": "Convert DICOM to JSON format for ML model processing"
+      },
+      {
+        "title": "Radiology AI Services",
+        "description": "Enable AI-powered diagnostic support from existing PACS"
+      }
+    ],
+    "prerequisites": [
+      "DICOM Service",
+      "HTTP Service",
+      "AI Cloud Backend"
+    ],
+    "directory": "dicom-ai",
+    "file": "dicom-ai/pipelines/dicom-to-ai.toml",
+    "type": "pipeline",
+    "featured": true
   }
 }

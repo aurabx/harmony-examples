@@ -1,0 +1,63 @@
+# DICOM to AI Cloud Gateway Configuration
+# Demonstrates receiving DICOM from PACS and transforming to JSON for cloud AI processing
+
+[proxy]
+name = "harmony-dicom-ai"
+log_level = "debug"
+pipelines_path = "pipelines"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration - DICOM listener
+[network.dicom_net]
+enable_wireguard = false
+interface = "wg0"
+
+# TCP network bind settings - used by all protocol adapters
+# For DICOM SCP, this is where the DIMSE listener will bind
+[network.dicom_net.tcp_config]
+bind_address = "0.0.0.0"
+bind_port = 11113
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_dicom_ai.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.dicom_scp]
+module = ""
+
+[services.http]
+module = ""
+
+# Middleware types
+[middleware_types.dicom_flatten]
+module = ""
+
+[middleware_types.transform]
+module = ""
+
+# Peer definition for the DICOM listener (New in v1.9)
+[peers.listener_config]
+connection.host = "0.0.0.0"
+connection.port = 11113
+connection.protocol = "dicom"
+
+# Target definition for AI Cloud API backend
+[targets.ai_service]
+connection.host = "ai-service.example.com"
+connection.port = 443
+connection.protocol = "https"
+connection.tls.enabled = true

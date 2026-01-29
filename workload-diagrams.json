@@ -442,5 +442,23 @@
     "targets": [
       { "label": "Backend Server", "subLabel": "HTTP service", "status": "active" }
     ]
+  },
+  "dicom-ai": {
+    "sources": [
+      { "label": "PACS System", "subLabel": "DICOM C-STORE", "status": "active" },
+      { "label": "Medical Modalities", "subLabel": "CT/MRI/Ultrasound", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "DICOM SCP", "subLabel": "AET: AI_GATEWAY", "status": "active" },
+      "middlewares": [
+        { "label": "DICOM Flatten", "subLabel": "Flatten DICOM structure", "status": "active" },
+        { "label": "Transform", "subLabel": "JOLT restructuring", "status": "active" }
+      ],
+      "backend": { "label": "HTTP Client", "subLabel": "AI Cloud API", "status": "active" }
+    },
+    "targets": [
+      { "label": "AI Cloud Service", "subLabel": "Image analysis", "status": "active" },
+      { "label": "ML Pipeline", "subLabel": "Processing request", "status": "active" }
+    ]
   }
 }

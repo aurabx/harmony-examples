@@ -1,0 +1,30 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "(0010,0020)": "patient.id",
+      "(0010,0010)": "patient.name", 
+      "(0020,000D)": "study.uid",
+      "(0020,000E)": "study.seriesUid",
+      "(0008,0018)": "instance.uid",
+      "(0008,0060)": "imaging.modality",
+      "(0008,0020)": "study.date",
+      "(0008,1030)": "study.description",
+      "(0018,0015)": "imaging.bodyPart",
+      "(0008,0050)": "study.accessionNumber",
+      "(0008,0090)": "referringPhysician",
+      "*": "metadata.&"
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "processing": {
+        "requestType": "DICOM_ANALYSIS",
+        "priority": "normal",
+        "timestamp": "${now}",
+        "source": "pacs_gateway"
+      }
+    }
+  }
+]

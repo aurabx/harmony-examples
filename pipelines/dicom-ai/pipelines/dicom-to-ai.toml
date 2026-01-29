@@ -1,0 +1,53 @@
+# ------------------------
+# DICOM to AI Cloud Gateway Example
+#-------------------------
+[pipelines.dicom_to_ai]
+description = "Receive DICOM from PACS and transform to JSON for cloud AI processing"
+networks = ["dicom_net"]
+endpoints = ["dicom_listener"]
+middleware = ["dicom_flatten", "transform_to_json"]
+backends = ["ai_cloud_api"]
+
+# ------------------------
+# DICOM Endpoint (SCP)
+#-------------------------
+[endpoints.dicom_listener]
+service = "dicom_scp"
+peer_ref = "listener_config"
+[endpoints.dicom_listener.options]
+local_aet = "AI_GATEWAY"
+# Bind address and port are inherited from peer_ref (listener_config)
+max_pdu = 32768
+enable_echo = true
+enable_store = true
+enable_find = false
+enable_move = false
+enable_get = false
+
+# ------------------------
+# Middleware: Flatten DICOM Data
+#-------------------------
+[middleware.dicom_flatten]
+type = "dicom_flatten"
+[middleware.dicom_flatten.options]
+apply = "right"
+
+# ------------------------
+# Middleware: Transform to JSON
+#-------------------------
+[middleware.transform_to_json]
+type = "transform"
+[middleware.transform_to_json.options]
+spec_path = "dicom_to_ai.json"
+apply = "left"
+fail_on_error = true
+
+# ------------------------
+# Backend: AI Cloud API
+#-------------------------
+[backends.ai_cloud_api]
+service = "http"
+target_ref = "ai_service"
+[backends.ai_cloud_api.options]
+method = "POST"
+headers = { "Content-Type" = "application/json" }
