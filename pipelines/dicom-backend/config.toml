@@ -12,14 +12,31 @@ primary_provider = "local"
 api = "https://api.runbeam.cloud"
 poll_interval_secs = 30
 
+[management]
+# Whether the management API is enabled. Defaults to false for security.
+enabled = true
+# The base path for management endpoints. Defaults to "admin".
+base_path = "admin"
+# The network to use for management endpoints. Required when enabled.
+network = "management"
+
 # Network configuration
 [network.http_net]
 enable_wireguard = false
 interface = "wg0"
 
 [network.http_net.http]
-bind_address = "127.0.0.1"
+bind_address = "0.0.0.0"
 bind_port = 8085
+
+[network.management]
+# Management-only listener
+enable_wireguard = false
+interface = "wg0"
+
+[network.management.http]
+bind_address = "127.0.0.1"
+bind_port = 9090
 
 # Logging
 [logging]

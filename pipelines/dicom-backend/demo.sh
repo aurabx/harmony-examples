@@ -63,12 +63,27 @@ echo -e "${YELLOW}Setting up Orthanc Docker container...${NC}"
 # Stop and remove any existing Orthanc container
 docker rm -f harmony-dicom-backend-orthanc 2>/dev/null || true
 
+# Create Orthanc configuration file to accept HARMONY_SCU as a modality
+echo -e "${YELLOW}Creating Orthanc configuration...${NC}"
+cat > "$TMP_DIR/orthanc-config.json" << 'ORTHANC_CONFIG'
+{
+  "DicomModalities" : {
+    "HARMONY_SCU" : {
+      "AET" : "HARMONY_SCU",
+      "Host" : "host.docker.internal",
+      "Port" : 11112
+    }
+  }
+}
+ORTHANC_CONFIG
+
 # Start Orthanc in Docker
 echo -e "${YELLOW}Starting Orthanc on DICOM port $ORTHANC_DICOM_PORT, HTTP port $ORTHANC_HTTP_PORT...${NC}"
 docker run -d \
   --name harmony-dicom-backend-orthanc \
   -p $ORTHANC_DICOM_PORT:4242 \
   -p $ORTHANC_HTTP_PORT:8042 \
+  -v "$TMP_DIR/orthanc-config.json":/etc/orthanc/orthanc.json:ro \
   -e ORTHANC__DICOM_AET="ORTHANC" \
   -e ORTHANC__OVERWRITE_INSTANCES=true \
   orthancteam/orthanc:latest > "$TMP_DIR/orthanc_container.log" 2>&1
@@ -93,6 +108,38 @@ for i in {1..30}; do
     fi
     sleep 1
 done
+
+# Insert study data from samples/dicom/study_1 into Orthanc
+echo -e "${YELLOW}Inserting study data from samples/dicom/study_1 into Orthanc...${NC}"
+STUDY_DIR="$PROJECT_ROOT/samples/dicom/study_1"
+if [ -d "$STUDY_DIR" ]; then
+    echo "  Found study directory: $STUDY_DIR"
+    DICOM_FILES=$(find "$STUDY_DIR" -name "*.dcm" -type f 2>/dev/null)
+    if [ -n "$DICOM_FILES" ]; then
+        echo "  Uploading DICOM files to Orthanc..."
+        UPLOADED_COUNT=0
+        for DICOM_FILE in $DICOM_FILES; do
+            echo "    Uploading: $(basename "$DICOM_FILE")"
+            if curl -s -X POST -u orthanc:orthanc \
+                -H "Content-Type: application/dicom" \
+                --data-binary @"$DICOM_FILE" \
+                "http://localhost:$ORTHANC_HTTP_PORT/instances" > /dev/null 2>&1; then
+                UPLOADED_COUNT=$((UPLOADED_COUNT + 1))
+            else
+                echo -e "${YELLOW}    Warning: Failed to upload $(basename "$DICOM_FILE")${NC}"
+            fi
+        done
+        if [ $UPLOADED_COUNT -gt 0 ]; then
+            echo -e "${GREEN}  ✓ Successfully uploaded $UPLOADED_COUNT DICOM files to Orthanc${NC}"
+        else
+            echo -e "${YELLOW}  ⚠ No DICOM files were uploaded successfully${NC}"
+        fi
+    else
+        echo -e "${YELLOW}  ⚠ No DICOM files found in $STUDY_DIR${NC}"
+    fi
+else
+    echo -e "${YELLOW}  ⚠ Study directory not found: $STUDY_DIR${NC}"
+fi
 echo ""
 
 # Initialize test status tracking
@@ -183,7 +230,7 @@ echo ""
 echo -e "${BLUE}=== Running Tests ===${NC}"
 echo ""
 
-# Test 1: C-FIND operation
+# Test 1: C-FIND operation (query for studies)
 echo -e "${YELLOW}Test 1: Trigger C-FIND operation${NC}"
 # Query identifier in DICOM JSON format
 CFIND_REQUEST='{
@@ -211,7 +258,7 @@ else
 fi
 echo ""
 
-# Test 2: C-FIND with specific patient
+# Test 2: C-FIND for specific patient
 echo -e "${YELLOW}Test 2: C-FIND for specific patient${NC}"
 # Query identifier in DICOM JSON format
 CFIND_PATIENT="{
@@ -227,11 +274,11 @@ HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" = "200" ]; then
-    echo -e "${GREEN}  ✓ Patient-level C-FIND successful (HTTP $HTTP_CODE)${NC}"
+    echo -e "${GREEN}  ✓ C-FIND with specific patient successful (HTTP $HTTP_CODE)${NC}"
     echo "  Response:"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 else
-    echo -e "${YELLOW}  ⚠ Patient-level C-FIND returned HTTP $HTTP_CODE${NC}"
+    echo -e "${YELLOW}  ⚠ C-FIND with specific patient returned HTTP $HTTP_CODE${NC}"
     echo "  Response:"
     echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
 fi
