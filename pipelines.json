@@ -263,7 +263,7 @@
     "type": "pipeline"
   },
   "dicomweb-dicom": {
-    "name": "DICOMweb Gateway",
+    "name": "DICOMweb to DICOM",
     "shortDescription": "Web-based DICOM services",
     "description": "DICOM Service Class Provider supporting web protocols. Enables browser-based access to medical imaging with C-ECHO, C-FIND, C-GET, C-MOVE operations.",
     "tags": [
