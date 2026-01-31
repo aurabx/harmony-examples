@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0]
+### Added
+- FHIR to Legacy pipeline example for converting FHIR data to legacy API formats
+- Legacy to FHIR pipeline example for converting legacy data to FHIR format
+- Webhook to FHIR pipeline example for webhook-driven FHIR transformation
+
+### Changed
+- Renamed some of the examples for clarity
+- Cleaned up tags
+
 ## [0.11.0]
 ### Added
 - DICOM to AI example pipeline for AI integration workflows
