@@ -1,0 +1,148 @@
+# ==============================================================================
+# Pipeline: Webhook to FHIR
+# ==============================================================================
+# Description: Receive webhooks from external systems and transform payloads
+#              into FHIR resources for submission to a FHIR server.
+#
+# Supports multiple webhook formats:
+#   - Patient registration events
+#   - Appointment booking events
+#   - Lab result notifications
+#
+# Flow:
+#   1. Receive webhook POST at /webhooks/{type} endpoint
+#   2. Extract and validate webhook payload
+#   3. Transform to appropriate FHIR resource
+#   4. Forward to FHIR server backend
+#   5. Return acknowledgment
+#
+# Test (patient registration webhook):
+#   curl -X POST http://127.0.0.1:8080/webhooks/patient \
+#     -H "Content-Type: application/json" \
+#     -H "X-Webhook-Event: patient.created" \
+#     -d '{"event":"patient.created","data":{"id":"123","name":"John Smith","email":"john@example.com"}}'
+#
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Pipeline: Patient Registration Webhooks
+# ------------------------------------------------------------------------------
+
+[pipelines.webhook_patient]
+description = "Transform patient registration webhooks to FHIR Patient"
+networks = ["http_net"]
+endpoints = ["webhook_patient_endpoint"]
+middleware = [
+    "log_incoming",
+    "json_extractor",
+    "patient_webhook_transform",
+    "log_outgoing",
+]
+backends = ["fhir_backend"]
+
+# ------------------------------------------------------------------------------
+# Pipeline: Appointment Webhooks
+# ------------------------------------------------------------------------------
+
+[pipelines.webhook_appointment]
+description = "Transform appointment webhooks to FHIR Appointment"
+networks = ["http_net"]
+endpoints = ["webhook_appointment_endpoint"]
+middleware = [
+    "log_incoming",
+    "json_extractor",
+    "appointment_webhook_transform",
+    "log_outgoing",
+]
+backends = ["fhir_backend"]
+
+# ------------------------------------------------------------------------------
+# Pipeline: Lab Result Webhooks
+# ------------------------------------------------------------------------------
+
+[pipelines.webhook_lab_result]
+description = "Transform lab result webhooks to FHIR Observation"
+networks = ["http_net"]
+endpoints = ["webhook_lab_endpoint"]
+middleware = [
+    "log_incoming",
+    "json_extractor",
+    "lab_webhook_transform",
+    "log_outgoing",
+]
+backends = ["fhir_backend"]
+
+# ==============================================================================
+# Endpoints
+# ==============================================================================
+
+[endpoints.webhook_patient_endpoint]
+service = "http"
+[endpoints.webhook_patient_endpoint.options]
+path_prefix = "/webhooks/patient"
+
+[endpoints.webhook_appointment_endpoint]
+service = "http"
+[endpoints.webhook_appointment_endpoint.options]
+path_prefix = "/webhooks/appointment"
+
+[endpoints.webhook_lab_endpoint]
+service = "http"
+[endpoints.webhook_lab_endpoint.options]
+path_prefix = "/webhooks/lab"
+
+# ==============================================================================
+# Backends
+# ==============================================================================
+
+[backends.fhir_backend]
+service = "echo"
+# For production, use: target_ref = "fhir_server"
+
+# ==============================================================================
+# Middleware - Logging
+# ==============================================================================
+
+[middleware.log_incoming]
+type = "log_dump"
+[middleware.log_incoming.options]
+label = "incoming_webhook"
+pretty = true
+
+[middleware.log_outgoing]
+type = "log_dump"
+[middleware.log_outgoing.options]
+label = "outgoing_response"
+pretty = true
+
+# ==============================================================================
+# Middleware - Transforms
+# ==============================================================================
+
+# JSON extractor for webhook payloads
+[middleware.json_extractor]
+type = "json_extractor"
+
+# Transform patient registration webhook to FHIR Patient
+[middleware.patient_webhook_transform]
+type = "transform"
+[middleware.patient_webhook_transform.options]
+spec_path = "webhook-patient-to-fhir.json"
+apply = "left"
+fail_on_error = false
+
+# Transform appointment webhook to FHIR Appointment
+[middleware.appointment_webhook_transform]
+type = "transform"
+[middleware.appointment_webhook_transform.options]
+spec_path = "webhook-appointment-to-fhir.json"
+apply = "left"
+fail_on_error = false
+
+# Transform lab result webhook to FHIR Observation
+[middleware.lab_webhook_transform]
+type = "transform"
+[middleware.lab_webhook_transform.options]
+spec_path = "webhook-lab-to-fhir.json"
+apply = "left"
+fail_on_error = false

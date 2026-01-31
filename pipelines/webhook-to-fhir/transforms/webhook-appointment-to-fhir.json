@@ -1,0 +1,112 @@
+[
+  {
+    "comment": "Extract appointment data from webhook payload",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "id": "id",
+        "appointment_id": "id",
+        "patient_id": "patient_ref",
+        "patient_ref": "patient_ref",
+        "practitioner_id": "practitioner_ref",
+        "practitioner_ref": "practitioner_ref",
+        "provider_id": "practitioner_ref",
+        "start_time": "start",
+        "start": "start",
+        "scheduled_at": "start",
+        "end_time": "end",
+        "end": "end",
+        "duration": "minutesDuration",
+        "duration_minutes": "minutesDuration",
+        "status": "status",
+        "appointment_status": "status",
+        "type": "service_type",
+        "service_type": "service_type",
+        "appointment_type": "service_type",
+        "reason": "reason",
+        "description": "description",
+        "notes": "comment"
+      },
+      "event": "event_type",
+      "timestamp": "meta_timestamp"
+    }
+  },
+  {
+    "comment": "Build FHIR Appointment structure",
+    "operation": "shift",
+    "spec": {
+      "id": "identifier[0].value",
+      "status": "status",
+      "service_type": "serviceType[0].coding[0].display",
+      "start": "start",
+      "end": "end",
+      "minutesDuration": "minutesDuration",
+      "patient_ref": "participant[0].actor.reference",
+      "practitioner_ref": "participant[1].actor.reference",
+      "reason": "reasonCode[0].text",
+      "description": "description",
+      "comment": "comment"
+    }
+  },
+  {
+    "comment": "Add FHIR Appointment defaults",
+    "operation": "default",
+    "spec": {
+      "resourceType": "Appointment",
+      "meta": {
+        "profile": [
+          "http://hl7.org/fhir/StructureDefinition/Appointment"
+        ]
+      },
+      "identifier": [
+        {
+          "system": "http://webhook.source/appointment-id"
+        }
+      ],
+      "status": "booked",
+      "serviceType": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type"
+            }
+          ]
+        }
+      ],
+      "participant": [
+        {
+          "actor": {
+            "type": "Patient"
+          },
+          "required": "required",
+          "status": "accepted"
+        },
+        {
+          "actor": {
+            "type": "Practitioner"
+          },
+          "required": "required",
+          "status": "accepted"
+        }
+      ]
+    }
+  },
+  {
+    "comment": "Format participant references",
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "participant": {
+        "0": {
+          "actor": {
+            "reference": "=concat('Patient/', @(3,participant[0].actor.reference))"
+          }
+        },
+        "1": {
+          "actor": {
+            "reference": "=concat('Practitioner/', @(3,participant[1].actor.reference))"
+          }
+        }
+      }
+    }
+  }
+]

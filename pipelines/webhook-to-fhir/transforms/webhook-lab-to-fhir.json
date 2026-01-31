@@ -1,0 +1,138 @@
+[
+  {
+    "comment": "Extract lab result data from webhook payload",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "id": "id",
+        "result_id": "id",
+        "observation_id": "id",
+        "patient_id": "patient_ref",
+        "patient_ref": "patient_ref",
+        "test_code": "code",
+        "code": "code",
+        "loinc_code": "code",
+        "test_name": "code_display",
+        "code_display": "code_display",
+        "value": "value",
+        "result_value": "value",
+        "numeric_value": "value_quantity",
+        "value_quantity": "value_quantity",
+        "unit": "unit",
+        "units": "unit",
+        "reference_range_low": "ref_low",
+        "ref_low": "ref_low",
+        "reference_range_high": "ref_high",
+        "ref_high": "ref_high",
+        "status": "status",
+        "result_status": "status",
+        "interpretation": "interpretation",
+        "abnormal_flag": "interpretation",
+        "collected_at": "effectiveDateTime",
+        "collection_date": "effectiveDateTime",
+        "effective_date": "effectiveDateTime",
+        "issued": "issued",
+        "issued_at": "issued",
+        "performer": "performer_ref",
+        "performer_id": "performer_ref",
+        "lab_id": "performer_ref"
+      },
+      "event": "event_type",
+      "timestamp": "meta_timestamp"
+    }
+  },
+  {
+    "comment": "Build FHIR Observation structure",
+    "operation": "shift",
+    "spec": {
+      "id": "identifier[0].value",
+      "status": "status",
+      "code": "code.coding[0].code",
+      "code_display": "code.coding[0].display",
+      "patient_ref": "subject.reference",
+      "value_quantity": "valueQuantity.value",
+      "unit": "valueQuantity.unit",
+      "ref_low": "referenceRange[0].low.value",
+      "ref_high": "referenceRange[0].high.value",
+      "interpretation": "interpretation[0].coding[0].code",
+      "effectiveDateTime": "effectiveDateTime",
+      "issued": "issued",
+      "performer_ref": "performer[0].reference"
+    }
+  },
+  {
+    "comment": "Add FHIR Observation defaults",
+    "operation": "default",
+    "spec": {
+      "resourceType": "Observation",
+      "meta": {
+        "profile": [
+          "http://hl7.org/fhir/StructureDefinition/Observation"
+        ]
+      },
+      "identifier": [
+        {
+          "system": "http://webhook.source/lab-result-id"
+        }
+      ],
+      "status": "final",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+              "code": "laboratory",
+              "display": "Laboratory"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org"
+          }
+        ]
+      },
+      "subject": {
+        "type": "Patient"
+      },
+      "valueQuantity": {
+        "system": "http://unitsofmeasure.org"
+      },
+      "interpretation": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
+            }
+          ]
+        }
+      ],
+      "referenceRange": [
+        {
+          "low": {
+            "system": "http://unitsofmeasure.org"
+          },
+          "high": {
+            "system": "http://unitsofmeasure.org"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "comment": "Format references with resource type prefixes",
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "subject": {
+        "reference": "=concat('Patient/', @(2,subject.reference))"
+      },
+      "performer": {
+        "0": {
+          "reference": "=concat('Organization/', @(3,performer[0].reference))"
+        }
+      }
+    }
+  }
+]

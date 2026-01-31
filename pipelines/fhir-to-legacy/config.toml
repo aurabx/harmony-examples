@@ -1,0 +1,62 @@
+# FHIR to Legacy HTTP API Example
+# Demonstrates accepting FHIR R4 resources and transforming them for legacy systems
+
+[proxy]
+name = "harmony-fhir-to-legacy"
+log_level = "debug"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8080
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_fhir_to_legacy.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.fhir]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware types
+[middleware_types.transform]
+module = ""
+
+[middleware_types.log_dump]
+module = ""
+
+[middleware_types.json_extractor]
+module = ""
+
+# Target definition - Legacy API backend
+[targets.legacy_api]
+connection.host = "127.0.0.1"
+connection.port = 8889
+connection.protocol = "http"
+timeout_secs = 60

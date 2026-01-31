@@ -1,0 +1,38 @@
+[
+  {
+    "comment": "Transform FHIR response to legacy JSON format",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "id": "data.patient_id",
+        "resourceType": "data.resource_type",
+        "meta": {
+          "versionId": "data.version",
+          "lastUpdated": "data.last_modified"
+        },
+        "identifier": {
+          "*": {
+            "value": "data.identifiers[]"
+          }
+        },
+        "issue": {
+          "*": {
+            "severity": "data.errors[&1].level",
+            "code": "data.errors[&1].code",
+            "diagnostics": "data.errors[&1].message"
+          }
+        }
+      }
+    }
+  },
+  {
+    "comment": "Add legacy response structure",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "success": true,
+        "api_version": "1.0"
+      }
+    }
+  }
+]

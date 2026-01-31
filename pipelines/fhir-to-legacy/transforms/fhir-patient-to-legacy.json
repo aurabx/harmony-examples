@@ -1,0 +1,57 @@
+[
+  {
+    "comment": "Transform FHIR Patient resource to legacy flat JSON format",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "id": "data.patient_id",
+        "name": {
+          "0": {
+            "family": "data.last_name",
+            "given": {
+              "0": "data.first_name",
+              "1": "data.middle_name"
+            }
+          }
+        },
+        "birthDate": "data.date_of_birth",
+        "gender": "data.sex",
+        "identifier": {
+          "*": {
+            "system": "data.identifiers[&1].type",
+            "value": "data.identifiers[&1].value"
+          }
+        },
+        "telecom": {
+          "*": {
+            "system": "data.contacts[&1].type",
+            "value": "data.contacts[&1].value",
+            "use": "data.contacts[&1].use"
+          }
+        },
+        "address": {
+          "0": {
+            "line": {
+              "0": "data.address_line1",
+              "1": "data.address_line2"
+            },
+            "city": "data.city",
+            "state": "data.state",
+            "postalCode": "data.zip_code",
+            "country": "data.country"
+          }
+        }
+      }
+    }
+  },
+  {
+    "comment": "Add legacy API metadata",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "api_version": "1.0",
+        "record_type": "patient"
+      }
+    }
+  }
+]

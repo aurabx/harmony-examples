@@ -1,0 +1,34 @@
+[
+  {
+    "comment": "Transform FHIR response to webhook acknowledgment",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "id": "data.resource_id",
+        "resourceType": "data.resource_type",
+        "meta": {
+          "versionId": "data.version",
+          "lastUpdated": "data.processed_at"
+        },
+        "issue": {
+          "*": {
+            "severity": "data.errors[&1].severity",
+            "code": "data.errors[&1].code",
+            "diagnostics": "data.errors[&1].message"
+          }
+        }
+      }
+    }
+  },
+  {
+    "comment": "Add webhook acknowledgment structure",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "success": true,
+        "status": "received",
+        "message": "Webhook processed successfully"
+      }
+    }
+  }
+]

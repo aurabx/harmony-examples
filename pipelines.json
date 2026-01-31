@@ -299,9 +299,7 @@
     "description": "Proxy for FHIR resources with authentication and validation. Routes healthcare data to FHIR servers with security headers and JSON extraction.",
     "tags": [
       "Healthcare",
-      "FHIR",
-      "HTTP",
-      "REST"
+      "FHIR"
     ],
     "useCases": [
       {
@@ -332,8 +330,7 @@
     "tags": [
       "Healthcare",
       "FHIR",
-      "DICOM",
-      "HTTP"
+      "DICOM"
     ],
     "useCases": [
       {
@@ -385,14 +382,13 @@
     "type": "pipeline"
   },
   "jmix": {
-    "name": "DICOM to JMIX",
+    "name": "JMIX to DICOM",
     "shortDescription": "Share JMIX packages from DICOM services",
     "description": "Integrate JMIX applications with DICOM infrastructure. Secure proxy with performance optimization and schema validation.",
     "tags": [
       "Healthcare",
       "DICOM",
-      "JMIX",
-      "HTTP"
+      "JMIX"
     ],
     "useCases": [
       {
@@ -606,8 +602,7 @@
     "tags": [
       "Healthcare",
       "DICOM",
-      "DICOMweb",
-      "HTTP"
+      "DICOMweb"
     ],
     "useCases": [
       {
@@ -672,8 +667,7 @@
     "description": "Proxy layer for forwarding JMIX envelope uploads (POST) and retrievals (GET) to upstream JMIX servers. Enables building JMIX distribution networks with security and access control.",
     "tags": [
       "Healthcare",
-      "JMIX",
-      "HTTP"
+      "JMIX"
     ],
     "useCases": [
       {
@@ -704,8 +698,7 @@
     "tags": [
       "Healthcare",
       "DICOM",
-      "DICOMweb",
-      "HTTP"
+      "JMIX"
     ],
     "useCases": [
       {
@@ -737,7 +730,6 @@
     "tags": [
       "Healthcare",
       "FHIR",
-      "HTTP",
       "Mesh-Networking"
     ],
     "useCases": [
@@ -835,8 +827,7 @@
       "Healthcare",
       "DICOM",
       "AI",
-      "Transform",
-      "HTTP"
+      "Transform"
     ],
     "useCases": [
       {
@@ -861,5 +852,103 @@
     "file": "dicom-ai/pipelines/dicom-to-ai.toml",
     "type": "pipeline",
     "featured": true
+  },
+  "fhir-to-legacy": {
+    "name": "FHIR to Legacy HTTP",
+    "shortDescription": "Accept FHIR resources and transform for legacy HTTP systems",
+    "description": "Accept FHIR R4 resources and transform them for legacy systems that don't speak FHIR. Bridges modern FHIR-compliant applications with older HTTP APIs using JOLT transformations.",
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "HTTP",
+      "REST"
+    ],
+    "useCases": [
+      {
+        "title": "Legacy System Integration",
+        "description": "Connect FHIR-enabled EHRs with legacy patient management systems"
+      },
+      {
+        "title": "FHIR to Flat JSON",
+        "description": "Convert FHIR resources to simple flat JSON structures"
+      },
+      {
+        "title": "Gradual FHIR Adoption",
+        "description": "Enable FHIR adoption without replacing legacy backends"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "directory": "fhir-to-legacy",
+    "file": "fhir-to-legacy/pipelines/fhir-to-legacy.toml",
+    "type": "pipeline"
+  },
+  "legacy-to-fhir": {
+    "name": "Legacy HTTP to FHIR",
+    "shortDescription": "Accept legacy HTTP requests and convert to FHIR resources",
+    "description": "Accept HTTP requests from legacy systems and convert them to FHIR requests. Enables older applications to communicate with modern FHIR servers without needing to understand FHIR.",
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "HTTP",
+      "REST"
+    ],
+    "useCases": [
+      {
+        "title": "Legacy to FHIR Bridge",
+        "description": "Connect legacy patient systems to FHIR servers"
+      },
+      {
+        "title": "Incremental Migration",
+        "description": "Migrate applications to FHIR incrementally"
+      },
+      {
+        "title": "FHIR Facade",
+        "description": "Provide a FHIR-compatible facade for existing APIs"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "directory": "legacy-to-fhir",
+    "file": "legacy-to-fhir/pipelines/legacy-to-fhir.toml",
+    "type": "pipeline"
+  },
+  "webhook-to-fhir": {
+    "name": "Webhook to FHIR",
+    "shortDescription": "Receive webhooks and transform to FHIR resources",
+    "description": "Receive webhooks from any system and transform payloads into FHIR resources. Supports patient registration, appointment booking, and lab result notifications with flexible field mapping.",
+    "tags": [
+      "Healthcare",
+      "FHIR",
+      "HTTP",
+      "REST",
+      "Webhook",
+      "Transform"
+    ],
+    "useCases": [
+      {
+        "title": "SaaS Integration",
+        "description": "Integrate SaaS applications with FHIR systems via webhooks"
+      },
+      {
+        "title": "Event-Driven FHIR",
+        "description": "Build event-driven FHIR data pipelines from external events"
+      },
+      {
+        "title": "Multi-Source Ingestion",
+        "description": "Receive patient, appointment, and lab data from multiple sources"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "directory": "webhook-to-fhir",
+    "file": "webhook-to-fhir/pipelines/webhook-to-fhir.toml",
+    "type": "pipeline"
   }
 }

@@ -1,0 +1,27 @@
+[
+  {
+    "comment": "Transform legacy API response to FHIR OperationOutcome",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "status": "data.issue[0].code",
+        "message": "data.issue[0].diagnostics",
+        "patient_id": "data.issue[0].expression[0]"
+      }
+    }
+  },
+  {
+    "comment": "Add FHIR OperationOutcome structure",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "resourceType": "OperationOutcome",
+        "issue": [
+          {
+            "severity": "information"
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,63 @@
+# Webhook to FHIR Example
+# Demonstrates receiving webhooks and transforming payloads into FHIR resources
+
+[proxy]
+name = "harmony-webhook-to-fhir"
+log_level = "debug"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8080
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_webhook_to_fhir.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.fhir]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware types
+[middleware_types.transform]
+module = ""
+
+[middleware_types.log_dump]
+module = ""
+
+[middleware_types.json_extractor]
+module = ""
+
+# Target definition - FHIR server backend
+[targets.fhir_server]
+connection.host = "hapi.fhir.org"
+connection.port = 443
+connection.protocol = "https"
+connection.base_path = "/baseR4"
+timeout_secs = 60

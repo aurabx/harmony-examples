@@ -1,0 +1,77 @@
+# ==============================================================================
+# Pipeline: FHIR R4 to Legacy HTTP API
+# ==============================================================================
+# Description: Accept FHIR R4 Patient resources and transform them to a legacy
+#              JSON API format for systems that don't speak FHIR
+#
+# Flow:
+#   1. Accept FHIR Patient resource at /Patient endpoint
+#   2. Transform FHIR structure to legacy flat JSON format
+#   3. Forward to legacy API backend
+#   4. Transform legacy response back to FHIR OperationOutcome
+#
+# Test (with echo backend):
+#   curl -X POST http://127.0.0.1:8080/Patient \
+#     -H "Content-Type: application/fhir+json" \
+#     -d '{"resourceType":"Patient","id":"123","name":[{"family":"Smith","given":["John"]}],"birthDate":"1990-01-15","gender":"male"}'
+#
+# ==============================================================================
+
+[pipelines.fhir_patient_to_legacy]
+description = "Transform FHIR Patient resources to legacy API format"
+networks = ["http_net"]
+endpoints = ["fhir_patient_endpoint"]
+middleware = [
+    "log_incoming",
+    "json_extractor",
+    "fhir_to_legacy_transform",
+    "log_outgoing",
+]
+backends = ["legacy_backend"]
+
+# ==============================================================================
+# Endpoints
+# ==============================================================================
+
+[endpoints.fhir_patient_endpoint]
+service = "http"
+[endpoints.fhir_patient_endpoint.options]
+path_prefix = "/Patient"
+
+# ==============================================================================
+# Backends
+# ==============================================================================
+
+[backends.legacy_backend]
+service = "echo"
+# For production, use: target_ref = "legacy_api"
+
+# ==============================================================================
+# Middleware - Request Processing (Left Side)
+# ==============================================================================
+
+# Log incoming FHIR request
+[middleware.log_incoming]
+type = "log_dump"
+[middleware.log_incoming.options]
+label = "incoming_fhir_patient"
+pretty = true
+
+# JSON extractor
+[middleware.json_extractor]
+type = "json_extractor"
+
+# Transform FHIR Patient to legacy format
+[middleware.fhir_to_legacy_transform]
+type = "transform"
+[middleware.fhir_to_legacy_transform.options]
+spec_path = "fhir-patient-to-legacy.json"
+apply = "left"
+fail_on_error = false
+
+# Log outgoing response
+[middleware.log_outgoing]
+type = "log_dump"
+[middleware.log_outgoing.options]
+label = "outgoing_fhir_response"
+pretty = true

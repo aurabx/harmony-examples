@@ -1,0 +1,112 @@
+[
+  {
+    "comment": "Transform legacy patient JSON to FHIR Patient resource",
+    "operation": "shift",
+    "spec": {
+      "data": {
+        "patient_id": "data.id",
+        "first_name": "data.name[0].given[0]",
+        "middle_name": "data.name[0].given[1]",
+        "last_name": "data.name[0].family",
+        "dob": "data.birthDate",
+        "date_of_birth": "data.birthDate",
+        "birth_date": "data.birthDate",
+        "gender": "data.gender_code",
+        "sex": "data.gender_code",
+        "mrn": "data.identifier[0].value",
+        "medical_record_number": "data.identifier[0].value",
+        "ssn": "data.identifier[1].value",
+        "phone": "data.telecom[0].value",
+        "phone_number": "data.telecom[0].value",
+        "email": "data.telecom[1].value",
+        "email_address": "data.telecom[1].value",
+        "address_line1": "data.address[0].line[0]",
+        "address_line2": "data.address[0].line[1]",
+        "street": "data.address[0].line[0]",
+        "city": "data.address[0].city",
+        "state": "data.address[0].state",
+        "zip": "data.address[0].postalCode",
+        "zip_code": "data.address[0].postalCode",
+        "postal_code": "data.address[0].postalCode",
+        "country": "data.address[0].country"
+      }
+    }
+  },
+  {
+    "comment": "Map gender codes to FHIR values - M/m to male, F/f to female",
+    "operation": "modify-overwrite-beta",
+    "spec": {
+      "data": {
+        "gender": "=ifEquals(@(1,gender_code),'M','male',ifEquals(@(1,gender_code),'F','female',ifEquals(@(1,gender_code),'m','male',ifEquals(@(1,gender_code),'f','female',@(1,gender_code)))))"
+      }
+    }
+  },
+  {
+    "comment": "Add FHIR Patient structure defaults",
+    "operation": "default",
+    "spec": {
+      "data": {
+        "resourceType": "Patient",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/Patient"
+          ]
+        },
+        "name": [
+          {
+            "use": "official"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hospital.org/mrn",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            }
+          },
+          {
+            "system": "http://hl7.org/fhir/sid/us-ssn",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "SS"
+                }
+              ]
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "use": "home"
+          },
+          {
+            "system": "email",
+            "use": "home"
+          }
+        ],
+        "address": [
+          {
+            "use": "home",
+            "type": "physical"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "comment": "Clean up temporary field",
+    "operation": "remove",
+    "spec": {
+      "data": {
+        "gender_code": ""
+      }
+    }
+  }
+]
