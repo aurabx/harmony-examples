@@ -950,5 +950,39 @@
     "directory": "webhook-to-fhir",
     "file": "webhook-to-fhir/pipelines/webhook-to-fhir.toml",
     "type": "pipeline"
+  },
+  "mcp-to-http": {
+    "name": "MCP to HTTP Bridge",
+    "shortDescription": "Bridge MCP protocol to standard HTTP APIs",
+    "description": "Transform MCP (Model Context Protocol) requests from AI agents into standard HTTP API calls. Enables AI systems using MCP to communicate with existing HTTP backends without native MCP support.",
+    "tags": [
+      "HTTP",
+      "REST",
+      "AI",
+      "MCP",
+      "Transform"
+    ],
+    "useCases": [
+      {
+        "title": "AI Agent Integration",
+        "description": "Allow AI agents to use MCP to call existing REST APIs"
+      },
+      {
+        "title": "Protocol Translation",
+        "description": "Convert MCP JSON-RPC to standard HTTP requests"
+      },
+      {
+        "title": "Legacy API Access",
+        "description": "Expose HTTP services to AI agents via MCP protocol"
+      }
+    ],
+    "prerequisites": [
+      "HTTP Service",
+      "Transform Middleware"
+    ],
+    "directory": "mcp-to-http",
+    "file": "mcp-to-http/pipelines/mcp-to-http.toml",
+    "type": "pipeline",
+    "featured": true
   }
 }

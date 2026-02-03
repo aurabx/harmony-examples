@@ -460,5 +460,22 @@
       { "label": "AI Cloud Service", "subLabel": "Image analysis", "status": "active" },
       { "label": "ML Pipeline", "subLabel": "Processing request", "status": "active" }
     ]
+  },
+  "mcp-to-http": {
+    "sources": [
+      { "label": "AI Agents", "subLabel": "MCP/JSON-RPC", "status": "active" }
+    ],
+    "harmony": {
+      "frontend": { "label": "MCP Bridge", "subLabel": "localhost:8090/mcp", "status": "active" },
+      "middlewares": [
+        { "label": "Access Control", "subLabel": "IP allow, POST/JSON only", "status": "active" },
+        { "label": "JSON Extract", "subLabel": "Parse MCP request", "status": "active" },
+        { "label": "Transform", "subLabel": "MCP→HTTP JOLT", "status": "active" }
+      ],
+      "backend": { "label": "HTTP Forward", "subLabel": "To backend API", "status": "active" }
+    },
+    "targets": [
+      { "label": "HTTP Backend", "subLabel": "localhost:8081", "status": "active" }
+    ]
   }
 }

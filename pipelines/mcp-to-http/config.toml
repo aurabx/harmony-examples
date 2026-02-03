@@ -1,0 +1,59 @@
+# MCP to HTTP Bridge Configuration
+# Enables AI agents using MCP to communicate with standard HTTP APIs
+
+[proxy]
+name = "harmony-mcp-to-http"
+log_level = "debug"
+pipelines_path = "pipelines"
+transforms_path = "transforms"
+primary_provider = "local"
+
+# Provider Configuration
+[provider.runbeam]
+api = "https://api.runbeam.cloud"
+poll_interval_secs = 30
+
+# Network configuration
+[network.http_net]
+enable_wireguard = false
+interface = "wg0"
+
+[network.http_net.http]
+bind_address = "127.0.0.1"
+bind_port = 8090
+
+# Logging
+[logging]
+log_to_file = true
+log_file_path = "./tmp/harmony_mcp_to_http.log"
+
+# Storage
+[storage]
+backend = "filesystem"
+
+[storage.options]
+path = "./tmp"
+
+# Service types
+[services.http]
+module = ""
+
+[services.echo]
+module = ""
+
+# Middleware types
+[middleware_types.json_extractor]
+module = ""
+
+[middleware_types.transform]
+module = ""
+
+[middleware_types.policies]
+module = ""
+
+# Target definition for HTTP backend
+[targets.http_backend]
+connection.host = "127.0.0.1"
+connection.port = 8081
+connection.protocol = "http"
+timeout_secs = 60

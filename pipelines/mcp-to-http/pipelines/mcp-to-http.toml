@@ -1,0 +1,107 @@
+# ------------------------
+# MCP to HTTP Bridge Pipeline
+# Transforms MCP (Model Context Protocol) requests to standard HTTP requests
+# Allows AI agents to communicate with existing HTTP APIs
+# ------------------------
+
+[pipelines.mcp_to_http]
+description = "Transform MCP protocol requests to standard HTTP API calls"
+networks = ["http_net"]
+endpoints = ["mcp_endpoint"]
+middleware = [
+    "mcp_security",
+    "json_extractor",
+    "mcp_transform",
+]
+backends = ["http_backend"]
+
+# ------------------------
+# Middleware
+# ------------------------
+
+# MCP Endpoint Security Policies
+[middleware.mcp_security]
+type = "policies"
+
+[middleware.mcp_security.options]
+policies = ["mcp_access_control"]
+
+# JSON extraction for MCP request parsing
+[middleware.json_extractor]
+type = "json_extractor"
+
+# Transform MCP protocol to HTTP request format
+[middleware.mcp_transform]
+type = "transform"
+[middleware.mcp_transform.options]
+spec_path = "mcp_to_http.json"
+apply = "left"
+fail_on_error = true
+
+# ------------------------
+# Policies
+# ------------------------
+[policies.mcp_access_control]
+id = "mcp_access_control"
+name = "MCP Access Control"
+enabled = true
+rules = ["allow_internal", "method_post_only", "content_json_only"]
+
+# ------------------------
+# Rules
+# ------------------------
+
+# Allow requests from internal networks
+[rules.allow_internal]
+id = "allow_internal"
+name = "Allow Internal Networks"
+type = "ip_allow"
+weight = 90
+enabled = true
+
+[rules.allow_internal.options]
+ip_addresses = [
+    "10.0.0.0/8",       # Private network - Class A
+    "172.16.0.0/12",    # Private network - Class B
+    "192.168.0.0/16",   # Private network - Class C
+    "127.0.0.1/32"      # Localhost
+]
+
+# MCP uses POST for all operations
+[rules.method_post_only]
+id = "method_post_only"
+name = "POST Only"
+type = "method"
+weight = 85
+enabled = true
+
+[rules.method_post_only.options]
+mode = "allow"
+methods = ["POST"]
+
+# MCP uses JSON payloads
+[rules.content_json_only]
+id = "content_json_only"
+name = "JSON Content Only"
+type = "content_type"
+weight = 80
+enabled = true
+
+[rules.content_json_only.options]
+mode = "allow"
+content_types = ["application/json"]
+
+# ------------------------
+# Endpoints
+# ------------------------
+[endpoints.mcp_endpoint]
+service = "http"
+[endpoints.mcp_endpoint.options]
+path_prefix = "/mcp"
+
+# ------------------------
+# Backends
+# ------------------------
+[backends.http_backend]
+service = "http"
+target_ref = "http_backend"

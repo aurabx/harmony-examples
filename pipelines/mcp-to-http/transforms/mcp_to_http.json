@@ -1,0 +1,19 @@
+[
+  {
+    "operation": "shift",
+    "spec": {
+      "jsonrpc": "jsonrpc",
+      "id": "id",
+      "method": "method",
+      "params": {
+        "*": "params.&"
+      }
+    }
+  },
+  {
+    "operation": "default",
+    "spec": {
+      "jsonrpc": "2.0"
+    }
+  }
+]
