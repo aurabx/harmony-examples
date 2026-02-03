@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-02-03
+### Added
+- MCP to HTTP Bridge pipeline example for AI agent integration
+  - Transform MCP (Model Context Protocol) JSON-RPC requests to standard HTTP API calls
+  - JOLT transform specification for protocol conversion
+  - Interactive demo script with mock HTTP backend
+  - Complete workload diagram for visualization
+
 ## [0.12.0]
 ### Added
 - FHIR to Legacy pipeline example for converting FHIR data to legacy API formats
